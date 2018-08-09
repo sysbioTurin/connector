@@ -7,7 +7,7 @@ To install it you can use use **devtools**:
 ```
 install.packages("devtools")
 library(devtools)
-install_github("qBioTurin/connector", ref="master")
+install_github("qBioTurin/connector", ref="master",dependencies=TRUE)
 ```
 
 #### An example of connector analysis:
