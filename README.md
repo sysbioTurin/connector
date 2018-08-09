@@ -7,7 +7,7 @@ The following R packages must be installed to use connector:
 DEoptim, GenSA, cowplot, fda, funcy, ggforce, ggplot2, optimr, plyr, readxl.
 
 ### How to install connector
-To install it you can use use **devtools**:
+To install it you can use  **devtools**:
 
 ```
 install.packages("devtools")
@@ -17,6 +17,11 @@ install_github("qBioTurin/connector", ref="master",dependencies=TRUE)
 
 ### An example of connector analysis:
 The **MainCommandsList.R** script contains the list of commands that can be used to reproduce the analysis described in the paper "CONNECTOR: fitting and clustering analysis of biological growth data".
+
+To execute this script you can use ***demo()*
+```
+demo("MainCommandsList", package = "connector")
+```
 
 
 ### Diclaimer:
