@@ -1,12 +1,8 @@
 Package: connector
 Type: Package
-Title: Version: 0.1.0
-Author: Jessica Giordano,
-        Simone Pernice, 
-        Roberta Sirovich,
-        Marco Beccuti,  
-        Francesca Cordero
-        Raffaele A Calogeror
+Title: CONNECTOR  
+Version: 0.1.0
+Author: Jessica Giordano, Simone Pernice, Roberta Sirovich, Marco Beccuti,  Francesca Cordero Raffaele A Calogeror
 Maintaine:  Marco Beccuti <beccuti@di.unito.it>
 Description: It is R package that is able to fit and cluster growth data using four different fitting models (i.e. Functional Clustering Models, Malthus model, Gompertz model, and logistic model). It exploits an unsupervised clustering algorithm to cluster the fitted data, and the separation and tightness measures are provide to evaluete the quality of the derived clusters.
 Depends: R (>= 3.0.0), DEoptim, GenSA, cowplot, fda, funcy, ggforce, ggplot2, optimr, plyr, readxl
