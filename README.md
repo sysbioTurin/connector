@@ -2,6 +2,11 @@
 It is R package that is able to fit and cluster growth data using four different fitting models (i.e. Functional Clustering Models, Malthus model, Gompertz model, and logistic model). 
 It exploits an unsupervised clustering algorithm to cluster the fitted data, and the separation and tightness measures are provide to evaluete the quality of the derived  clusters.
 
+### Required installed packages
+The following R packages must be installed to use connector:
+DEoptim, GenSA, cowplot, fda, funcy, ggforce, ggplot2, optimr, plyr, readxl
+
+### How to install connector
 To install it you can use use **devtools**:
 
 ```
