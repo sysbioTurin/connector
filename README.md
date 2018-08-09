@@ -11,7 +11,7 @@ install_github("qBioTurin/connector", ref="master")
 ```
 
 #### An example of connector analysis:
-The **MainListOfCommands.R** script contains the list of commands that can be used to reproduce the analysis described in the paper "CONNECTOR: fitting and clustering analysis of biological growth data".
+The **MainCommandsList.R** script contains the list of commands that can be used to reproduce the analysis described in the paper "CONNECTOR: fitting and clustering analysis of biological growth data".
 
 
 #### Diclaimer:
