@@ -1,7 +1,7 @@
 
 ### Data files
-GrowDataFile<-"data/1864dataset.xls"
-AnnotationFile <-"data/1864info.txt"
+GrowDataFile<-system.file("data", "1864dataset.xls", package = "connector")
+AnnotationFile <-system.file("data", "1864info.txt", package = "connector")
 
 ### Merge curves and target file
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)

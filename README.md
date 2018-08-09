@@ -4,7 +4,7 @@ It exploits an unsupervised clustering algorithm to cluster the fitted data, and
 
 ### Required installed packages
 The following R packages must be installed to use connector:
-DEoptim, GenSA, cowplot, fda, funcy, ggforce, ggplot2, optimr, plyr, readxl
+DEoptim, GenSA, cowplot, fda, funcy, ggforce, ggplot2, optimr, plyr, readxl.
 
 ### How to install connector
 To install it you can use use **devtools**:
@@ -15,9 +15,9 @@ library(devtools)
 install_github("qBioTurin/connector", ref="master",dependencies=TRUE)
 ```
 
-#### An example of connector analysis:
+### An example of connector analysis:
 The **MainCommandsList.R** script contains the list of commands that can be used to reproduce the analysis described in the paper "CONNECTOR: fitting and clustering analysis of biological growth data".
 
 
-#### Diclaimer:
+### Diclaimer:
 connector developers have no liability for any use of docker4seq functions, including without limitation, any loss of data, incorrect results, or any costs, liabilities, or damages that result from use of connector. 
