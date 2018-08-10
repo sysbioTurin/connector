@@ -18,10 +18,10 @@ DataVisualization(data, feature, labels = NULL, save = FALSE, path = NULL)
 \item{path}{The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.}
 }
 \value{
-Data Visualization returns a plot with the density time grid and the line plot of cancer growth data as a ggplot object.
+Data Visualization returns a plot with the density time grid and the line plot of growth data as a ggplot object.
 }
 \description{
-Computes the time grid and the line plot of cancer growth data.
+Computes the time grid and the line plot of growth data.
 }
 \examples{
 

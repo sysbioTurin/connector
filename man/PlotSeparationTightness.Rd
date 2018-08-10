@@ -8,22 +8,51 @@ PlotSeparationTightness(clusterdata, Title = NULL, save = FALSE,
   path = NULL)
 }
 \arguments{
-\item{Title}{Title to associate to the withinness and Betweenness plot.}
+\item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).}
 
-\item{save}{If TRUE the Betweenness and Withinness plot is saved in a pdf file.}
+\item{Title}{Title of the Separation and Tightness plot.}
 
-\item{path}{Path to save plot to (combined with file name). If it is missing, the plot is saved in the working  directory.}
+\item{save}{If TRUE then the Separation and Tightness plot is saved into a pdf file.}
 
-\item{ClustCurve}{Data frame with five arguments : time, growth data, sample ID, cluster membership and feature values for each sample.}
-
-\item{MeanCurves}{Matrix with the meancurve values on the columns according to different clusters.}
+\item{path}{The folder path where the plots will be saved. If it is missing, the plots are saved in the current working  directory.}
 }
 \value{
-Returns the Withinness and Betweenness plot.
+Returns the Separation and Tightness plot.
 }
 \description{
-Visualization of the plots reporting the withinness and betweenness clustering measures.
+Visualizes the plots reporting the Separation and Tightness clustering measures.
+}
+\details{
+To visualize the Separation (how much the cluster mean curves are different from each other)  and the Tightness (how much the curves belonging to the same cluster are different from the corresponding mean curve) of the clusters three circles are drawn according to the mean and variance of the Hausdorff distance of fitted curves within a cluster with respect to the cluster mean curve. In each circle the number represent the cluster mean curves while the symbols represent the objects in the cluster, one symbol for each cluster.
 }
 \examples{
+### Data files
+GrowDataFile<-"data/1864dataset.xls"
+AnnotationFile <-"data/1864info.txt"
+
+### Merge curves and target file
+CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
+
+### Truncation
+
+CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",60,labels = c("time","volume","Tumor Growth"))
+
+############################## FCM ##############################
+
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),h=2)
+CONNECTORList.FCM.k4.h2<- CONNECTORList.FCM$FCM_all$`k= 4`$`h= 2`
+
+PlotSeparationTightness(CONNECTORList.FCM.k4.h2,Title = "FCM Cluster betweenness and withinness")
+
+############################## MALTHUS ##############################
+lower<-c(10^(-5),0)
+upper<-c(10^2,10^3)
+init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=1)
+
+
+Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",feature="Progeny",fitting.method="optimr",lower=lower,upper=upper,init=init)
+
+
+PlotSeparationTightness(Malthus1,Title = "Malthus Cluster betweenness and withinness")
 
 }

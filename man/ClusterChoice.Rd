@@ -7,18 +7,20 @@
 ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL)
 }
 \arguments{
-\item{data}{CONNECTORList.}
+\item{data}{CONNECTORList. (see \code{\link{DataImport}})}
 
-\item{k}{Number of clusters.}
+\item{k}{The vector/number of clusters.}
 
-\item{h}{Dimension of the cluster mean space. If NULL, ClusterChoice set the h value equals to the number of PCA components needed to explain the 95 perc. of variability of the data.}
+\item{h}{The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).}
 
-\item{PCAperc}{The PCA percentages calculated with the function PCAbarplot, if NULL then it must be inserted in input a value for h.
+\item{p}{The dimension of the natural cubic spline basis.}
+
+\item{PCAperc}{The PCA percentages applied to the natural cubic spline coefficients, if  NULL then $h$ is needed (see \code{\link{PCA.Analysis}}).
  @return
-The matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList for each h and k and  the plot generated using the Elbow Method.}
+ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the Hausdorff distance.}
 }
 \description{
-Calculates the BIC and AIC values considering k number of clusters and h dimension of the cluster mean space, and generates the plot based on the Elbow Method.
+Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method and considering the Hausdorff distance is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.
 }
 \examples{
 
@@ -29,13 +31,22 @@ CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
 CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=60,labels = c("time","volume","Tumor Growth"))
 
+
+### Calculation of k and fitting using FCM
 # Specifying the h value
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),h=2)
+
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),h=c(1:2))
 
 # Using the PCA percentaes instead of the h value.
+pca <- PCA.Analysis(CONNECTORList)
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),PCAperc = pca$perc)
 
-perc <- PCA.Analysis(CONNECTORList$Dataset)$perc
 
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),PCAperc=perc)
 
+}
+\references{
+Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
+}
+\seealso{
+\code{\link[funcy]{funcit}}.
 }

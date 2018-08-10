@@ -12,8 +12,15 @@ hausdorff(A, B)
 \item{B}{A set.}
 }
 \value{
-Returnst the Hausdorff distance between A and B.
+Returnst the Hausdorff distance between the two sets A and B.
 }
 \description{
 Calculates the Hausdorff distance between two sets.
+}
+\details{
+Given A and B, two non-empty subsets of a metric space \eqn{(M, d)}, their Hausdorff distance \eqn{d_H (A, B)} is:
+
+\deqn{d_{ H}(X,Y) = \max{\sup_<sub>x \in X</sub> \inf_{y \in Y} d(x,y),\, \sup_{y \in Y} \inf_{x \in X} d(x,y)}.}{d_H(X,Y) = \max{\sup_{x \in X} inf_{y \in Y} d(x,y), sup_{y \in Y} inf_{x \in X} d(x,y)}.}
+
+Given that the curves in study are a subsets of \eqn{R^2} , \eqn{\{(t_1 , x_1 ),..., (t_n , x_n )\}}. Hence a natural choice for the metric \eqn{d} is the Euclidean distance on \eqn{R^2} .
 }

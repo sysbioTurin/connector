@@ -1,4 +1,4 @@
-makeCoeffs <- function(data, base=NULL, reg, dimBase, grid=NULL, pert){
+makeCoeffs <- function(data, base=NULL, reg, dimBase, grid=NULL, pert, baseType=baseType){
   if(is.null(base)){
     time<-grid
     nbasis <- dimBase

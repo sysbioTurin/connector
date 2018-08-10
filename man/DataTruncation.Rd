@@ -10,7 +10,7 @@ DataTruncation(data, feature, truncTime = NULL, labels = NULL,
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
 
-\item{feature}{The column name reported in the \textbf{AnnotationFile} containing the feature  to be investigated.}
+\item{feature}{The column name reported in the AnnotationFile containing the feature  to be investigated.}
 
 \item{truncTime}{An integer number corresponding to the time where  the curves will be truncated.}
 
@@ -24,7 +24,7 @@ DataTruncation(data, feature, truncTime = NULL, labels = NULL,
 DataTruncation returns the line plot of growth curves with a vertical line at the truncation time and the CONNECTORList updated with the following elements: (i)a data frame with three variables (ID curves, volume and time values truncated at the chosen time), (ii) a vector collecting the number of truncated observations collected per sample, a data frame matching curses  with the chosen feature, (iv) the vector storing all the truncated time points of the samples (i.e. truncated time grid).
 }
 \description{
-Truncates the cancer growth data at a specific time point chosen by the user.
+Truncates the growth data at a specific time point chosen by the user.
 }
 \examples{
 

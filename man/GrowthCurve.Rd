@@ -17,7 +17,7 @@ GrowthCurve(data, feature, labels = NULL)
 GrowthCurve returns a list containing the line plot and the CONNECTORList.
 }
 \description{
-Generates the line plot of the cancer growth data. The curves are colored with respect to the feature chosen by the user and/or reported in the AnnotationFile.
+Generates the line plot of the growth data. The curves are colored with respect to the feature chosen by the user and/or reported in the AnnotationFile.
 }
 \examples{
 GrowDataFile<-"data/1864dataset.xls"

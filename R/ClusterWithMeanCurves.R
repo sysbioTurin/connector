@@ -47,7 +47,8 @@
 #'
 #'MalthusPlots1$plotsCluster$ALL
 #'
-#' @import ggplot2 cowplot
+#' @import ggplot2 
+#' @importFrom cowplot plot_grid
 #' @export
 ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c("","") ,save=FALSE,path=NULL )
 {
