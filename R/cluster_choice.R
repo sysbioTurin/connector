@@ -44,12 +44,14 @@
 ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL)
 {
   K<-k
-  H<-h
+ 
   database<-data$Dataset
   
 
   if(!is.null(PCAperc)){ h<-min(which(cumsum(PCAperc)>=95)) }
-
+ 
+  H<-h
+  
   output_k<-list()
   row_names <-c(paste("k=",K))
   col_names<-c(paste("h=",H))
