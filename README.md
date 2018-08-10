@@ -23,7 +23,7 @@ To execute this script you can use **demo()**
 library(connector)
 demo("MainCommandsList", package = "connector")
 ```
-Observe that some functions in the scripts requires several minutes to be terminated. 
+Observe that some functions in the **MainCommandsList.R** script requires several minutes to be terminated. 
 
 ### Diclaimer:
 connector developers have no liability for any use of docker4seq functions, including without limitation, any loss of data, incorrect results, or any costs, liabilities, or damages that result from use of connector. 
