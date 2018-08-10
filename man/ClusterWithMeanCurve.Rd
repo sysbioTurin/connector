@@ -5,33 +5,62 @@
 \title{Mean Cluster Curves}
 \usage{
 ClusterWithMeanCurve(clusterdata, data, feature, title = "", labels = c("",
-  ""), path = NULL, save = FALSE)
+  ""), save = FALSE, path = NULL)
 }
 \arguments{
-\item{data}{CONNECTORList.}
+\item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).}
 
-\item{feature}{The column name reported in the AnnotationFile containing the feature interesting for the user to be investigated.}
+\item{data}{CONNECTORList. (see \code{\link{DataImport}})}
 
-\item{labels}{Vector containing the text for the title of axis.}
+\item{feature}{he column name reported in the AnnotationFile containing the feature  to be investigated.}
 
-\item{clusterdata.FCM}{Object belonging to the class funcyOutList.}
+\item{title}{The  string containing  the plot title.}
 
-\item{clusterdata.Models}{Object, or a list of objects storing the parameters, clusters, centers, meancurves and seed derived from fitting and clustering the data using Malthus, Gompertz or/and Logistic model.}
+\item{labels}{The vector containing the axis names.}
 
-\item{model}{Model name, i.e. FCM, Malthus, Gompertz or Logistic. The default is "ALL" that runs all the models but it needs in input both clusterdata.FCM and clusterdata.Models .}
+\item{save}{If TRUE then the plots of the fitted and clustered growth curves are saved into two  pdf files.}
+
+\item{path}{The folder path where the plots will be saved. If it is missing, the plots are saved in the current working  directory.}
 }
 \value{
-The plot reporting the mean curves of all clusters, for each cluster the plot of the growth curves and a list of data reporting the mean curve values and for each sample the ID of the belonging cluster.
+ClusterWithMeanCurve returns a list with two objects, (i) a list storing the growth curves plots partitioned according to cluster membership and (ii) the cluster mean curves plot.
 }
 \description{
-Visualize the plot of the mean cluster curves given one model (i.e. FCM, Malthus, Gompertz or Logistic).
-ClusterWithMeanCurve  generates k plots, where k is the number of clusters: in each plot the curves are colored according to the feature chosen by the user.
+Visualizes the plots regarding the fitted and clustered data with respect to one model among FCM, Malthus, Gompertz and Logistic.
 }
 \examples{
 
 GrowDataFile<-"data/1864dataset.xls"
 AnnotationFile <-"data/1864info.txt"
 
-CONNECTORList <- DataImport(GrowDataFile,AnnotationFile).............
+### Merge curves and target file
+CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
+### Truncation
+
+CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",60,labels = c("time","volume","Tumor Growth"))
+
+
+###  FCM
+
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),h=2)
+
+CONNECTORList.FCM.k4.h2<- CONNECTORList.FCM$FCM_all$`k= 4`$`h= 2`
+
+FCMplots <- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.k4.h2,data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= " FCM model ")
+
+###  Malthus
+
+lower<-c(10^(-5),0)
+upper<-c(10^2,10^3)
+init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=1)
+
+Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",feature="Progeny",fitting.method="optimr",lower=lower,upper=upper,init=init)
+MalthusPlots1<-ClusterWithMeanCurve(clusterdata=Malthus1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Malthus model")
+
+MalthusPlots1$plotsCluster$ALL
+
+}
+\seealso{
+\code{\link{ClusterChoice}},  \code{\link{FittingAndClustering}}.
 }

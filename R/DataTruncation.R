@@ -2,10 +2,10 @@
 #'
 #' @description
 #'
-#' Truncates the cancer growth data at a specific time point chosen by the user.
+#' Truncates the growth data at a specific time point chosen by the user.
 #'
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
-#' @param feature The column name reported in the \textbf{AnnotationFile} containing the feature  to be investigated.
+#' @param feature The column name reported in the AnnotationFile containing the feature  to be investigated.
 #' @param truncTime  An integer number corresponding to the time where  the curves will be truncated.
 #' @param labels  Vector containing the text for the title of axis names and plot title.
 #' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
@@ -62,7 +62,7 @@ return(data.tr)
 
 DataTrunc <- function(data,truncTime=NULL)
 {
-#### Truncates the cancer growth data at a specific time point chosen by the user.
+#### Truncates the growth data at a specific time point chosen by the user.
   # Variables inizialization
   dataset <- data$Dataset
   sample.size <- max(unique(dataset[,1]))

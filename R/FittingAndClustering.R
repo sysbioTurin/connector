@@ -19,9 +19,9 @@
 #' @details 
 #' The model proposed are the following:
 #' \itemize{
-#'  \item \emph{Malthus}:  \eqn{f(t)= V_0 e^{a\cdot t}}, 
-#'  \item \emph{Gompertz}:  \eqn{ f(t)= V_0 e^{\frac{a}{b} (1-e^{-b\cdot t})} },
-#'  \item \emph{Logistic}:  \eqn{ f(t)= \dfrac{V_0  K}{V_0 + (K-V_0)e^{-b\cdot t}} }.
+#'  \item \emph{Malthus}:  \eqn{f(t) = V_0 e^{a\cdot t}}{f(t) = V_0 exp{a t}}, 
+#'  \item \emph{Gompertz}:  \eqn{ f(t) = V_0 e^{\frac{a}{b} (1-e^{-b\cdot t})} }{ f(t) = V_0 exp{ a / b ( 1-exp{-b t} ) } },
+#'  \item \emph{Logistic}:  \eqn{ f(t)= \dfrac{V_0  K}{ V_0 + ( K-V_0 )e^{-b\cdot t}} }{ f(t) = (V_0  K) / ( V_0 + ( K-V_0 )exp{-b t} ) }.
 #' }
 #' These are parametric models characterized by three (or two in the Malthus case) unknow parameters. In order to identify the parameters that minimize the sums of squared error (SSE), three methods are proposed:
 #'\itemize{

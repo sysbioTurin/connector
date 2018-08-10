@@ -11,6 +11,8 @@
 #' 
 #' @details To visualize the Separation (how much the cluster mean curves are different from each other)  and the Tightness (how much the curves belonging to the same cluster are different from the corresponding mean curve) of the clusters three circles are drawn according to the mean and variance of the Hausdorff distance of fitted curves within a cluster with respect to the cluster mean curve. In each circle the number represent the cluster mean curves while the symbols represent the objects in the cluster, one symbol for each cluster.
 #' 
+#' @seealso \code{\link{hausdorff}}
+#' 
 #' @examples
 #' ### Data files
 #' GrowDataFile<-"data/1864dataset.xls"
