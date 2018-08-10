@@ -131,3 +131,9 @@ pl3<-list(FCMplots$plotMeanCurve,MalthusPlots3$plotMeanCurve,LogisticPlots3$plot
 ############## Counting the samples
 
 NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.k4.h2,CONNECTORList,feature = "Progeny")
+
+NumberSamples<-CountingSamples(clusterdata=Malthus1,CONNECTORList,feature = "Progeny")
+
+NumberSamples<-CountingSamples(clusterdata=Logistic1,CONNECTORList,feature = "Progeny")
+
+NumberSamples<-CountingSamples(clusterdata=Gompertz1,CONNECTORList,feature = "Progeny")

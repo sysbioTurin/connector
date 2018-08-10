@@ -76,29 +76,22 @@ FittingAndClustering <- function(data,k,model, fitting.method="optimr",init=NULL
   data.fit <- matrix(c(curve,x,time),ncol=3,byrow=F)
   meancurves <- matrix(numeric(length(t)*k),ncol=k)
   
+if(model=="Malthus" & (length(lower)!=2 || length(upper)!=2 ) ) 
+    stop("Considering the Malthus model, the length of buonds should be 2.")
+
   
-if((length(lower)!=3 || length(upper)!=3 ))
-{
-    if(model=="Malthus" & (length(lower)!=2 || length(upper)!=2 ) ) 
-    {
-      stop("Considering the Malthus model, the length of buonds should be 2.")
-    }
-    else{
-      stop("Considering the Logistic or Gompertz model, the length of buonds should be 3.")
-    }
-}
+if(model %in% c("Logistic","Gompertz") &  (length(lower)!=3 || length(upper)!=3 ))       
+  stop("Considering the Logistic or Gompertz model, the length of buonds should be 3.")
+  
  
 if(fitting.method!="DEoptim")
 {
-  if((length(init)!=3 ))
-  {
-    if(model=="Malthus" & (length(init)!=2 ) ) 
-      {
-        stop("Considering the Malthus model, the length of the initial vector should be 2.")
-      }else{
-  stop("Considering the Logistic or Gompertz model, the length of the initial vector should be 3.")
-}
-}
+  if(model=="Malthus" & (length(init)!=2 ) ) 
+    stop("Considering the Malthus model, the length of the initial vector should be 2.")
+  
+  if(model %in% c("Logistic","Gompertz") &  (length(init)!=3 ))       
+    stop("Considering the Logistic or Gompertz model, the length of the initial vector should be 3.")
+  
 }
 
 
