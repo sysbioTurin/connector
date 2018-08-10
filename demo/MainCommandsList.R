@@ -46,9 +46,9 @@ upper<-c(10^2,10^3)
 init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=1)
 
 
-Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",feature="Progeny",fitting.method="optimr",lower=lower,upper=upper,init=init)
-Malthus2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",feature="Progeny",fitting.method="GenSA",lower=lower,upper=upper,init=init)
-Malthus3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",feature="Progeny",fitting.method="DEoptim",lower=lower,upper=upper)
+Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="optimr",lower=lower,upper=upper,init=init)
+Malthus2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="GenSA",lower=lower,upper=upper,init=init)
+Malthus3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="DEoptim",lower=lower,upper=upper)
 
 MalthusPlots1<-ClusterWithMeanCurve(clusterdata=Malthus1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Malthus model")
 MalthusPlots2<-ClusterWithMeanCurve(clusterdata=Malthus2,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "GenSA Malthus model")
@@ -72,9 +72,9 @@ lower<-c(10^(-5),0,0)
 upper<-c(10^2,10^5,1)
 init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=.5, b=.5)
 
-Logistic1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",feature="Progeny",fitting.method="optimr",lower=lower,upper=upper,init=init)
-Logistic2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",feature="Progeny",fitting.method="GenSA",lower=lower,upper=upper,init=init)
-Logistic3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",feature="Progeny",fitting.method="DEoptim",lower=lower,upper=upper)
+Logistic1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="optimr",lower=lower,upper=upper,init=init)
+Logistic2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="GenSA",lower=lower,upper=upper,init=init)
+Logistic3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="DEoptim",lower=lower,upper=upper)
 
 LogisticPlots1<-ClusterWithMeanCurve(clusterdata=Logistic1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Logistic model")
 LogisticPlots2<-ClusterWithMeanCurve(clusterdata=Logistic2,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "GenSA Logistic model")
@@ -99,9 +99,9 @@ lower<-c(10,0,10^(-4))
 upper<-c(10^2,2,2)
 init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=.5, b=.5)
 
-Gompertz1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",feature="Progeny",fitting.method="optimr",lower=lower,upper=upper,init=init)
-Gompertz2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",feature="Progeny",fitting.method="GenSA",lower=lower,upper=upper,init=init)
-Gompertz3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",feature="Progeny",fitting.method="DEoptim",lower=lower,upper=upper)
+Gompertz1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="optimr",lower=lower,upper=upper,init=init)
+Gompertz2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="GenSA",lower=lower,upper=upper,init=init)
+Gompertz3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="DEoptim",lower=lower,upper=upper)
 
 GompertzPlots1<-ClusterWithMeanCurve(clusterdata=Gompertz1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Gompertz model")
 GompertzPlots2<-ClusterWithMeanCurve(clusterdata=Gompertz2,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "GenSA Gompertz model")
