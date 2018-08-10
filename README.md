@@ -20,6 +20,7 @@ The **MainCommandsList.R** script contains the list of commands that can be used
 
 To execute this script you can use **demo()**
 ```
+library(connector)
 demo("MainCommandsList", package = "connector")
 ```
 
