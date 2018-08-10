@@ -1,4 +1,3 @@
-options(warn=-1)
 
 ### Data files
 GrowDataFile<-system.file("data", "1864dataset.xls", package = "connector")
