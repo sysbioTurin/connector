@@ -45,16 +45,41 @@ PCA.Analysis <- function(data,p=5,save=FALSE,path=NULL)
     TimeGrid <- unique(sort(data[,3]))
   }
   
-  
-  
   # curves splines basis coefficients
+  m <- length(TimeGrid)
+  bObj <-  create.bspline.irregular(c(TimeGrid[1],TimeGrid[m]),
+                                    nbasis=p,
+                                    norder=min(p, 4))
   
-  res <- makeCoeffs(data=data, reg=reg, dimBase=p,
-                     grid=TimeGrid, pert=0.01)
-
+  tempBase <- eval.basis(TimeGrid, bObj)
+  
+  base <- svd(tempBase)$u
+  pert<-0.01
+  if(reg){
+    coeffs <- t((solve(t(base) %*% base + pert *
+                         diag(p))%*%t(base)) %*% data)
+  }else{
+    curveIndx <- data[,1]
+    timeIndx <- match(data[,3],TimeGrid)
+    n <- max(curveIndx)
+    fullBase <- base[timeIndx,  ]
+    coeffs <- matrix(0,nrow=n,ncol=sum(p))
+    for (i in 1:n){
+      if(is.null(dim(base)[1]))
+        base <- t(t(base))
+      basei <- fullBase[curveIndx==i,]
+      yi <- data[curveIndx==i,2] 
+      if(length(yi)>1){
+        coeffs[i,] <- solve(t(basei) %*% basei + pert * diag(p)) %*% t(basei) %*%yi
+      }else{
+        coeffs[i,] <- ((basei) * basei + pert )^(-1) * (basei)*yi
+      }
+    }
+  }
+  
   # Principal Components Analysis
 
-  princomp(as.matrix(res$coeffs)) -> pca
+  princomp(as.matrix(coeffs)) -> pca
   # Number of principal components
   ncomp <- length(names(pca$sdev))
   # Principal components variances

@@ -29,13 +29,14 @@ distance <- function(A,B)
    a <- numeric(n)
    b <- numeric(m)
 
-   for (i in 1:n)
-      {
+   
+ff<-function(i){
         for (j in 1:m)
         {
           b[j] <- eucl.dist(A[i,]-B[j,])
         }
-          a[i] <- min(b)
-      }
+        min(b)
+}
+a<-sapply(1:n, ff)
    return(max(a))
 }

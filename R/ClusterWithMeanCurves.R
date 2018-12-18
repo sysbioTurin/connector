@@ -13,6 +13,7 @@
 #' 
 #' @return ClusterWithMeanCurve returns a list with two objects, (i) a list storing the growth curves plots partitioned according to cluster membership and (ii) the cluster mean curves plot.
 #'
+#' @details   ADD THE COEFFS MEANING, to check the distance used in kmeans to calculate withtot 
 #' @seealso \code{\link{ClusterChoice}},  \code{\link{FittingAndClustering}}.
 #'
 #' @examples
@@ -61,15 +62,18 @@ axis.y<-labels[2]
       
       Cluster(clusterdata)->classes
       out.fit<-clusterdata@models$fitfclust@fit
-      # Check if it is regular
-      if(clusterdata@reg==1)
-      {
-        fitfclust.curvepred(out.fit)$meancurves->meancurves
-      } else{
-        fitfclust.curvepredIrreg(out.fit)$meancurves->meancurves
-      }
-    }else{
+      sigma <- out.fit$par$sigma
+      Gamma <- out.fit$par$Gamma
+      Lambda <- out.fit$par$Lambda
+      alpha <- out.fit$par$alpha
+      lambda.zero <- as.vector(out.fit$par$lambda.zero)
+      base <- out.fit$base
+      Lambda.alpha <- lambda.zero + Lambda %*% t(alpha)
       
+      meancurves <- base%*%Lambda.alpha
+
+      
+    }else{
       clusterdata -> classification
       classification$cluster ->classes
       classification$meancurves->meancurves
@@ -78,16 +82,20 @@ axis.y<-labels[2]
     
     symbols<-cluster.symbol(k)
     
+    ################## eucl and haus coeffs
+    tightness<-With_coeff(clusterdata, data)
+    
     ##################
     
     classificate <- rep(classes,data$LenCurv)
     curves <- data.frame(Times=data$Dataset$Time,Vol=data$Dataset$Vol,ID=data$Dataset$ID,Cluster=classificate, Info=rep(t(data$LabCurv[feature]),data$LenCurv))
-  
+    
     # cut the meancurves at the growth curves' maximum time
     time1<-sort(unique(data$Dataset$Time))
     meancurves_truncated<-c()
     time3<-c()
     cluster<-c()
+    
     for(clust in 1:k)
     {
       time2<-sort(unique(curves[curves$Cluster==clust,]$Times))
@@ -101,14 +109,14 @@ axis.y<-labels[2]
   
     plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
     PlotMeanCurve<-ggplot()+
-                      geom_line(data=plot_data, aes(x=time,y=means,group=clusters) )+
-                      labs(title=title, x=axis.x, y = axis.y)+
-                      theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
-  
+                      geom_line(data=plot_data, aes(x=time,y=means,group=clusters,col= as.factor(clusters)) )+
+                      labs(title=title, x=axis.x, y = axis.y,colour="Cluster")+
+                      theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ labs(subtitle = paste("Tight.E\ =\ ",as.integer(tightness$EucTight),"\ \ \ Tight.H\ =\ ",as.integer(tightness$HausTight),"\ \ \ coeff\ =\ ",signif(tightness$coeff , digits = 2)) )
+    
       col<-as.character(unique(curves$Info))
       col1<-rainbow(length(col))
       plots<-list()
-      ymax<-max(curves$Vol)
+      ymax<-max(plot_data$means,curves$Vol)
       for(i in 1:k)
       {
         plots[[paste(symbols[i],"Cluster")]]<-ggplot()+
@@ -134,7 +142,7 @@ axis.y<-labels[2]
     ggsave(filename = "MeanCurve.pdf",plot=out$plotMeanCurve,width=29, height = 20, units = "cm",scale = 1,path = path)
 }
 
- return(out)
+ return(list(plots=out,coeffs=tightness))
 }
 
 

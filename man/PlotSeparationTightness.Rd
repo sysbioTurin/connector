@@ -23,7 +23,7 @@ Returns the Separation and Tightness plot.
 Visualizes the plots reporting the Separation and Tightness clustering measures.
 }
 \details{
-To visualize the Separation (how much the cluster mean curves are different from each other)  and the Tightness (how much the curves belonging to the same cluster are different from the corresponding mean curve) of the clusters three circles are drawn according to the mean and variance of the Hausdorff distance of fitted curves within a cluster with respect to the cluster mean curve. In each circle the number represent the cluster mean curves while the symbols represent the objects in the cluster, one symbol for each cluster.
+To visualize the Separation (how much the cluster mean curves are different from each other)  and the Tightness (how much the curves belonging to the same cluster are different from the corresponding mean curve) of the clusters three circles are drawn according to the mean and variance of the Euclidian distance of fitted curves within a cluster with respect to the cluster mean curve. In each circle the number represent the cluster mean curves while the symbols represent the objects in the cluster, one symbol for each cluster.
 }
 \examples{
 ### Data files
@@ -55,7 +55,4 @@ Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fea
 
 PlotSeparationTightness(Malthus1,Title = "Malthus Cluster betweenness and withinness")
 
-}
-\seealso{
-\code{\link{hausdorff}}
 }

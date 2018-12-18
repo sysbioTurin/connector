@@ -133,7 +133,7 @@ checkFormat <- function(data, reformat=TRUE){
   if(dim(data)[2]!=3){
     format <- "Format2"
     reg <- TRUE
-  }else if(dim(data)[2]==3 & length(unique(table(data[,1])))==1){
+  }else if(dim(data)[2]==3 & length(unique(table(data[,1])))==1){  ### potrei avere uguale numero di osservazioni ma a tempi diversi!!!!!
     format <- "Format1"
     if(reformat)
       data <- formatFuncy(data=data, format="Format2")

@@ -9,9 +9,8 @@
 #' 
 #' @return  Returns the Separation and Tightness plot.
 #' 
-#' @details To visualize the Separation (how much the cluster mean curves are different from each other)  and the Tightness (how much the curves belonging to the same cluster are different from the corresponding mean curve) of the clusters three circles are drawn according to the mean and variance of the Hausdorff distance of fitted curves within a cluster with respect to the cluster mean curve. In each circle the number represent the cluster mean curves while the symbols represent the objects in the cluster, one symbol for each cluster.
+#' @details To visualize the Separation (how much the cluster mean curves are different from each other)  and the Tightness (how much the curves belonging to the same cluster are different from the corresponding mean curve) of the clusters three circles are drawn according to the mean and variance of the Euclidian distance of fitted curves within a cluster with respect to the cluster mean curve. In each circle the number represent the cluster mean curves while the symbols represent the objects in the cluster, one symbol for each cluster.
 #' 
-#' @seealso \code{\link{hausdorff}}
 #' 
 #' @examples
 #' ### Data files
@@ -43,7 +42,7 @@
 #'
 #' PlotSeparationTightness(Malthus1,Title = "Malthus Cluster betweenness and withinness")
 #' 
-#' @import ggplot2 ggforce
+#' @import ggplot2 ggforce Matrix
 #' @export
 PlotSeparationTightness <- function(clusterdata,Title=NULL,save=FALSE,path=NULL)
 {
@@ -51,21 +50,14 @@ PlotSeparationTightness <- function(clusterdata,Title=NULL,save=FALSE,path=NULL)
   
   if(isS4(clusterdata))
   {
-    
-    k<-clusterdata@k
-    
     Cluster(clusterdata)->cluster
     out.fit<-clusterdata@models$fitfclust@fit
     # Check if it is regular
     if(clusterdata@reg==1)
     {
       fitfclust.curvepred(out.fit)$meancurves-> MeanCurves
-      
-      
     } else{
-      
       fitfclust.curvepredIrreg(out.fit)$meancurves-> MeanCurves
-      
     }
     ClustCurve <- out.fit$ClustCurves
     
@@ -73,82 +65,91 @@ PlotSeparationTightness <- function(clusterdata,Title=NULL,save=FALSE,path=NULL)
     
     MeanCurves <- clusterdata$meancurves
     ClustCurve <- clusterdata$Summary
+    clusterdata$cluster -> cluster
   }
-
-
+  
+  # calculating the area to sort the cluster
+  
+  distFromZero<-apply(MeanCurves,2,sum)/length(MeanCurves[,1])
+  
   K <- length(unique(ClustCurve[,4]))
   ClustSymbol<-cluster.symbol(K)
   cluster.palette <- rainbow(K)
- 
-
-  ## calculate the max, min, mean and sd distance in the k-clusters;
-  within.all <- Withinness(ClustCurve,MeanCurves,centroids=TRUE)
-  ## calculate the nearest cluster
-  between.all <- Betweenness(ClustCurve,MeanCurves)$Betweenness
-
-  if(length(which(table(between.all[,2])==1))== 0 )
-      {first<-names(which(table(c(between.all[,2],rownames(between.all)))==1)[1])}
-  else{ first<-names(which(table(between.all[,2])==1)[1])}
-  ## sort the cluster and save the distance among them
-  shift<-sort(Betweenness(ClustCurve,MeanCurves)$CentroidDist[paste(first),])
-
-  ClustSymbol.sorted <- names(shift)
+  
+  names(distFromZero)<-ClustSymbol
+  
+  distFromZero.sorted<-sort(distFromZero)
+  ClustSymbol.sorted <- names(distFromZero.sorted)
   i<-match(ClustSymbol.sorted, ClustSymbol)
-
+  MeanCurves.sorted<-MeanCurves[,i]
+  
+  nc <- dim(MeanCurves.sorted)[2]
+  nt <- dim(MeanCurves.sorted)[1]
+  res <- t(sapply(2:nc, function(x) sum(sqrt((MeanCurves.sorted[,x]-MeanCurves.sorted[,1])^2))) /nt)
+  
+  
+  
+  shift<-sapply(2:K , function(x){
+    sum( sqrt((MeanCurves.sorted[,1]-MeanCurves.sorted[,x])^2 ) )
+  } )/length(MeanCurves.sorted[,1]) 
+  
+  shift<- c(0,shift) # taking the first cluster as zero!
+  
   cluster.magnitudo <- apply(table(unique(ClustCurve[,c(4,1)])),1,sum)[i]
   circles <- data.frame(
-  x0 = numeric(3*K)     ,
-  y0 = numeric(3*K)     ,
-  r = numeric(3*K)      ,
-  distance = numeric(3*K),
-  Cluster = numeric(3*K)
+    x0 = numeric(3*K)     ,
+    y0 = numeric(3*K)     ,
+    r = numeric(3*K)      ,
+    distance = numeric(3*K),
+    Cluster = numeric(3*K)
   )
   colnames(circles) <- c("x0","y0","r","distance","Cluster")
-
+  
   n <- length(unique(ClustCurve[,1]))
   WithDist <- data.frame(
-  x1 = numeric(n),
-  y1 = numeric(n),
-  Cluster = numeric(n)
-	)
+    x1 = numeric(n),
+    y1 = numeric(n),
+    Cluster = numeric(n)
+  )
   colnames(WithDist) <- c("x1","y1","Cluster")
-  counter <- 1
   index <- matrix(seq(1,3*K),nrow=K,byrow=TRUE)
-
+  
+  dataplotALL <- DataFrameWithinness.2(clusterdata,MeanCurves,cluster,shift,ClustSymbol=ClustSymbol.sorted,K)
+  
+  counter <- 1
   for(k in 1:K)
   {
-  ### Data frames
-    dataplot <- DataFrameWithinness.i(ClustCurve,MeanCurves,i[k],ClustSymbol,shift=shift[k])
+    ### Data frames
+    dataplot <- dataplotALL[[i[k]]]
     circles[index[k,],] <- dataplot$circles
     WithDist[counter:(cumsum(cluster.magnitudo)[k]),] <- dataplot$WithDist
     counter <- cumsum(cluster.magnitudo)[k] + 1
   }
-
+  
   circles$distance <- factor(circles$distance)
   circles$Cluster <- factor(circles$Cluster)
-
+  
   WithDist$Cluster <- factor(WithDist$Cluster)
-
-  plots <- ggplot() + geom_circle(aes(x0=x0, y0=y0, r=r,linetype=distance,color=Cluster), data=circles,size=.6)
+  
+  plots <- ggplot() + geom_circle(aes(x0=x0, y0=y0, r=r,linetype=distance,color=Cluster), data=circles,size=.6)+ylim(-max(shift)/2,max(shift)/2)
   plots <- plots + scale_shape_manual(values=c(0:(K-1)))+
-                    geom_point(data=WithDist,aes(x=x1,y=y1,shape=Cluster),size=4)+
-                    scale_linetype_manual("",values = c( "2"= "dashed","1"="solid"),
-                                           labels=c("Mean ","Mean+- sd"))
-
+    geom_point(data=WithDist,aes(x=x1,y=y1,shape=Cluster),size=4)+
+    scale_linetype_manual("",values = c( "2"= "dashed","1"="solid"),
+                          labels=c("Mean ","Mean+- sd"))
+  
   if(is.null(Title)) Title<-"Cluster Separation and Tightness"
-
+  
   plots <- plots  + geom_text(aes(x=x0, y=y0,label=Cluster), data=circles) +
-                    #scale_colour_manual(values = cluster.palette,name="Cluster Colors") +
-                    labs(title=Title,x="distance",y="distance")+
-                    theme(plot.title = element_text(hjust = 0.5),                                                                      axis.line = element_line(colour = "black"))
-
-
+    #scale_colour_manual(values = cluster.palette,name="Cluster Colors") +
+    labs(title=Title,x="distance",y="distance")+
+    theme(plot.title = element_text(hjust = 0.5),                                                                      axis.line = element_line(colour = "black"))
+  
+  
   if(save==TRUE)
   {
-   if(is.null(path)) path <- getwd()
-   ggsave(filename="Separation&Tightness.pdf",plot =plots,width=29, height = 20, units = "cm",scale = 1,path=path)
+    if(is.null(path)) path <- getwd()
+    ggsave(filename="Separation&Tightness.pdf",plot =plots,width=29, height = 20, units = "cm",scale = 1,path=path)
   }
-
+  
   return(plots)
 }
-

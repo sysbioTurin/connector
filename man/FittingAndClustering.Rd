@@ -10,7 +10,7 @@ FittingAndClustering(data, k, model, fitting.method = "optimr", init = NULL,
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
 
-\item{k}{The number of clusters.}
+\item{k}{The vector/number of clusters.}
 
 \item{model}{Model name, i.e. Malthus, Gompertz and Logistic. See \sQuote{Details}.}
 
@@ -25,7 +25,7 @@ FittingAndClustering(data, k, model, fitting.method = "optimr", init = NULL,
 \item{seed}{Seed for the k-means.}
 }
 \value{
-FittingAndClustering returns a list containing all the information related to the clustering, i.e. the parameters estimated for each sample, the parameters of the cluster centers, the mean curve values, the samples cluster membership and the seed used in the k-means. Finally, it is also returned a data frame with four arguments: ID, time, volume and cluster membership for each sample.
+FittingAndClustering  returns the Elbow Method plot and a list containing for each k all the information related to the clustering, i.e. the parameters estimated for each sample, the parameters of the cluster centers, the mean curve values, the samples cluster membership and the seed used in the k-means. It is also stored a data frame with four arguments: ID, time, volume and cluster membership for each sample.
 }
 \description{
 Fits and clusters the data with respect to the Malthus, Gompertz and Logistic model. The clustering method used is the \emph{k-means} one.

@@ -2,7 +2,7 @@
 #  Modified Code: Copyright (C) 2011-2015 Christina Yassouridis
 #  all functions for regular data were implemented by Yassouridis
 #
-#' @import funcy 
+
 "fitfclust" <-
     function(data, k, reg=reg, regTime=NULL, dimBase=dimBase, h, p=5, epsilon=0.01,
              maxiter=20, pert =0.01, hard=F,
@@ -165,6 +165,9 @@
 
         ## Compute rank p estimate of Gamma
         ind <- matrix(rep(c(rep(c(1, rep(0, dimBase - 1)), nc), 0), dimBase)[1:(nc*dimBase^2)], nc * dimBase, dimBase)
+        
+        if(any(!is.finite(vars$gprod %*% ind/nc))) browser("ehiehiu")
+        
         gsvd <- svd(vars$gprod %*% ind/nc)
         gsvd$d[ - (1:p)] <- 0
         parameters$Gamma <- gsvd$u %*% diag(gsvd$d) %*% t(gsvd$u)
@@ -384,12 +387,20 @@
                 ni <- 1
                 basei <- t(basei)
                 invvar <- 1/sigma
-            } else
-                invvar <- diag(1/rep(sigma, ni))
+            } else invvar <- diag(1/rep(sigma, ni))
+            
             covx <- basei %*% Gamma %*% t(basei) + solve(invvar)
             centx <- y- basei %*% Lambda.alpha
             d <- exp( - diag(t(centx) %*% solve(covx) %*% centx)/2) * fit$par$pi
-            pi <- d/sum(d)
+          ################ Modified by Pernice Simone ##################
+            if(all(d==0))
+              pi <- rep(1,length(fit$par$pi))
+            else
+              pi <- d/sum(d) 
+         
+         ##### before just:  pi <- d/sum(d) 
+         #############################################
+            
             k<- length(pi)
             mu <- lambda.zero + Lambda %*% t(alpha * pi) %*% rep(1, k)
             cov <- (Gamma - Gamma %*% t(basei) %*% solve(diag(ni) + basei %*% Gamma %*%
@@ -402,7 +413,9 @@
             v <- diag(base %*% (cov * sigma) %*% t(base))
             pse <- sqrt(v + sigma)
             se <- sqrt(v)
-            lower.p <- upper.p <- lower.c <- upper.c <- matrix(0, nrow(base), numb)
+            
+          lower.p <- upper.p <- lower.c <- upper.c <- matrix(0, nrow(base), numb)
+
             for(j in 1:numb) {
                 mu <- lambda.zero + Lambda %*% alpha[ord[j],  ]
                 mean <- base %*% (mu + cov %*% t(basei) %*% (y - basei %*% mu))
@@ -1005,4 +1018,91 @@ discriminantplot<-  function(clusterdata,h,k)
   }
 
 
-
+fitfclustWrapper <- function(data, 
+                             k,
+                             reg,
+                             regTime,
+                             funcyCtrlMbc,
+                             fpcCtrl,
+                             p=2,
+                             pert=0.01){
+  ##input
+  dimBase <- funcyCtrlMbc@dimBase
+  baseType <- funcyCtrlMbc@baseType
+  epsilon <- funcyCtrlMbc@eps
+  maxiter <- funcyCtrlMbc@maxit
+  hard <- funcyCtrlMbc@hard
+  seed <- funcyCtrlMbc@seed
+  init <- funcyCtrlMbc@init
+  nrep <- funcyCtrlMbc@nrep
+  redDim <- funcyCtrlMbc@redDim
+  
+  if(reg==1){
+    predFct <- fitfclust.pred
+    curvepredFct <- fitfclust.curvepred
+    discrimFct <- fitfclust.discrim
+    plotCurvesFct <- fitfclust.plotcurves
+    
+  }else{
+    predFct <- fitfclust.predIrreg
+    curvepredFct <- fitfclust.curvepredIrreg
+    discrimFct <- fitfclust.discrim
+    plotCurvesFct <- fitfclust.plotcurvesIrreg
+  }
+  
+  ##evaluation
+  ptm <- proc.time()
+  
+  res <- fitfclust(data=data, 
+                   dimBase=dimBase, 
+                   h=redDim, 
+                   p=p, 
+                   k=k,
+                   regTime=regTime,
+                   epsilon=epsilon, 
+                   maxiter=maxiter, 
+                   pert=pert,
+                   hard=hard, 
+                   seed=seed, 
+                   init=init, 
+                   nrep=nrep, 
+                   reg=reg,
+                   fpcCtrl=fpcCtrl, 
+                   baseType=baseType)
+  
+  sysTime <- proc.time()-ptm
+  
+  prms <- res$parameters
+  ##class prediction
+  pred <- predFct(res)
+  ##curve prediction
+  curvePred <- curvepredFct(res)
+  
+  ##funcyOut
+  out <- new("funcyOutMbc-fitfclust")
+  out@methodName <- "fitfclust"
+  out@kOut <- k
+  out@time <- res$grid
+  out@dimBaseOut <- dimBase
+  out@cluster<-pred$class.pred
+  out@centers <- curvePred$meancurves
+  out@props <- round(prms[[4]],4)
+  if(k>1){
+  out@dist2centers<-dist2centers(data, out@centers)
+  out@cldist=makeClMat(out@dist2centers)
+  }
+  out@calcTime <- sysTime 
+  out@plotParams <- res$plotParams
+  ##funcyOutMbc 
+  out@groupDimBase <- rep(dim(prms$alpha)[2], k)
+  out@probs<-res$vars$piigivej
+  out@prms <- prms[-4]
+  out@AIC <- res$aic
+  out@BIC <- res$bic
+  out@logLik <- res$loglik
+  out@nrIter <- res$nrIter
+  ##funcyOutMbc-fitfclust output
+  out@fit <- res #for plotting
+  
+  return(out)
+}

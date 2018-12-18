@@ -5,7 +5,7 @@
 #' Fits and clusters the data with respect to the Malthus, Gompertz and Logistic model. The clustering method used is the \emph{k-means} one.
 #'
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
-#' @param k   The number of clusters.
+#' @param k  The vector/number of clusters.
 #' @param model Model name, i.e. Malthus, Gompertz and Logistic. See \sQuote{Details}.
 #' @param fitting.method The method to be used to fit the data with respect to the Malthus, Gompertz and Logistic model. Three methods are proposed: \code{\link[optimr]{opm}}, \code{\link[GenSA]{GenSA}}, \code{\link[DEoptim]{DEoptim}}. See \sQuote{Details}.
 #' @param init A vector containing the initial values for the parameters that must be optimized. In the Malthus case the length of this vector has to be two, instead in the Gompertz and Logistic cases it has to be three. It is not necessary when  \emph{DEoptim} is used.
@@ -13,7 +13,8 @@
 #' @param upper Upper bound associated with each parameter.
 #' @param seed  Seed for the k-means.
 #' 
-#' @return FittingAndClustering returns a list containing all the information related to the clustering, i.e. the parameters estimated for each sample, the parameters of the cluster centers, the mean curve values, the samples cluster membership and the seed used in the k-means. Finally, it is also returned a data frame with four arguments: ID, time, volume and cluster membership for each sample.
+#' @return FittingAndClustering  returns the Elbow Method plot and a list containing for each k all the information related to the clustering, i.e. the parameters estimated for each sample, the parameters of the cluster centers, the mean curve values, the samples cluster membership and the seed used in the k-means. It is also stored a data frame with four arguments: ID, time, volume and cluster membership for each sample.
+
 #' 
 #' 
 #' @details 
@@ -74,7 +75,7 @@ FittingAndClustering <- function(data,k,model, fitting.method="optimr",init=NULL
   number_curves<-max(curve)
   
   data.fit <- matrix(c(curve,x,time),ncol=3,byrow=F)
-  meancurves <- matrix(numeric(length(t)*k),ncol=k)
+ 
   
 if(model=="Malthus" & (length(lower)!=2 || length(upper)!=2 ) ) 
     stop("Considering the Malthus model, the length of buonds should be 2.")
@@ -185,42 +186,63 @@ if(fitting.method!="DEoptim")
       Voldata <- x[m]
       DEoptim( lsfunction, lower=lower,upper=upper,t=tdata,y=Voldata,control = DEoptim.control(trace = F, itermax = 2000))$optim$bestmem
     }
-    
-  }
+}
   
   parameters<- t(sapply(1:number_curves,fn))
   
   x<-parameters[1,]
   # set.seed(2404)
-  group <- kmeans(parameters,k,iter.max = 50)
-  cluster <- group$cluster
-  center <- group$centers
-  curves <- data.frame(ID=data$Dataset$ID, Times=data$Dataset$Time, Vol=data$Dataset$Vol, Cluster= rep(cluster,data$LenCurv))
   
+  clus<-function(K){
+    k<-K
+    meancurves <- matrix(numeric(length(t)*k),ncol=k)
+    
+    group <-kmeans(parameters,k,iter.max = 50)
+    cluster <- group$cluster
+    center <- group$centers
+    Tot.within<-group$tot.withinss
+    
+    curves <- data.frame(ID=data$Dataset$ID, Times=data$Dataset$Time, Vol=data$Dataset$Vol,     Cluster = rep(cluster,data$LenCurv))
+    
+    for(i in c(1:k))
+    {
+      center[i,]->x
+      if(model=="Gompertz")
+      {
+        # meancurves[,i] <- (x[1]*exp(-exp((x[2]*exp(1)/x[1])*(x[3]-t)+1)))
+        meancurves[,i] <-x[1]*exp(x[2]/x[3]*(1-exp(-x[3]*t)))
+      }
+      if(model=="Logistic")
+      {
+        # meancurves[,i] <-(x[1]/(1+exp((4*x[2]/x[1])*(x[3]-t)+2)))
+        meancurves[,i] <-x[1]*x[2]/( x[1] + (x[2]-x[1])*exp(-x[3]*t) )
+      }
+      if(model=="Malthus")
+      {
+        meancurves[,i] <- x[1]*exp(x[2]*t)
+      }
+    }
+    
+    list(parameters=parameters,cluster=cluster,center=center,meancurves=meancurves,Summary=curves,seed=seed,Tot.within=Tot.within)
+    
+    }
+  
+  clusterList<-lapply(k, clus)
+  names(clusterList)<-paste("K=",k)
+  Tot.within<-sapply(k, FUN = function(k){clusterList[[paste("K=",k)]]$Tot.within })
   
   seed <- .Random.seed
   ###### meancurves calculating ######
+
   
-  for(i in c(1:k))
-  {
-    center[i,]->x
-    if(model=="Gompertz")
-    {
-      # meancurves[,i] <- (x[1]*exp(-exp((x[2]*exp(1)/x[1])*(x[3]-t)+1)))
-      meancurves[,i] <-x[1]*exp(x[2]/x[3]*(1-exp(-x[3]*t)))
-    }
-    if(model=="Logistic")
-    {
-      # meancurves[,i] <-(x[1]/(1+exp((4*x[2]/x[1])*(x[3]-t)+2)))
-      meancurves[,i] <-x[1]*x[2]/( x[1] + (x[2]-x[1])*exp(-x[3]*t) )
-    }
-    if(model=="Malthus")
-    {
-      meancurves[,i] <- x[1]*exp(x[2]*t)
-    }
-  }
+  Tot.within<-data.frame(dist=c(Tot.within),K=k)
   
- OUT<-list(parameters=parameters,cluster=cluster,center=center,meancurves=meancurves,Summary=curves,seed=seed)
+  ElbowMethod<-ggplot(data=Tot.within,aes(x=K))+ geom_point(aes(y=dist))+
+    geom_line(aes(y=dist))+
+    labs(title="Elbow method",x="Cluster",y="total within-cluster")+
+    theme(text = element_text(size=20))
+  
+OUT<-list( clusterList=clusterList,ElbowMethod=ElbowMethod)
 
   return(OUT)
 }

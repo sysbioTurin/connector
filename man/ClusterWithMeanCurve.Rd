@@ -28,6 +28,9 @@ ClusterWithMeanCurve returns a list with two objects, (i) a list storing the gro
 \description{
 Visualizes the plots regarding the fitted and clustered data with respect to one model among FCM, Malthus, Gompertz and Logistic.
 }
+\details{
+ADD THE COEFFS MEANING, to check the distance used in kmeans to calculate withtot
+}
 \examples{
 
 GrowDataFile<-"data/1864dataset.xls"
