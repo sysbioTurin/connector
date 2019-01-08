@@ -71,9 +71,11 @@ lower<-c(10^(-5),0)
 upper<-c(10^2,10^3)
 init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=1)
 
-
+#The following function can require some  minutes to finish
 Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="optimr",lower=lower,upper=upper,init=init)
+#The following function can require some  minutes to finish
 Malthus2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="GenSA",lower=lower,upper=upper,init=init)
+#The following function can require some  minutes to finish
 Malthus3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="DEoptim",lower=lower,upper=upper)
 
 CONNECTORList.Malthus1<-Malthus1$clusterList$`K= 4`
@@ -95,8 +97,11 @@ lower<-c(10^(-5),0,0)
 upper<-c(10^2,10^5,1)
 init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=.5, b=.5)
 
+#The following function can require some  minutes to finish
 Logistic1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="optimr",lower=lower,upper=upper,init=init)
+#The following function can require some  minutes to finish
 Logistic2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="GenSA",lower=lower,upper=upper,init=init)
+#The following function can require some  minutes to finish
 Logistic3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="DEoptim",lower=lower,upper=upper)
 
 CONNECTORList.Logistic1<-Logistic1$clusterList$`K= 4`
@@ -118,8 +123,11 @@ lower<-c(10,0,10^(-4))
 upper<-c(10^2,2,2)
 init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=.5, b=.5)
 
+#The following function can require some  minutes to finish
 Gompertz1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="optimr",lower=lower,upper=upper,init=init)
+#The following function can require some  minutes to finish
 Gompertz2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="GenSA",lower=lower,upper=upper,init=init)
+#The following function can require some  minutes to finish
 Gompertz3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="DEoptim",lower=lower,upper=upper)
 
 CONNECTORList.Gompertz1<-Gompertz1$clusterList$`K= 4`
