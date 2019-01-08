@@ -59,8 +59,8 @@ axis.y<-labels[2]
     if(isS4(clusterdata))
     {
       k<-clusterdata@k
-      
-      Cluster(clusterdata)->classes
+    
+      clusterdata@allClusters->classes
       out.fit<-clusterdata@models$fitfclust@fit
       sigma <- out.fit$par$sigma
       Gamma <- out.fit$par$Gamma
@@ -102,7 +102,7 @@ axis.y<-labels[2]
       m<-meancurves[,clust][time1<=max(time2)]
       time3<-c(time3,time1[time1<=max(time2)])
       meancurves_truncated<-c(meancurves_truncated,m)
-      cluster<-c(cluster,rep(clust,length(time1[time1<=max(time2)])))
+      cluster<-c(cluster,rep(symbols[clust],length(time1[time1<=max(time2)])))
     }
   
   
@@ -111,7 +111,7 @@ axis.y<-labels[2]
     PlotMeanCurve<-ggplot()+
                       geom_line(data=plot_data, aes(x=time,y=means,group=clusters,col= as.factor(clusters)) )+
                       labs(title=title, x=axis.x, y = axis.y,colour="Cluster")+
-                      theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ labs(subtitle = paste("Tight.E\ =\ ",as.integer(tightness$EucTight),"\ \ \ Tight.H\ =\ ",as.integer(tightness$HausTight),"\ \ \ coeff\ =\ ",signif(tightness$coeff , digits = 2)) )
+                      theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+                       labs(subtitle = paste("Tight.E\ =\ ",as.integer(tightness$EucTight),"\ \ \ Tight.H\ =\ ",as.integer(tightness$HausTight),"\ \ \ coeff\ =\ ",signif(tightness$coeff , digits = 2)) )
     
       col<-as.character(unique(curves$Info))
       col1<-rainbow(length(col))
@@ -120,7 +120,7 @@ axis.y<-labels[2]
       for(i in 1:k)
       {
         plots[[paste(symbols[i],"Cluster")]]<-ggplot()+
-          geom_line(data=plot_data[plot_data$clusters==i,], aes(x=time,y=means),size = 1.2 )+
+          geom_line(data=plot_data[plot_data$clusters==symbols[i],], aes(x=time,y=means),size = 1.2 )+
           labs(title=paste(title,"",symbols[i],"Cluster"), x=axis.x, y = axis.y)+
           geom_line(data = curves[curves$Cluster==i,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
           scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+

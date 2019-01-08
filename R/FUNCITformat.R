@@ -10,7 +10,6 @@
 ##Fomat3: res <- structure(list(t(data), Tin, N, isobs, t_all), names=c("Yin","Tin","N", "isobs", "t_all"))
 
 ##Default method, used if data=NULL
-#' @import funcy 
 #' 
 setGeneric("formatFuncy", function(data, format, ...) standardGeneric("formatFuncy"))
 

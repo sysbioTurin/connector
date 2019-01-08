@@ -65,7 +65,14 @@ DimensionBasis.Choice<-function(data,p.values)
   mean<-sapply(p.values, function(x){ mean(ALLcrossvalid$CrossLikelihood[ALLcrossvalid$p==x]) } )
   meandata<-data.frame(p=p.values,mean=mean)
   
-  ValidationPlot<-ggplot()+geom_line(data=ALLcrossvalid,aes(x=p,y=CrossLikelihood,group=sim,linetype="test"),col="grey",size=1.2)+geom_line(data=meandata,aes(x=p,y=mean,linetype="mean"),size=1.2)+geom_point(data=meandata,aes(x=p,y=mean),size=2 )+ylab(" Cross-LogLikelihood ")+xlab("number of knots")+theme(legend.title=element_blank())
+  ValidationPlot<-ggplot()+
+                  geom_line(data=meandata,aes(x=p,y=mean,linetype="mean",col="mean"),size=1.2)+
+                  geom_line(data=ALLcrossvalid,aes(x=p,y=CrossLikelihood,group=sim,linetype="test",col="test"),size=1.1)+
+                  geom_point(data=meandata,aes(x=p,y=mean),size=2 )+
+                  ylab(" Cross-LogLikelihood ")+xlab("number of knots")+
+                  scale_color_manual("",breaks=c("mean","test"),values = c("black","grey"))+
+                  scale_linetype_manual("",breaks=c("mean","test"),values = c("solid","dashed"))+
+                  theme(legend.title=element_blank())
   
   return(list(CrossLogLikePlot=ValidationPlot,Meanvalues=meandata,CrossLogLike=ALLcrossvalid))
 }
@@ -76,8 +83,6 @@ CalcLikelihood<-function(p,data.funcit,TestSet){
   perc<-max(TestSet[,1])
   
   mycontfclust = new("funcyCtrl",baseType="splines",dimBase=p,init="kmeans",nrep=10,redDim=1)
-  
-  
   
   out.funcit<- funcit.simo(data.funcit,seed=2404,1,methods="fitfclust",funcyCtrl=mycontfclust,save.data=TRUE)
   

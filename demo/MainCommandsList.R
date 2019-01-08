@@ -30,40 +30,40 @@ pca <- PCA.Analysis(CONNECTORList,p = p)
 
 pca$plot
 
-h<-c(1,2)
+h<-1
 
 ### Calculation of k and fitting using FCM
 
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = c(2:6), h = c(1,2) , p = 3)
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:6, h = h, p = p)
 
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),PCAperc = pca$perc , p = p)
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:6, PCAperc = pca$perc, p = p)
 
 CONNECTORList.FCM$ElbowMethod
 
 k<-4
 
 
-CONNECTORList.FCM.p3.k4.h2<- CONNECTORList.FCM$FCM_all[[paste("k=",4)]][[paste("h=",1)]]
+CONNECTORList.FCM.p3.k4.h1<- CONNECTORList.FCM$FCM_all[[paste("k=",4)]][[paste("h=",1)]]
 
+### Plotting discriminant functions
 
-#discriminantplot(CONNECTORList.FCM.p3.k4.h2)
+MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.k4.h1)
 
-a<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.k4.h2)
+### Plotting Mean Curves and Sample Curves depending on the cluster
 
-FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.k4.h2, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= " FCM model h=1 ")
+FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= " FCM model h=1 ")
 
 
 FCMplots$plots$plotMeanCurve
 FCMplots$plots$plotsCluster$ALL
 
-DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.k4.h2, data= CONNECTORList,h=2,feature="Progeny")
+### Disriminant Plot (goodness of the cluster) just for h = 1 or 2
+
+DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.k4.h2, data= CONNECTORList,h= 1,feature="Progeny")
+
+### Counting samples distribution into the clusters
 
 NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h2,CONNECTORList,feature = "Progeny")
-
-######### separation and tightness plot considering the FCM
-
-PlotSeparationTightness(clusterdata=CONNECTORList.FCM.p3.k4.h2,Title = "FCM Cluster betweenness and withinness h=2 ",save = TRUE,path="../../Dropbox/Universita/Progetto CONNECTOR/newdata/dati1864/FCMp3h2k3/")
-PlotSeparationTightness(clusterdata=CONNECTORList.FCM.p3.k4.h2,Title = "FCM Cluster betweenness and withinness h=1 ")
 
 
 ############################## MALTHUS ##############################
@@ -88,13 +88,6 @@ MalthusPlots1$plotsCluster$ALL
 MalthusPlots2$plotsCluster$ALL
 MalthusPlots3$plotsCluster$ALL
 
-##### separation and tightness plot considering the Malthus model
-
-PlotSeparationTightness(CONNECTORList.Malthus1,Title = "Malthus Optimr Cluster betweenness and withinness")
-
-PlotSeparationTightness(CONNECTORList.Malthus2,Title = "Malthus Gensa Cluster betweenness and withinness")
-
-PlotSeparationTightness(CONNECTORList.Malthus3,Title = "Malthus Deoptim Cluster betweenness and withinness")
 
 ############################## LOGISTIC ##############################
 
@@ -119,14 +112,6 @@ LogisticPlots2$plotsCluster$ALL
 LogisticPlots3$plotsCluster$ALL
 
 
-##### separation and tightness plot considering the Logistic model
-
-PlotSeparationTightness(CONNECTORList.Logistic1,Title = "Logistic Optimr Cluster betweenness and withinness")
-
-PlotSeparationTightness(CONNECTORList.Logistic2,Title = "Logistic Gensa Cluster betweenness and withinness")
-
-PlotSeparationTightness(CONNECTORList.Logistic3,Title = "Logistic Deoptim Cluster betweenness and withinness")
-
 ############################## GOMPERTZ ##############################
 
 lower<-c(10,0,10^(-4))
@@ -149,11 +134,6 @@ GompertzPlots1$plotsCluster$ALL
 GompertzPlots2$plotsCluster$ALL
 GompertzPlots3$plotsCluster$ALL
 
-###### separation and tightness plot considering the Gompertz model
-
-a2<-PlotSeparationTightness(CONNECTORList.Gompertz1,Title = "Gompertz Optimr Cluster betweenness and withinness")
-b2<-PlotSeparationTightness(CONNECTORList.Gompertz2,Title = "Gompertz Gensa Cluster betweenness and withinness")
-c2<-PlotSeparationTightness(CONNECTORList.Gompertz3,Title = "Gompertz Deoptim Cluster betweenness and withinness")
 #################################################
 
 ###### All meancurves together
@@ -167,13 +147,6 @@ pl3<-list(FCMplots$plotMeanCurve,MalthusPlots3$plotMeanCurve,LogisticPlots3$plot
 
 
 ############## Counting the samples
-NumberSamples1<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h2_1,CONNECTORList,feature = "Progeny")
-
-NumberSamples2<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h2_2,CONNECTORList,feature = "Progeny")
-
-NumberSamples3<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h2_3,CONNECTORList,feature = "Progeny")
-
-
 
 NumberSamples<-CountingSamples(clusterdata=Malthus1,CONNECTORList,feature = "Progeny")
 

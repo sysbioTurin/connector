@@ -166,7 +166,7 @@
         ## Compute rank p estimate of Gamma
         ind <- matrix(rep(c(rep(c(1, rep(0, dimBase - 1)), nc), 0), dimBase)[1:(nc*dimBase^2)], nc * dimBase, dimBase)
         
-        if(any(!is.finite(vars$gprod %*% ind/nc))) browser("ehiehiu")
+        #if(any(!is.finite(vars$gprod %*% ind/nc))) browser("ehiehiu")
         
         gsvd <- svd(vars$gprod %*% ind/nc)
         gsvd$d[ - (1:p)] <- 0
@@ -190,7 +190,7 @@
                 base.Lam.pi <- base.Lam * piigivej[curve, i]
                 if(sum(piigivej[, i]) > 10^(-4)){
                     alpha[i,  ] <- solve(t(base.Lam.pi) %*% base.Lam) %*% t(base.Lam.pi) %*% (x - diag(base %*% t(gamma[curve, i,  ])))
-                }else print("Warning: empty cluster")
+                    }else print("Warning: empty cluster")
             }
 
             ## through each column of Lambda holding the other columns fixed.
@@ -273,8 +273,12 @@
             covx <- basej %*% par$Gamma %*% t(basej) + solve(invvar)
             d <- exp( - diag(t(centx) %*% solve(covx) %*% centx)/2) * par$pi
             cost[j,] <-exp( - diag(t(centx) %*% solve(covx) %*% centx)/2)
+            
+            if(sum(d)!=0)
+              vars$piigivej[j,  ] <- d/sum(d)
+            else
+              vars$piigivej[j,  ] <- 0
 
-            vars$piigivej[j,  ] <- d/sum(d)
             if(hard) {
                 m <- order( - d)[1]
                 vars$piigivej[j,  ] <- 0

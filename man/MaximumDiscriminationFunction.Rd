@@ -5,15 +5,16 @@
 \title{Maximum Discrimination Function}
 \usage{
 MaximumDiscriminationFunction(clusterdata, k = NULL, h = NULL,
-  absvalue = FALSE)
+  absvalue = TRUE)
 }
 \arguments{
 \item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).}
 
 \item{k}{The number of clusters.}
 
-\item{h}{The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
-@return}
+\item{h}{The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).}
+
+\item{absvalue}{@return}
 }
 \description{
 

@@ -38,7 +38,7 @@
 #'
 #'
 #'
-#' @import  ggplot2 flexclust
+#' @import  ggplot2 flexclust Matrix
 #' @export
 #' 
 ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL)
@@ -74,7 +74,8 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL)
       
       out.funcit<- funcit.simo(data.funcit,seed=2404,k,methods="fitfclust",funcyCtrl=mycontfclust,save.data=TRUE)
       
-      Cluster(out.funcit)->cluster
+      out.funcit@allClusters->cluster
+      
       if(out.funcit@reg){
       ClustCurve <- data.frame(ID=database[,1],Times=database[,3],Vol=database[,2],Cluster= rep(cluster,out.funcit@timeNr[,1]))
       }else{
@@ -104,10 +105,10 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL)
   
   ####### Elbow method with Hausdorff distance
   ############
-  Tot.within.Eucl<-data.frame(dist=c(Tot.within.Eucl),K=rep(K,length(H)),H=factor(rep(H,each=length(K))))
+  Tot.within.Eucl<-data.frame(dist=c(Tot.within.Eucl),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
  
-ElbowMethod.Eucl<-ggplot(data=Tot.within.Eucl,aes(x=K))+ geom_point(aes(y=dist,col=H))+
-    geom_line(aes(y=dist,col=H))+
+ElbowMethod.Eucl<-ggplot(data=Tot.within.Eucl,aes(x=k))+ geom_point(aes(y=dist,col=h))+
+    geom_line(aes(y=dist,col=h))+
     labs(title="Elbow method",x="Cluster",y="total within-cluster")+
     theme(text = element_text(size=20))
   
