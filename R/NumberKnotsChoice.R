@@ -1,20 +1,19 @@
 #' Choice of the B-spline dimension 
 #'
 #'@description
-#'
+#'	Generates a line plot reporting the cross-validated loglikelihood value for each number of knots. In details, for each number of knots 10\% of the curves from the whole data are removed and treated as a test set, then the remaing curves are fitted using the FCM and the loglikelihood on the test set is calculated. The process is then repeated nine more times.
 #'  
 #'
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
 #' @param p The vector of the dimension of the natural cubic spline basis.
 #' 
 #' @return
-#' DimensionBasis.Choice returns a plot with ...as a ggplot object.
+#' DimensionBasis.Choice returns line plot of the cross-validated loglikelihood for each value of p, in grey the result of all ten repetitions of the likelihood calculation and in black the mean of them.
 #'
 #' 
-#' @seealso \code{\link[funcy]{funcit}}.
-#' 
+#'  
 #' @references
-#' Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
+#' Gareth M. James and Catherine A. Sugar, (2000). Principal component models for sparse functional data.
 #' 
 #' @examples
 #'
@@ -25,19 +24,17 @@
 #'
 #'CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=60,labels = c("time","volume","Tumor Growth"))
 #'
-#'
-#'### Calculation of k and fitting using FCM
-#' # Specifying the h value
+#'CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:10)
+#'CrossLogLike$CrossLogLikePlot
 #' 
-#' .................
 #'
 #'
 #' @import ggplot2 MASS fda plyr
 #' @export
 #' 
-DimensionBasis.Choice<-function(data,p.values)
+BasisDimension.Choice<-function(data,p)
 {
-  
+  p.values<-p
   crossvalid<-list()
   n_sample<-length(data$LenCurv)
   perc<- as.integer(n_sample*0.1)
@@ -74,7 +71,7 @@ DimensionBasis.Choice<-function(data,p.values)
                   scale_linetype_manual("",breaks=c("mean","test"),values = c("solid","dashed"))+
                   theme(legend.title=element_blank())
   
-  return(list(CrossLogLikePlot=ValidationPlot,Meanvalues=meandata,CrossLogLike=ALLcrossvalid))
+  return(list(CrossLogLikePlot=ValidationPlot))
 }
 
 

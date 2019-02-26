@@ -19,7 +19,7 @@ CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",60,labels = c("ti
 
 ### Calculation of p
 
-CrossLogLike<-DimensionBasis.Choice(CONNECTORList,2:10)
+CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:10)
 
 CrossLogLike$CrossLogLikePlot
 
@@ -34,7 +34,7 @@ h<-1
 
 ### Calculation of k and fitting using FCM
 
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:6, h = h, p = p)
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:7, h = h, p = p)
 
 CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:6, PCAperc = pca$perc, p = p)
 
@@ -54,16 +54,16 @@ MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.
 FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= " FCM model h=1 ")
 
 
-FCMplots$plots$plotMeanCurve
-FCMplots$plots$plotsCluster$ALL
+FCMplots$plotMeanCurve
+FCMplots$plotsCluster$ALL
 
 ### Disriminant Plot (goodness of the cluster) just for h = 1 or 2
 
-DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.k4.h2, data= CONNECTORList,h= 1,feature="Progeny")
+DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,h= 1,feature="Progeny")
 
 ### Counting samples distribution into the clusters
 
-NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h2,CONNECTORList,feature = "Progeny")
+NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h1,CONNECTORList,feature = "Progeny")
 
 
 ############################## MALTHUS ##############################

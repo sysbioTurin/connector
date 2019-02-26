@@ -65,12 +65,15 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL)
 
   # return a list of K lists, in which is is stored the output for all h
   # We also create two matrixes with the BIC and AIC values
+  
+  grid <- CONNECTORList$TimeGrid
+  
   for(k in K)
   {
     output_h<-list()
     for(h in H)
     {
-      mycontfclust = new("funcyCtrl",baseType="splines",dimBase=p,init="kmeans",nrep=10,redDim=h)
+      mycontfclust = new("funcyCtrl",baseType="splines",dimBase=p,init="kmeans",nrep=10,redDim=h,UserGrid=grid,eps=0.001)
       
       out.funcit<- funcit.simo(data.funcit,seed=2404,k,methods="fitfclust",funcyCtrl=mycontfclust,save.data=TRUE)
       

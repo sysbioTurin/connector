@@ -59,11 +59,15 @@ CountingSamples<-function(clusterdata,data,feature="ID")
   }
   
   ClustCurve <- data.frame(merge(ClustCurve,data$LabCurv,by="ID"))
+  k<-max(ClustCurve$Cluster)
+  s<-cluster.symbol(k)
+  ClustCurve$Cluster<-s[ClustCurve$Cluster]
   
   a<-count(ClustCurve, c("ID", "Cluster",feature))[,-length(count(ClustCurve, c("ID", "Cluster",feature)))]
+  
+  
   Counting<-count(a,c( "Cluster",feature))
 
-  
   return(list(Counting=Counting,ClusterNames=data.frame(Cluster=ClustCurve$Cluster[cumsum(CONNECTORList$LenCurv)],SampleName=unique(ClustCurve$SampleName))))
 }
 

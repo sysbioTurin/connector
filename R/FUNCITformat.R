@@ -2,15 +2,14 @@
 #  Copyright (C) 2011-2015 Christina Yassouridis
 #  
 #
-
-
 ##3 Different Formats:
 ##Format1: c("curveIndex", "yin", "tin")
 ##Format2: matrix of dimension nr_time x nr_curves - only if data is regular curves can be stored in a matrix
 ##Fomat3: res <- structure(list(t(data), Tin, N, isobs, t_all), names=c("Yin","Tin","N", "isobs", "t_all"))
 
 ##Default method, used if data=NULL
-#' 
+#
+
 setGeneric("formatFuncy", function(data, format, ...) standardGeneric("formatFuncy"))
 
 

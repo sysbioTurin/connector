@@ -59,7 +59,9 @@ setClass("funcyCtrl",
            nrep="numeric",
            seed="numNULL",
            thd="numeric",
-           redDim="numeric"
+           redDim="numeric",
+           UserGrid="numeric",
+           eps="numeric"
          ),
          prototype(
            baseType="splines",
@@ -69,7 +71,9 @@ setClass("funcyCtrl",
            nrep=3,
            seed=2804,
            thd=0.01,
-           redDim=2
+           redDim=2,
+           UserGrid=1,
+           eps=0.001
          )
 )
 
@@ -95,8 +99,8 @@ setClass("funcyCtrlMbc",
            hard="logical"     
          ),
          prototype(
-           eps=0.01,
-           maxit=10,
+           eps=0.001,
+           maxit=20,
            hard=FALSE
          )
 )

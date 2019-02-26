@@ -31,6 +31,7 @@ DataTruncation <- function(data,feature,truncTime=NULL,labels=NULL,save=FALSE,pa
 growth.curve.ls <- GrowthCurve(data,feature,labels = labels)
 ### Plot growth curves with truncation time
 growth.curve.tr <- growth.curve.ls$GrowthCurve_plot
+
 if(! is.null(truncTime)) growth.curve.tr <- growth.curve.tr + geom_vline(xintercept=truncTime, color="black", size=1)
 
 if(save==TRUE)
@@ -51,9 +52,9 @@ lencurv.tr <- numeric(sample.size)
 if(!is.null(truncTime)) data.tr <- DataTrunc(data,truncTime=truncTime)
 else data.tr <- data
 
+data.tr[["ColFeature"]]<-growth.curve.ls$data$FeatureColour
 
-
-plot(growth.curve.tr)
+#plot(growth.curve.tr)
 
 return(data.tr)
 }

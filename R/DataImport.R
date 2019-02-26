@@ -97,7 +97,7 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   vol      <- vol[1:ndata]
   times    <- times[1:ndata]
   ID       <- rep(labcurv$ID,times=lencurv)
-  timegrid <- 1:max(times)
+  timegrid <- sort(unique(times))
 
   ### ID, volume and time data frame
 

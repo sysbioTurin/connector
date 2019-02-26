@@ -4,24 +4,27 @@
 #
 
 "fitfclust" <-
-    function(data, k, reg=reg, regTime=NULL, dimBase=dimBase, h, p=5, epsilon=0.01,
+    function(data, k, reg=reg, regTime=NULL, dimBase=dimBase, h, p=5, epsilon=0.001,
              maxiter=20, pert =0.01, hard=F,
-             seed, init=init, nrep=nrep, fpcCtrl, baseType="splines"){
+             seed, init=init, nrep=nrep, fpcCtrl, baseType="splines",UserGrid=UserGrid){
         if(baseType=="fourier")
             dimBase <- fourierWarn(dimBase)
         ##Check Input
         if(h>k)
             stop("Reduced dimension in mbcCtrl cannot be greater than k!")
         if(reg==1){
-            if(is.null(regTime))
-                grid <- 1:dim(data)[1]
-            else
-                grid <- regTime
+          if(is.null(UserGrid)) grid<-UserGrid #### Added by Simone
+           else if(is.null(regTime)) grid <- 1:dim(data)[1]
+            else  grid <- regTime
+            
             initFct <- initStepReg
             MstepFct <- fitfclustMstep
             EstepFct <- fitfclustEstep
         }else if(reg==0){
-            grid <- unique(sort(data[,3]))
+          
+          if(is.null(UserGrid)) grid<-UserGrid #### Added by Simone
+          else    grid <- unique(sort(data[,3]))
+          
             initFct <- initStepIrreg
             MstepFct <- fitfclustMstepIrreg
             EstepFct <- fitfclustEstepIrreg
@@ -29,7 +32,7 @@
 
         ##INITIAL CLUSTERING --------------------------------------------
         initFit <- initFct(data=data, pert=pert, grid=grid, h=h,
-                           p=p, dimBase=dimBase, k=k, baseType,
+                           p=dimBase, dimBase=dimBase, k=k, baseType,
                            seed=seed, init=init, nrep=nrep, fpcCtrl=fpcCtrl)
 
         ## Initialize the parameters ------------------------------------
@@ -99,7 +102,8 @@
     ## Use k-means to get initial cluster memberships from coeffs.
     nc <- max(data[,1])
     if(k > 1)
-        class <- initClust(data=coeffs, k=k, init=init, seed=seed, nrep=nrep)$clusters
+       class <- kmeans(coeffs, k, 10)$cluster
+      #class <- initClust(data=coeffs, k=k, init=init, seed=seed, nrep=nrep)$clusters
     else
         class <- rep(1, nc)
 
@@ -184,7 +188,8 @@
 
             lambda.zero <- solve(t(base) %*% base) %*% t(base) %*% (data[,2] - diag(base %*% Lambda %*% alpha.pi) - gamma.pi)
 
-            x <- t(data[,2] - t(base %*% lambda.zero))
+           # x <- t(data[,2] - t(base %*% lambda.zero))
+            x <- data[,2] - base %*% lambda.zero
             for(i in 1.:k) {
                 base.Lam <- base %*% Lambda
                 base.Lam.pi <- base.Lam * piigivej[curve, i]
@@ -287,8 +292,7 @@
             }
             ## Calculate expected value of gamma and gamma %*% t(gamma)
             vars$gprod <- cbind(vars$gprod, t(matrix(vars$gamma[j,  ,  ],
-                                                     k, dimBase)) %*% (matrix(vars$gamma[j,  ,  ], k, dimBase) * vars$
-                                                                       piigivej[j,  ]) + Cgamma)
+                                                     k, dimBase)) %*% (matrix(vars$gamma[j,  ,  ], k, dimBase) * vars$piigivej[j,  ]) + Cgamma)
             vars$gcov <- cbind(vars$gcov, Cgamma)
         }
         vars$loglik <- sum(log(cost))
@@ -384,7 +388,7 @@
         Lambda.alpha <- lambda.zero + Lambda %*% t(alpha)
         for (i in index){
             y <-data[curveIndx==i,2]
-            basei <-  fullBase[timeIndx[curveIndx == i],  ]
+            basei <-  base[timeIndx[curveIndx == i],  ]
             ni <- dim(basei)[1]
 
             if(is.null(dim(basei))){
@@ -396,15 +400,15 @@
             covx <- basei %*% Gamma %*% t(basei) + solve(invvar)
             centx <- y- basei %*% Lambda.alpha
             d <- exp( - diag(t(centx) %*% solve(covx) %*% centx)/2) * fit$par$pi
-          ################ Modified by Pernice Simone ##################
+         
+             ################ Modified by Pernice Simone ##################
             if(all(d==0))
-              pi <- rep(1,length(fit$par$pi))
+              pi <- rep(0,length(fit$par$pi))
             else
               pi <- d/sum(d) 
          
          ##### before just:  pi <- d/sum(d) 
          #############################################
-            
             k<- length(pi)
             mu <- lambda.zero + Lambda %*% t(alpha * pi) %*% rep(1, k)
             cov <- (Gamma - Gamma %*% t(basei) %*% solve(diag(ni) + basei %*% Gamma %*%
@@ -1038,6 +1042,7 @@ fitfclustWrapper <- function(data,
   hard <- funcyCtrlMbc@hard
   seed <- funcyCtrlMbc@seed
   init <- funcyCtrlMbc@init
+  UserGrid <-funcyCtrlMbc@UserGrid
   nrep <- funcyCtrlMbc@nrep
   redDim <- funcyCtrlMbc@redDim
   
@@ -1060,7 +1065,7 @@ fitfclustWrapper <- function(data,
   res <- fitfclust(data=data, 
                    dimBase=dimBase, 
                    h=redDim, 
-                   p=p, 
+                   p=dimBase, 
                    k=k,
                    regTime=regTime,
                    epsilon=epsilon, 
@@ -1072,7 +1077,8 @@ fitfclustWrapper <- function(data,
                    nrep=nrep, 
                    reg=reg,
                    fpcCtrl=fpcCtrl, 
-                   baseType=baseType)
+                   baseType=baseType,
+                   UserGrid=UserGrid)
   
   sysTime <- proc.time()-ptm
   
