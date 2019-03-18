@@ -56,19 +56,13 @@ ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c(""
 axis.x<-labels[1]
 axis.y<-labels[2]
 
-    if(isS4(clusterdata))
+    if(!is.null(clusterdata$fit))
     {
-      k<-clusterdata@k
-      clusterdata@allClusters->classes
+      k<-length(clusterdata$prediction$meancurves[1,])
       
-      if(clusterdata@reg){
-        spl_pred<-fitfclust.curvepred( clusterdata@models$fitfclust@fit   )
-      }else{
-        spl_pred<-fitfclust.curvepredIrreg( clusterdata@models$fitfclust@fit   )
-      }
-      
-      meancurves<-spl_pred$meancurves
-      grid<-clusterdata@models$fitfclust@fit$grid
+      clusterdata$cluster$cluster.member -> classes
+      clusterdata$prediction$meancurves -> meancurves
+      clusterdata$fit$grid -> grid
       
     }else{
       clusterdata -> classification
@@ -80,11 +74,7 @@ axis.y<-labels[2]
     
     symbols<-cluster.symbol(k)
     
-    # ################## eucl and haus coeffs
-    # tightness<-With_coeff(clusterdata, data)
-    # 
-    # ##################
-    
+
     classificate <- rep(classes,data$LenCurv)
     
     curves <- data.frame(Times=data$Dataset$Time,Vol=data$Dataset$Vol,ID=data$Dataset$ID,Cluster=classificate, Info=rep(t(data$LabCurv[feature]),data$LenCurv))
@@ -92,7 +82,7 @@ axis.y<-labels[2]
 
     
     # cut the meancurves at the growth curves' maximum time
-    time1<-sort(unique(data$Dataset$Time))
+    
     meancurves_truncated<-c()
     time3<-c()
     cluster<-c()
@@ -100,14 +90,16 @@ axis.y<-labels[2]
     for(clust in 1:k)
     {
       time2<-sort(unique(curves[curves$Cluster==clust,]$Times))
-      m<-meancurves[,clust][time1<=max(time2)]
-      time3<-c(time3,time1[time1<=max(time2)])
+      m<-meancurves[,clust][grid%in%time2]
+      time3<-c(time3,grid[grid%in%time2])
       meancurves_truncated<-c(meancurves_truncated,m)
-      cluster<-c(cluster,rep(symbols[clust],length(time1[time1<=max(time2)])))
+      cluster<-c(cluster,rep(symbols[clust],length(grid[grid%in%time2])))
     }
-  
-    plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
     
+    #cluster<-rep(symbols,each=length(grid))
+    #plot_data<-data.frame(time=rep(grid,k),means=c(meancurves),clusters=cluster)
+    
+    plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
     
     PlotMeanCurve<-ggplot()+
       geom_line(data=plot_data, aes(x=time,y=means,group=clusters,col= as.factor(clusters)) )+
@@ -135,53 +127,43 @@ axis.y<-labels[2]
       
        plots[["ALL"]]<-plot_grid(plotlist = plots)
        
-
-  if(save)
-  {
-    if(is.null(path)) path <- getwd()
-    for(i in 1:k)
-    {
-    ggsave(filename = paste(symbols[i],"Cluster.pdf",sep=""),plot=out$plotsCluster[[paste(symbols[i],"Cluster")]],width=29, height = 20, units = "cm",scale = 1,path = path)
-    }
-    ggsave(filename = "ALLCluster.pdf",plot=out$plotsCluster$ALL,width=29, height = 20, units = "cm",scale = 1,path = path)
-    ggsave(filename = "MeanCurve.pdf",plot=out$plotMeanCurve,width=29, height = 20, units = "cm",scale = 1,path = path)
-  }
        
-    if(isS4(clusterdata))
+       if(save)
+       {
+         if(is.null(path)) path <- getwd()
+         
+         for(i in 1:k)
+         {
+           ggsave(filename = paste(symbols[i],"Cluster.pdf",sep=""),plot=plots[[paste(symbols[i],"Cluster")]],width=29, height = 20, units = "cm",scale = 1,path = path)
+         }
+           ggsave(filename = "ALLCluster.pdf",plot=plots$ALL,width=29, height = 20, units = "cm",scale = 1,path = path)
+           ggsave(filename = "MeanCurve.pdf",plot=PlotMeanCurve,width=29, height = 20, units = "cm",scale = 1,path = path)
+       }
+         
+######## Let's plot the spline fitting for each sample 
+         
+    if(!is.null(clusterdata$fit))
      {
       
-      allsplineEstimation<-curve_prediction(object=spl_pred,cluster=classes,clusterdata=clusterdata)
+      allsplineEstimation<-curve_prediction(cluster=classes ,object=clusterdata$prediction)
 
-      grid<-clusterdata@models$fitfclust@fit$grid
-      spline.curves<-data.frame(Times=rep(grid,max(data$Dataset$ID)),Vol=c(t(spl_pred$gpred)),ID=rep(unique(data$Dataset$ID),each=length(grid)),Cluster=rep(classes,each=length(grid)), Info=rep(t(data$LabCurv[feature]),each=length(grid)))
-      
-      for(i in 1:k)
-      {
-      plots_spline[[paste(symbols[i],"Cluster")]]<-ggplot()+
-        geom_line(data=plot_data[plot_data$clusters==symbols[i],], aes(x=time,y=means),size = 1.2 )+
-        labs(title=paste(title,"",symbols[i],"Cluster"), x=axis.x, y = axis.y)+
-        geom_line(data = spline.curves[spline.curves$Cluster==i,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
-        scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+
-        theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+
-        ylim(0,ymax)+xlim(0,xmax)
-      }
-      #spline.plots[["ALL"]]<-plot_grid(plotlist = plots_spline)
-      
       out<-list(plotMeanCurve=PlotMeanCurve,plotsCluster=plots,spline.plots=allsplineEstimation)
-     }
+    }
+    else{
+      out<-list(plotMeanCurve=PlotMeanCurve,plotsCluster=plots)
+    }
 
- #return(list(plots=out,coeffs=tightness))
- return(out)
+  return(out)
 }
 
-curve_prediction<-function(object,cluster,clusterdata)
+curve_prediction<-function(cluster,object)
 {
-  index <- 1:length(table(object$data[,1])) #pdx
+  index <- 1:length(table(object$data$curve)) #pdx
   
-  timeIndx <- match(object$data[,3],object$grid)
-  curveIndx <- object$data[,1]
+  timeIndx <- object$data$timeindex
+  curveIndx <- object$data$curve
   
- plotCreation<-function(i,cluster,object,clusterdata)
+ plotCreation<-function(i,cluster,object)
  {
     cl<-cluster[i]
     grid <- object$grid
@@ -191,31 +173,33 @@ curve_prediction<-function(object,cluster,clusterdata)
     lowpi <- object$lowpi[i,]
     gpred <- object$gpred[i,]
     meancurves <- (object$mean)[,cl]
-    
-    # si<- clusterdata@models$fitfclust@fit$fullBase[curveIndx==i,] 
-    # yi<- object$data[curveIndx==i,2] 
-    # 
-    # eta.predF<- yi %*% (ginv(si%*%t(si))%*%si)
-    # gpredF<- eta.predF %*% t(si)
-      
-    yrange <- c(min(c(lowpi,meancurves)),max(c(uppi,meancurves)))
+
+        yrange <- c(min(c(lowpi,meancurves)),max(c(uppi,meancurves)))
     
     data.ggplot<-data.frame(grid=grid,upci=upci,uppi=uppi,lowci=lowci,lowpi=lowpi,gpred=gpred,meancurves=meancurves)
-    data.real<-data.frame(time=grid[timeIndx[curveIndx==i]],vol=object$data[curveIndx==i,2] )
+    data.real<-data.frame(time=grid[timeIndx[curveIndx==i]],vol=object$data$x[curveIndx==i] )
     
-    gpl<-ggplot()+geom_line(data=data.ggplot,aes(x=grid,y=upci,linetype="Confidence interval"))+
-      geom_line(data=data.ggplot,aes(x=grid,y=lowci,linetype="Confidence interval"))+
-      geom_line(data=data.ggplot,aes(x=grid,y=gpred,linetype="Predicted curve",col="Predicted curve"))+
-      geom_line(data=data.ggplot,aes(x=grid,y=meancurves,linetype="Cluster mean"))+
-      geom_line(data=data.real,aes(x=time,y=vol,linetype="Real",col="Real"))+
+    gpl<-
+      
+      ggplot()+
+      geom_ribbon(data=data.ggplot,aes(x=grid,ymin=lowci, ymax=upci), alpha=0.1)+
+      geom_line(data=data.ggplot,aes(x=grid,y=gpred,linetype="Spline estimated",col="Spline estimated"))+
+      geom_line(data=data.ggplot,aes(x=grid,y=meancurves,linetype="Cluster mean",col="Cluster mean"))+
       #geom_line(data=data.real,aes(x=time,y=gpredF,linetype="SplineFiltering",col="SplineFiltering"))+
-      geom_point(data=data.real,aes(x=time,y=vol,col="Real"))+
-      labs(title=paste("Sample ",i), x="Time", y=" ")+
-      theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
+      geom_line(data=data.real,aes(x=time,y=vol,col="Real points",linetype="Real points"))+
+      geom_point(data=data.real,aes(x=time,y=vol),col="blue")+
+      labs(title=paste("Sample ",i), x="Time", y="Growth value")+
+      scale_colour_manual(values = c("black","red","blue") ,limits =c("Cluster mean","Spline estimated","Real points"),breaks= c("Cluster mean","Spline estimated","Real points") , name=" ")+
+      guides(
+             linetype = FALSE,
+             colour = guide_legend(override.aes = list(linetype = c("solid","dashed","dashed"))))+
+      theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank(),legend.key.width = unit(1, "cm"))
+    
+    
     return(gpl)
  }
  
- plot_list<-lapply(index,plotCreation,cluster,object,clusterdata)
+ plot_list<-lapply(index,plotCreation,cluster,object)
  names(plot_list)<-paste(paste("Sample ",index))
 
  return(plot_list)

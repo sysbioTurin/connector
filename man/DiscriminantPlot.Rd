@@ -7,9 +7,9 @@
 DiscriminantPlot(clusterdata, h, data, feature)
 }
 \arguments{
-\item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).}
+\item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}).}
 
-\item{h}{The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
+\item{h}{The  number between 1 or 2 representing the dimension of the cluster mean space(see \code{\link{PCA.Analysis}}).
 @return}
 
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}

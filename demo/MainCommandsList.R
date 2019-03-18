@@ -34,7 +34,7 @@ h<-1
 
 ### Calculation of k and fitting using FCM
 
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:7, h = h, p = p)
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:7, h = 1:2, p = p,seed=2404)
 
 CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:6, PCAperc = pca$perc, p = p)
 
@@ -42,8 +42,13 @@ CONNECTORList.FCM$ElbowMethod
 
 k<-4
 
+####### Stability Analysis
 
-CONNECTORList.FCM.p3.k4.h1<- CONNECTORList.FCM$FCM_all[[paste("k=",4)]][[paste("h=",1)]]
+S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1:2, p = p ,runs=50)
+
+#######
+
+CONNECTORList.FCM.p3.k4.h1<- CONNECTORList.FCM$FCM_all[[paste("k=",4)]][[paste("h=",1)]][["FCM"]]
 
 ### Plotting discriminant functions
 

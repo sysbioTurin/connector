@@ -4,7 +4,7 @@
 \alias{ClusterChoice}
 \title{Cluster Choice}
 \usage{
-ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL)
+ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL, seed = 2404)
 }
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
@@ -15,7 +15,9 @@ ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL)
 
 \item{p}{The dimension of the natural cubic spline basis.}
 
-\item{PCAperc}{The PCA percentages applied to the natural cubic spline coefficients, if  NULL then $h$ is needed (see \code{\link{PCA.Analysis}}).
+\item{PCAperc}{The PCA percentages applied to the natural cubic spline coefficients, if  NULL then $h$ is needed (see \code{\link{PCA.Analysis}}).}
+
+\item{seed}{Seed for the kmeans function.
  @return
 ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the Euclidian distance.}
 }

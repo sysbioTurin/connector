@@ -23,14 +23,14 @@
 #' 
 MaximumDiscriminationFunction<-function(clusterdata,k=NULL,h=NULL,absvalue=TRUE)
 { 
-  if( !isS4(clusterdata) )
+  if( is.null(clusterdata$fit) )
   {
-    warning("In input is needed a funcyOutList-class file. ")
+    warning("In input is needed the file generated from FCM. ")
   }else{
-    fit<-clusterdata@models$fitfclust@fit
+    fit<-clusterdata$fit
   }
   
-  base <- fit$base
+  base <- fit$FullS
   sigma <- fit$par$sigma
   nt <- nrow(base)
   Gamma <- fit$par$Gamma
@@ -41,9 +41,7 @@ MaximumDiscriminationFunction<-function(clusterdata,k=NULL,h=NULL,absvalue=TRUE)
   if (absvalue)
     discrim <- abs(discrim)
   n <- ncol(discrim)
-  nrows <- ceiling(sqrt(n))
   
-  par(mfrow=squareGrid(n))
   plots<-list()
   
   DiscrPlot<-function(i){
@@ -53,6 +51,11 @@ MaximumDiscriminationFunction<-function(clusterdata,k=NULL,h=NULL,absvalue=TRUE)
                 xlab("Time")+ylab(paste("Discriminant Function ",i))
   }
   DiscriminantFunctions<-lapply(1:n,DiscrPlot)
-  DiscriminantFunctionsALL<-plot_grid(plotlist = DiscriminantFunctions)
-  return(list(DiscriminantFunctionsALL,DiscriminantFunctions))
+  
+  if(n>1)  
+  {
+    DiscriminantFunctionsALL<-plot_grid(plotlist = DiscriminantFunctions)
+    return(list(DiscriminantFunctionsALL,DiscriminantFunctions))
+  }
+  else return(DiscriminantFunctions)
 }

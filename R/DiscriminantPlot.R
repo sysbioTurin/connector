@@ -22,24 +22,19 @@
 
 DiscriminantPlot<-function(clusterdata,h,data,feature)
 { 
-  K<-clusterdata@k
+  K<-length(clusterdata$prediction$meancurves[1,])
   discrplot<-list()
   
-  if(clusterdata@reg==1)
-  {
-    fitfclust.pred(clusterdata@models$fitfclust@fit)->outpred
-  } else{
-    fitfclust.predIrreg(clusterdata@models$fitfclust@fit)->outpred
-  }
+  outpred<-clusterdata$cluster$cl.info
   
   projectedcurve=outpred$alpha.hat
-  projectedclustcenters=clusterdata@models$fitfclust@fit$parameters$alpha
+  projectedclustcenters=clusterdata$fit$parameters$alpha
   outpred$Calpha -> stdevalpha
   outpred$class.pred -> classes
   outpred$distance -> distanze
   Feature <- data$LabCurv[paste(feature)]
   
-  col<- as.character(unique(Feature))
+  col<- as.character(unlist(unique(Feature)) )
   col1<- data$ColFeature
   
   symbols<-cluster.symbol(K)

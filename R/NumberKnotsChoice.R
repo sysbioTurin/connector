@@ -39,6 +39,8 @@ BasisDimension.Choice<-function(data,p)
   n_sample<-length(data$LenCurv)
   perc<- as.integer(n_sample*0.1)
   
+  grid<-data$TimeGrid
+  
   for(step in 1:10)
   {
   
@@ -49,10 +51,12 @@ BasisDimension.Choice<-function(data,p)
   TestSet <-data.frame(ID=rep(1:(length(SampleTestSet)),CONNECTORList$LenCurv[SampleTestSet]),Vol=TestSet$Vol[],Time=TestSet$Time)
   
   TrainingSet<-CONNECTORList$Dataset[-which(CONNECTORList$Dataset$ID%in%SampleTestSet),]
+
+  #### Let define the FCM input matrix of ID sample, Points and time indexes per sample into the grid.
   
-  data.funcit <-matrix(c(rep(1:(n_sample-length(SampleTestSet)),CONNECTORList$LenCurv[-SampleTestSet]),TrainingSet$Vol,TrainingSet$Time),ncol=3,byrow=F)
-  
-  CrossLikelihood<-sapply(p.values, CalcLikelihood, data.funcit,TestSet)
+  data.funcit <-matrix(c(rep(1:(n_sample-length(SampleTestSet)),CONNECTORList$LenCurv[-SampleTestSet]),TrainingSet$Vol,match(TrainingSet$Time,grid)),ncol=3,byrow=F)
+ 
+  CrossLikelihood<-sapply(p.values, CalcLikelihood, data.funcit,TestSet,grid)
   
   crossvalid[[step]]<-data.frame(p=p.values,CrossLikelihood=CrossLikelihood,sim=step)
   
@@ -75,39 +79,38 @@ BasisDimension.Choice<-function(data,p)
 }
 
 
-CalcLikelihood<-function(p,data.funcit,TestSet){
+CalcLikelihood<-function(p,data.funcit,TestSet,grid){
  
   perc<-max(TestSet[,1])
   
-  mycontfclust = new("funcyCtrl",baseType="splines",dimBase=p,init="kmeans",nrep=10,redDim=1)
+  #grid<-sort(unique(data.funcit[,3] ) )
+  points<-data.funcit[,2]
+  ID<-data.funcit[,1]
+  timeindex<-data.funcit[,3]
   
-  out.funcit<- funcit.simo(data.funcit,seed=2404,1,methods="fitfclust",funcyCtrl=mycontfclust,save.data=TRUE)
+  fcm.fit <- fitfclust(x=points,curve=ID,timeindex=timeindex,q=p,h=1,K=1,p=p,grid=grid,seed=2404)
   
-  Gamma<-as.matrix(out.funcit@models$fitfclust@prms$Gamma)
-  sigma<-out.funcit@models$fitfclust@prms$sigma
-  Lambda<- out.funcit@models$fitfclust@prms$Lambda
-  alpha<- out.funcit@models$fitfclust@prms$alpha
-  mu<- out.funcit@models$fitfclust@prms$lambda.zero+Lambda*c(alpha)
+  Gamma<-as.matrix(fcm.fit$par$Gamma)
+  sigma<-fcm.fit$par$sigma
+  Lambda<- fcm.fit$par$Lambda
+  alpha<- fcm.fit$par$alpha
+  mu<- fcm.fit$par$lambda.zero+Lambda*c(alpha)
   
   ##### make basis considering the test set
   
-  TimeGrid<- unique(sort(TestSet[,3]))
+  # TimeGrid<- unique(sort(TestSet[,3]))
+  # 
+  # tempBase <-cbind(1, ns(TimeGrid, df = (p - 1)))
+  # base <- svd(tempBase)$u
+  
+  base<-fcm.fit$FullS
   
   
-  m <- length(TimeGrid)
-  
-  bObj<-create.bspline.irregular(c(TimeGrid[1],TimeGrid[m]),
-                           nbasis=p,
-                           norder=min(p, 4))
-  base <- eval.basis(TimeGrid, bObj)
-  
-
-  
-  Likelihood<-function(x)
+  Likelihood<-function(x,base,TestSet)
   {
     data.temp<-TestSet[TestSet$ID==x,]
     time.temp<-data.temp$Time
-    base.i<-base[TimeGrid%in%time.temp,]
+    base.i<-base[grid%in%time.temp,]
     Yi<-data.temp$Vol
     n.i<-length(time.temp)
     Vi<-base.i%*%Gamma%*%t(base.i)+sigma^2*diag(n.i)
@@ -116,7 +119,7 @@ CalcLikelihood<-function(p,data.funcit,TestSet){
     -n.i/2*log(det(Vi)) - n.i/2*log(2*pi) - 1/2*t(Yi-mui)%*%invVi%*%(Yi-mui)
   }
   
-  Li<-sapply(1:perc,Likelihood)
+  Li<-sapply(1:perc,Likelihood,base,TestSet)
   Likelihood<-sum(Li)
   return( Likelihood )
 }

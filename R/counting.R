@@ -47,10 +47,10 @@ CountingSamples<-function(clusterdata,data,feature="ID")
 {
   
   
-  if(isS4(clusterdata))
+  if(!is.null(clusterdata$fit))
   {
     
-    ClustCurve <-clusterdata@models$fitfclust@fit$ClustCurves
+    ClustCurve <-clusterdata$cluster$ClustCurve
     
   }else{
     

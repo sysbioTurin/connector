@@ -9,6 +9,7 @@
 #' @param h The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
 #' @param p The dimension of the natural cubic spline basis.
 #' @param PCAperc The PCA percentages applied to the natural cubic spline coefficients, if  NULL then $h$ is needed (see \code{\link{PCA.Analysis}}).
+#' @param seed Seed for the kmeans function.
 #'  @return
 #' ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the Euclidian distance.
 #' 
@@ -38,10 +39,10 @@
 #'
 #'
 #'
-#' @import  ggplot2 flexclust Matrix
+#' @import  ggplot2 flexclust Matrix splines statmod
 #' @export
 #' 
-ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL)
+ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404)
 {
   K<-k
  
@@ -61,59 +62,88 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL)
   
   data.funcit <-matrix(c(database$ID,database$Vol,database$Time),ncol=3,byrow=F)
 ########## 
-  Tot.within.Eucl<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
-
+  DB.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
+  Tight.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
+  
   # return a list of K lists, in which is is stored the output for all h
   # We also create two matrixes with the BIC and AIC values
   
-  grid <- CONNECTORList$TimeGrid
+  grid <- data$TimeGrid
   
+  ############### Calculation and integration of the Gauss points into the timegrid 
+  ############### for calculating the distances between curves
+  ## we need the splines values calculated in the gauss$nodes in the time interval [a,b]
+  
+  gauss.quad(10) -> gauss
+
+  a <- min(grid)
+  b <- max(grid)
+  itempi <- (a+b)/2 + (b-a)/2*gauss$nodes
+  
+  grid <- sort(c(grid,itempi))
+  match(itempi,grid) -> itimeindex 
+  
+  gauss.info<-list(gauss=gauss,itimeindex=itimeindex,a=a,b=b)
+  ##########################################
+  
+  ## Let define the input parameters for the FCM function
+  
+  points<-database$Vol
+  ID<-database$ID
+  times<-database$Time
+  match(times,grid) -> timeindex
+ 
   for(k in K)
   {
     output_h<-list()
     for(h in H)
     {
-      mycontfclust = new("funcyCtrl",baseType="splines",dimBase=p,init="kmeans",nrep=10,redDim=h,UserGrid=grid,eps=0.001)
+      out.funcit<-list()
       
-      out.funcit<- funcit.simo(data.funcit,seed=2404,k,methods="fitfclust",funcyCtrl=mycontfclust,save.data=TRUE)
+      fcm.fit<- fitfclust(x=points,curve=ID,timeindex=timeindex,q=p,h=h,K=k,p=p,grid=grid,seed=seed)
       
-      out.funcit@allClusters->cluster
+      fclust.curvepred(fcm.fit) -> fcm.prediction
+      fclust.pred(fcm.fit) -> fcm.PRED
       
-      if(out.funcit@reg){
-      ClustCurve <- data.frame(ID=database[,1],Times=database[,3],Vol=database[,2],Cluster= rep(cluster,out.funcit@timeNr[,1]))
-      }else{
-        ClustCurve <- data.frame(ID=database[,1],Times=database[,3],Vol=database[,2],Cluster= rep(cluster,out.funcit@timeNr[,2]))
-      }
-      out.funcit@models$fitfclust@fit[["ClustCurves"]] <- ClustCurve
+      fcm.PRED$class.pred -> cluster
       
-      output_h[[paste("h=",h)]] <- out.funcit
+      ClustCurve <- data.frame(ID=database[,1],Times=database[,3],Vol=database[,2],Cluster= rep(cluster,data$LenCurv))
+      
+      out.funcit$cluster <- list(ClustCurve=ClustCurve,cl.info=fcm.PRED,cluster.member=cluster)
+      out.funcit$fit <- fcm.fit
+      out.funcit$prediction <- fcm.prediction
+      
+      output_h[[paste("h=",h)]]$FCM <- out.funcit
  
-      ##################     
-      if(out.funcit@reg==1)
-      {
-        fitfclust.curvepred(out.funcit@models$fitfclust@fit)$meancurves->meancurves
-      } else{
-        fitfclust.curvepredIrreg(out.funcit@models$fitfclust@fit)$meancurves->meancurves
-      }
-      dist<-dist2centers.new(out.funcit@data, meancurves)
-      minDist<-makeClMat(dist)[,1]
-      Tot.within.Eucl[which(K==k),which(H==h)]<-sum(minDist)
-      ##################     
+      ##################  Goodness coefficents calculation ############
       
-      matrix_BIC[which(K==k),which(H==h)]<-output_h[[paste("h=",h)]]@models$fitfclust@BIC
-      matrix_AIC[which(K==k),which(H==h)]<-output_h[[paste("h=",h)]]@models$fitfclust@AIC
+
+      fcm.prediction$meancurves->meancurves
+      
+      distances <- L2dist.curve2mu(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 0)
+      
+      Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 0)
+      Deriv.Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 1)
+
+      output_h[[paste("h=",h)]]$Cl.Info<- list(Coefficents=Coefficents,Deriv.Coefficents=Deriv.Coefficents)
+        
+      DB.indexes[which(K==k),which(H==h)]<-Coefficents$DB.index
+      Tight.indexes[which(K==k),which(H==h)]<-sum(distances^2)
+      
     }
-    output_k[[paste("k=",k)]]<-output_h
+
+      output_k[[paste("k=",k)]]<-output_h
   }
   
-  ####### Elbow method with Hausdorff distance
+  ####### Elbow method with DB index
   ############
-  Tot.within.Eucl<-data.frame(dist=c(Tot.within.Eucl),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
+  
+  DB.index.tot <- data.frame(dist=c(Tight.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
  
-ElbowMethod.Eucl<-ggplot(data=Tot.within.Eucl,aes(x=k))+ geom_point(aes(y=dist,col=h))+
+  ElbowMethod<-ggplot(data=DB.index.tot,aes(x=k))+ geom_point(aes(y=dist,col=h))+
     geom_line(aes(y=dist,col=h))+
-    labs(title="Elbow method",x="Cluster",y="total within-cluster")+
+    labs(title="Elbow method ",x="Cluster",y="Tightness")+
     theme(text = element_text(size=20))
   
-  return(list(FCM_all=output_k,matrix_BIC=matrix_BIC,matrix_AIC=matrix_AIC,ElbowMethod=ElbowMethod.Eucl,Tot.within=Tot.within.Eucl))
+  return(list(FCM_all=output_k,matrix_BIC=matrix_BIC,matrix_AIC=matrix_AIC,ElbowMethod=ElbowMethod,DB.indexes=DB.indexes,Tight.indexes=Tight.indexes))
 }
