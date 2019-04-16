@@ -4,7 +4,7 @@
 \alias{StabilityAnalysis}
 \title{Cluster Stability}
 \usage{
-StabilityAnalysis(data, k, h, p, runs = 50)
+StabilityAnalysis(data, k, h, p, runs = 50, seed = NULL)
 }
 \description{
 

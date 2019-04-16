@@ -79,9 +79,16 @@ L2dist.mu2mu <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
 
   }
   
-  int <- (b-a)/2 * colSums(weights * fxk)
+  if(length(as.matrix(fxk)[1,] ) == 1 ){
+    int <- (b-a)/2 * sum(weights * fxk)
+  }else int <- (b-a)/2 * colSums(weights * fxk)
+  
   dist.mu2mu[,] <- sqrt(int)
   
+  symbols<-cluster.symbol(k)
+  
+  row.names(dist.mu2mu)<-symbols
+  colnames(dist.mu2mu)<-symbols
   return(dist.mu2mu)
 }
 
@@ -111,11 +118,15 @@ Sclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
 
 Rclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   k<-length(fcm.curve$meancurves[1,])
+  symbols<-cluster.symbol(k)
   
   emme <- L2dist.mu2mu(fcm.curve,gauss.info,fcm.fit,deriv)
-  esse <- Sclust.coeff(clust,fcm.curve,gauss.info,fcm.fit,deriv) 
+
   
-  erre <- matrix(0,nrow=k,ncol=k)
+  esse <- Sclust.coeff(clust,fcm.curve,gauss.info,fcm.fit,deriv) 
+  names(esse)<-symbols
+  
+  erre <- matrix(0,nrow=k,ncol=k,dimnames = list(symbols,symbols))
 
   S.matrix<-matrix(rep(esse,length(esse)),ncol=length(esse))
   sum.2S <- S.matrix + t(S.matrix) 

@@ -27,38 +27,22 @@
 #' 
 #' @seealso \code{\link[fda]{create.bspline.irregular}}.
 #' 
-#' @import ggplot2 fda
+#' @import ggplot2 fda spline
 #' @export
 PCA.Analysis <- function(data,p=5,save=FALSE,path=NULL)
 {
-  database<-data$Dataset
+  database <- data$Dataset
+  TimeGrid <- data$TimeGrid
   
   data <-matrix(c(database$ID,database$Vol,database$Time),ncol=3,byrow=F)
   
-  
-  chf <- checkFormat(data)
-  reg <- chf$reg
-  data<-chf$data
-  if(reg){
-    TimeGrid<-1:dim(data)[1]
-  }else{
-    TimeGrid <- unique(sort(data[,3]))
-  }
-  
   # curves splines basis coefficients
-  m <- length(TimeGrid)
-  bObj <-  create.bspline.irregular(c(TimeGrid[1],TimeGrid[m]),
-                                    nbasis=p,
-                                    norder=min(p, 4))
+  FullS <- cbind(1, ns(TimeGrid, df = (p - 1)))
+  base <- svd(FullS)$u
   
-  tempBase <- eval.basis(TimeGrid, bObj)
   
-  base <- svd(tempBase)$u
   pert<-0.01
-  if(reg){
-    coeffs <- t((solve(t(base) %*% base + pert *
-                         diag(p))%*%t(base)) %*% data)
-  }else{
+
     curveIndx <- data[,1]
     timeIndx <- match(data[,3],TimeGrid)
     n <- max(curveIndx)
@@ -69,13 +53,14 @@ PCA.Analysis <- function(data,p=5,save=FALSE,path=NULL)
         base <- t(t(base))
       basei <- fullBase[curveIndx==i,]
       yi <- data[curveIndx==i,2] 
+      
       if(length(yi)>1){
         coeffs[i,] <- solve(t(basei) %*% basei + pert * diag(p)) %*% t(basei) %*%yi
       }else{
         coeffs[i,] <- ((basei) * basei + pert )^(-1) * (basei)*yi
       }
     }
-  }
+  
   
   # Principal Components Analysis
 
@@ -86,9 +71,10 @@ PCA.Analysis <- function(data,p=5,save=FALSE,path=NULL)
   eigs <- pca$sdev^2
   # Percentage of variances explained by each component
   percentage <- eigs/sum(eigs)*100
-
+  dt.fr<-data.frame(comp=factor(paste("Comp.",1:ncomp,sep=""),levels=paste("Comp.",1:ncomp,sep="")),Variances=eigs,perc=paste(signif(percentage,4),"%",sep=""))
+  
   # PCA bar plot
-  PCA_barplot<-ggplot(data=data.frame(comp=paste("Comp.",1:ncomp),Variances=eigs,perc=paste(signif(percentage,4),"%",sep="")), aes(x=comp, y=Variances)) +
+  PCA_barplot<-ggplot(data=dt.fr, aes(x=comp, y=Variances)) +
     geom_bar(stat="identity", fill="steelblue")+
     geom_text(aes(label=perc), vjust=-.3,  size=3.5)+
     labs(title="PCA barplot", x="Components", y = "Variances")+

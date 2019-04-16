@@ -49,12 +49,15 @@
 #'MalthusPlots1$plotsCluster$ALL
 #'
 #' @import ggplot2 
-#' @importFrom cowplot plot_grid
+#' @importFrom cowplot plot_grid add_sub ggdraw
 #' @export
 ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c("","") ,save=FALSE,path=NULL )
 {
 axis.x<-labels[1]
 axis.y<-labels[2]
+
+clusterdata.info<-clusterdata$Cl.Info
+clusterdata<-clusterdata$FCM
 
     if(!is.null(clusterdata$fit))
     {
@@ -105,7 +108,7 @@ axis.y<-labels[2]
       geom_line(data=plot_data, aes(x=time,y=means,group=clusters,col= as.factor(clusters)) )+
       labs(title=title, x=axis.x, y = axis.y,colour="Cluster")+
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
-    #+labs(subtitle = paste("Tight.E\ =\ ",as.integer(tightness$EucTight),"\ \ \ Tight.H\ =\ ",as.integer(tightness$HausTight),"\ \ \ coeff\ =\ ",signif(tightness$coeff , digits = 2)) )
+    #labs(subtitle = paste("Tight.E\ =\ ",as.integer(tightness$EucTight),"\ \ \ Tight.H\ =\ ",as.integer(tightness$HausTight),"\ \ \ coeff\ =\ ",signif(tightness$coeff , digits = 2)) )
     
       col<- as.character(unique(curves$Info))
       col1<- data$ColFeature
@@ -114,18 +117,31 @@ axis.y<-labels[2]
       ymax<-max(plot_data$means,curves$Vol)
       xmax<-max(grid)
       
+      esse<-clusterdata.info$Coefficents$esse
+      essed1<-clusterdata.info$Deriv.Coefficents$esse
+      essed2<-clusterdata.info$Deriv2.Coefficents$esse
+      errei<-clusterdata.info$Coefficents$errei
+      erreid1<-clusterdata.info$Deriv.Coefficents$errei
+      erreid2<-clusterdata.info$Deriv2.Coefficents$errei
+      
+      
       for(i in 1:k)
       {
-        plots[[paste(symbols[i],"Cluster")]]<-ggplot()+
+        plots[[i]]<- ggplot()+
           geom_line(data=plot_data[plot_data$clusters==symbols[i],], aes(x=time,y=means),size = 1.2 )+
           labs(title=paste(title,"",symbols[i],"Cluster"), x=axis.x, y = axis.y)+
           geom_line(data = curves[curves$Cluster==i,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
           scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+
-          theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+
-          ylim(0,ymax)+xlim(0,xmax)
+          theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(0,ymax)+xlim(0,xmax)+ 
+          labs(subtitle = paste("Der0 S = " , signif(esse[symbols[i]], digits = 5),";   Der1 S = " , signif(essed1[symbols[i]], digits = 5),";   Der2 S = " , signif(essed2[symbols[i]], digits = 5),sep="" ) )  
+        
       }
       
-       plots[["ALL"]]<-plot_grid(plotlist = plots)
+       allCl.plot<-plot_grid(plotlist = plots)
+       
+       plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Der = 0 => ",paste("R_",names(errei)," = ",signif(errei, digits = 4) ,sep="",collapse="; "),"\nDer = 1 => ",paste("R_",names(erreid1)," = ",signif(erreid1, digits = 4) ,sep="",collapse="; "  ),"\nDer = 2 => ",paste("R_",names(erreid2)," = ",signif(erreid2, digits = 4) ,sep="",collapse="; "  ),sep = "")  ))
+       
+       
        
        
        if(save)

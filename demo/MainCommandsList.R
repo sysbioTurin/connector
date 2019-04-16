@@ -46,9 +46,10 @@ k<-4
 
 S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1:2, p = p ,runs=50)
 
+S.cl
 #######
 
-CONNECTORList.FCM.p3.k4.h1<- CONNECTORList.FCM$FCM_all[[paste("k=",4)]][[paste("h=",1)]][["FCM"]]
+CONNECTORList.FCM.p3.k4.h1<- CONNECTORList.FCM$FCM_all[[paste("k=",4)]][[paste("h=",1)]]
 
 ### Plotting discriminant functions
 
@@ -58,7 +59,7 @@ MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.
 
 FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= " FCM model h=1 ")
 
-
+FCMplots$plotsCluster$ALL
 FCMplots$plotMeanCurve
 FCMplots$plotsCluster$ALL
 

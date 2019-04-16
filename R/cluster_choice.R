@@ -42,7 +42,7 @@
 #' @import  ggplot2 flexclust Matrix splines statmod
 #' @export
 #' 
-ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404)
+ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit = 20)
 {
   K<-k
  
@@ -100,7 +100,7 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404)
     {
       out.funcit<-list()
       
-      fcm.fit<- fitfclust(x=points,curve=ID,timeindex=timeindex,q=p,h=h,K=k,p=p,grid=grid,seed=seed)
+      fcm.fit<- fitfclust(x=points,curve=ID,timeindex=timeindex,q=p,h=h,K=k,p=p,grid=grid,seed=seed,tol = tol, maxit = maxit)
       
       fclust.curvepred(fcm.fit) -> fcm.prediction
       fclust.pred(fcm.fit) -> fcm.PRED
@@ -112,6 +112,7 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404)
       out.funcit$cluster <- list(ClustCurve=ClustCurve,cl.info=fcm.PRED,cluster.member=cluster)
       out.funcit$fit <- fcm.fit
       out.funcit$prediction <- fcm.prediction
+      out.funcit$TimeGrid<-data$TimeGrid
       
       output_h[[paste("h=",h)]]$FCM <- out.funcit
  
@@ -124,11 +125,12 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404)
       
       Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 0)
       Deriv.Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 1)
-
-      output_h[[paste("h=",h)]]$Cl.Info<- list(Coefficents=Coefficents,Deriv.Coefficents=Deriv.Coefficents)
+      Deriv2.Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 2)
+      
+      output_h[[paste("h=",h)]]$Cl.Info<- list(Coefficents=Coefficents,Deriv.Coefficents=Deriv.Coefficents,Deriv2.Coefficents=Deriv2.Coefficents)
         
       DB.indexes[which(K==k),which(H==h)]<-Coefficents$DB.index
-      Tight.indexes[which(K==k),which(H==h)]<-sum(distances^2)
+      Tight.indexes[which(K==k),which(H==h)]<-sum(distances)
       
     }
 
