@@ -4,7 +4,8 @@ It exploits an unsupervised clustering algorithm to cluster the fitted data, and
 
 ### Required installed packages
 The following R packages must be installed to use connector:
-DEoptim, GenSA, cowplot, fda, funcy, ggforce, ggplot2, optimr, plyr, readxl.
+cowplot, fda, flexclust, ggplot2, MASS, Matrix, plyr, RColorBrewer, readxl, reshape2, splines, statmod.
+
 
 ### How to install connector
 To install it you can use  **devtools**:
