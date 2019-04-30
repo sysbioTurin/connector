@@ -34,7 +34,7 @@ h<-1
 
 ### Calculation of k and fitting using FCM
 
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:7, h = 1:2, p = p,seed=2404)
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 4, h = 1:2, p = p,seed=2404)
 
 CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:6, PCAperc = pca$perc, p = p)
 
@@ -44,7 +44,7 @@ k<-4
 
 ####### Stability Analysis
 
-S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1:2, p = p ,runs=50)
+S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1, p = p ,runs=10)
 
 S.cl
 #######
@@ -71,99 +71,3 @@ DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,h
 
 NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h1,CONNECTORList,feature = "Progeny")
 
-
-############################## MALTHUS ##############################
-lower<-c(10^(-5),0)
-upper<-c(10^2,10^3)
-init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=1)
-
-#The following function can require some  minutes to finish
-Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="optimr",lower=lower,upper=upper,init=init)
-#The following function can require some  minutes to finish
-Malthus2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="GenSA",lower=lower,upper=upper,init=init)
-#The following function can require some  minutes to finish
-Malthus3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fitting.method="DEoptim",lower=lower,upper=upper)
-
-CONNECTORList.Malthus1<-Malthus1$clusterList$`K= 4`
-CONNECTORList.Malthus2<-Malthus2$clusterList$`K= 4`
-CONNECTORList.Malthus3<-Malthus3$clusterList$`K= 4`
-
-MalthusPlots1<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Malthus1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Malthus model")
-MalthusPlots2<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Malthus2,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "GenSA Malthus model")
-MalthusPlots3<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Malthus3,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "DEoptim Malthus model")
-
-MalthusPlots1$plotsCluster$ALL
-MalthusPlots2$plotsCluster$ALL
-MalthusPlots3$plotsCluster$ALL
-
-
-############################## LOGISTIC ##############################
-
-lower<-c(10^(-5),0,0)
-upper<-c(10^2,10^5,1)
-init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=.5, b=.5)
-
-#The following function can require some  minutes to finish
-Logistic1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="optimr",lower=lower,upper=upper,init=init)
-#The following function can require some  minutes to finish
-Logistic2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="GenSA",lower=lower,upper=upper,init=init)
-#The following function can require some  minutes to finish
-Logistic3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Logistic",fitting.method="DEoptim",lower=lower,upper=upper)
-
-CONNECTORList.Logistic1<-Logistic1$clusterList$`K= 4`
-CONNECTORList.Logistic2<-Logistic2$clusterList$`K= 4`
-CONNECTORList.Logistic3<-Logistic3$clusterList$`K= 4`
-
-LogisticPlots1<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Logistic1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Logistic model")
-LogisticPlots2<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Logistic2,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "GenSA Logistic model")
-LogisticPlots3<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Logistic3,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "DEoptim Logistic model")
-
-LogisticPlots1$plotsCluster$ALL
-LogisticPlots2$plotsCluster$ALL
-LogisticPlots3$plotsCluster$ALL
-
-
-############################## GOMPERTZ ##############################
-
-lower<-c(10,0,10^(-4))
-upper<-c(10^2,2,2)
-init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=.5, b=.5)
-
-#The following function can require some  minutes to finish
-Gompertz1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="optimr",lower=lower,upper=upper,init=init)
-#The following function can require some  minutes to finish
-Gompertz2<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="GenSA",lower=lower,upper=upper,init=init)
-#The following function can require some  minutes to finish
-Gompertz3<- FittingAndClustering(data = CONNECTORList, k = 4, model="Gompertz",fitting.method="DEoptim",lower=lower,upper=upper)
-
-CONNECTORList.Gompertz1<-Gompertz1$clusterList$`K= 4`
-CONNECTORList.Gompertz2<-Gompertz2$clusterList$`K= 4`
-CONNECTORList.Gompertz3<-Gompertz3$clusterList$`K= 4`
-
-GompertzPlots1<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Gompertz1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Gompertz model")
-GompertzPlots2<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Gompertz2,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "GenSA Gompertz model")
-GompertzPlots3<-ClusterWithMeanCurve(clusterdata=CONNECTORList.Gompertz3,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "DEoptim Gompertz model")
-
-GompertzPlots1$plotsCluster$ALL
-GompertzPlots2$plotsCluster$ALL
-GompertzPlots3$plotsCluster$ALL
-
-#################################################
-
-###### All meancurves together
-
-pl1<-list(FCMplots$plotMeanCurve,MalthusPlots1$plotMeanCurve,LogisticPlots1$plotMeanCurve,GompertzPlots1$plotMeanCurve)
-
-pl2<-list(FCMplots$plotMeanCurve,MalthusPlots2$plotMeanCurve,LogisticPlots2$plotMeanCurve,GompertzPlots2$plotMeanCurve)
-
-pl3<-list(FCMplots$plotMeanCurve,MalthusPlots3$plotMeanCurve,LogisticPlots3$plotMeanCurve,GompertzPlots3$plotMeanCurve)
-
-
-
-############## Counting the samples
-
-NumberSamples<-CountingSamples(clusterdata=Malthus1,CONNECTORList,feature = "Progeny")
-
-NumberSamples<-CountingSamples(clusterdata=Logistic1,CONNECTORList,feature = "Progeny")
-
-NumberSamples<-CountingSamples(clusterdata=Gompertz1,CONNECTORList,feature = "Progeny")

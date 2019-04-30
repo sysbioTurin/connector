@@ -29,19 +29,22 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL)
     dt.fr<-do.call(cbind, l.tight)
     if(length(dt.fr[,1])==1) row.names(dt.fr)=paste("k=",k) 
     
-    dt.fr<-data.frame(clust=rep(row.names(dt.fr),length(dt.fr[1,])),y=c(dt.fr) )
+    dt.fr<-data.frame(clust=rep(row.names(dt.fr),length(dt.fr[1,])),y=round(c(dt.fr),digits = 3) )
+    counts<-count(dt.fr,vars=c("clust","y"))
     
-    pl[["Tight"]]<-ggplot(dt.fr,aes(x=clust,y=y))+geom_boxplot()+geom_point(col="red")+
+    pl[["Tight"]]<-ggplot()+geom_boxplot(data= dt.fr,aes(x=clust,y=y))+geom_point(data=counts, col="red",aes(x=clust,y=y,size=freq/runs) )+
       labs(title=paste("Elbow method with h=",h[hind] ),x="Cluster",y="Tightness")+
-      theme(text = element_text(size=20))
+      theme(text = element_text(size=20)) +labs(size="Counts freq.") 
     
     dt.fr2<-do.call(cbind, l.DB)
     if(length(dt.fr2[,1])==1) row.names(dt.fr2)=paste("k=",k) 
     
-    dt.fr2<-data.frame(clust=rep(row.names(dt.fr2),length(dt.fr2[1,])),y=c(dt.fr2) )
-    pl[["DBindex"]]<-ggplot(dt.fr2,aes(x=clust,y=y))+geom_boxplot()+geom_point(col="red")+
+    dt.fr2<-data.frame(clust=rep(row.names(dt.fr2),length(dt.fr2[1,])),y=round(c(dt.fr2),digits = 3) )
+    counts2<-count(dt.fr2,vars=c("clust","y"))
+    
+    pl[["DBindex"]]<-ggplot()+geom_boxplot(data= dt.fr2,aes(x=clust,y=y))+geom_point(data=counts2, col="red",aes(x=clust,y=y,size=freq/runs) )+
       labs(title=paste("DB indexes variability with h=",h[hind] ),x="Cluster",y="DB index",col="")+
-      theme(text = element_text(size=20))
+      theme(text = element_text(size=20))+labs(size="Counts freq.") 
     
     Box.pl[[paste("h= ",h[hind])]]$Boxplot<-pl
     Box.pl[[paste("h= ",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=dt.fr2)

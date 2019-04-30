@@ -109,14 +109,8 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit
       
       ClustCurve <- data.frame(ID=database[,1],Times=database[,3],Vol=database[,2],Cluster= rep(cluster,data$LenCurv))
       
-      out.funcit$cluster <- list(ClustCurve=ClustCurve,cl.info=fcm.PRED,cluster.member=cluster)
-      out.funcit$fit <- fcm.fit
-      out.funcit$prediction <- fcm.prediction
-      out.funcit$TimeGrid<-data$TimeGrid
       
-      output_h[[paste("h=",h)]]$FCM <- out.funcit
- 
-      ##################  Goodness coefficents calculation ############
+     ##################  Goodness coefficents calculation ############
       
 
       fcm.prediction$meancurves->meancurves
@@ -127,6 +121,31 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit
       Deriv.Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 1)
       Deriv2.Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 2)
       
+      ######### Let name the cluster with A->Z from the lower mean curve to the higher.
+      
+      M <- Coefficents$emme
+      if( k !=1 )
+      {
+        for(x in 1:length(M[1,]))
+        {
+          if( !all(!M[x,]%in%max(M[M!=0]) ) ) order(M[x,])-> Cl.order
+        }
+      }else{
+        Cl.order<-1
+      }
+      
+      cl.names<-LETTERS[order(Cl.order)]
+      
+      names(cluster)<-cl.names[cluster]
+      
+      ################
+      
+      out.funcit$cluster <- list(ClustCurve=ClustCurve,cl.info=fcm.PRED,cluster.member=cluster,cluster.names=cl.names)
+      out.funcit$fit <- fcm.fit
+      out.funcit$prediction <- fcm.prediction
+      out.funcit$TimeGrid<-data$TimeGrid
+      
+      output_h[[paste("h=",h)]]$FCM <- out.funcit
       output_h[[paste("h=",h)]]$Cl.Info<- list(Coefficents=Coefficents,Deriv.Coefficents=Deriv.Coefficents,Deriv2.Coefficents=Deriv2.Coefficents)
         
       DB.indexes[which(K==k),which(H==h)]<-Coefficents$DB.index

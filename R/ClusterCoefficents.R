@@ -84,11 +84,7 @@ L2dist.mu2mu <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   }else int <- (b-a)/2 * colSums(weights * fxk)
   
   dist.mu2mu[,] <- sqrt(int)
-  
-  symbols<-cluster.symbol(k)
-  
-  row.names(dist.mu2mu)<-symbols
-  colnames(dist.mu2mu)<-symbols
+
   return(dist.mu2mu)
 }
 
@@ -118,10 +114,27 @@ Sclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
 
 Rclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   k<-length(fcm.curve$meancurves[1,])
-  symbols<-cluster.symbol(k)
   
   emme <- L2dist.mu2mu(fcm.curve,gauss.info,fcm.fit,deriv)
 
+  ######### Let name the cluster with A->Z from the lower mean curve to the higher.
+  
+  M <- emme
+  if( k !=1 )
+  {
+    for(x in 1:length(M[1,]))
+    {
+      if( !all(!M[x,]%in%max(M[M!=0]) )) order(M[x,])-> Cl.order
+    }
+  }else{
+    Cl.order<-1
+  }
+  
+  symbols<-LETTERS[order(Cl.order)]
+  
+  
+  row.names(emme)<-symbols
+  colnames(emme)<-symbols
   
   esse <- Sclust.coeff(clust,fcm.curve,gauss.info,fcm.fit,deriv) 
   names(esse)<-symbols

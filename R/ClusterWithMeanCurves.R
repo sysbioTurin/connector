@@ -66,16 +66,13 @@ clusterdata<-clusterdata$FCM
       clusterdata$cluster$cluster.member -> classes
       clusterdata$prediction$meancurves -> meancurves
       clusterdata$fit$grid -> grid
+      symbols<-clusterdata$cluster$cluster.names
       
     }else{
-      clusterdata -> classification
-      classification$cluster ->classes
-      classification$meancurves->meancurves
-      length(meancurves[1,])->k
-      grid <- unique(data$Dataset$Time)
-    }
+      warning("An object returned by Cluster_choice is required.",immediate. = TRUE)
+}
     
-    symbols<-cluster.symbol(k)
+    
     
 
     classificate <- rep(classes,data$LenCurv)

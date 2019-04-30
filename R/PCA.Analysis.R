@@ -27,7 +27,7 @@
 #' 
 #' @seealso \code{\link[fda]{create.bspline.irregular}}.
 #' 
-#' @import ggplot2 fda spline
+#' @import ggplot2 fda splines
 #' @export
 PCA.Analysis <- function(data,p=5,save=FALSE,path=NULL)
 {
