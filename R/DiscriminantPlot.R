@@ -16,19 +16,19 @@
 #' @examples
 #'
 #'
-#' @import  ggplot2 MASS
+#' @import  ggplot2 
 #' @export
 #' 
 
 DiscriminantPlot<-function(clusterdata,h,data,feature)
 { 
-  K<-length(clusterdata$prediction$meancurves[1,])
+  K<-length(clusterdata$FCM$prediction$meancurves[1,])
   discrplot<-list()
   
-  outpred<-clusterdata$cluster$cl.info
+  outpred<-clusterdata$FCM$cluster$cl.info
   
   projectedcurve=outpred$alpha.hat
-  projectedclustcenters=clusterdata$fit$parameters$alpha
+  projectedclustcenters=clusterdata$FCM$fit$parameters$alpha
   outpred$Calpha -> stdevalpha
   outpred$class.pred -> classes
   outpred$distance -> distanze
@@ -37,7 +37,8 @@ DiscriminantPlot<-function(clusterdata,h,data,feature)
   col<- as.character(unlist(unique(Feature)) )
   col1<- data$ColFeature
   
-  symbols<-cluster.symbol(K)
+  symbols<-clusterdata$FCM$cluster$cluster.names
+  
   if(h==1)
   {     
     DataFrame<-data.frame(PrjCurv=projectedcurve,stdaplh=stdevalpha,Feature=unlist(Feature),Cluster=symbols[classes] )

@@ -29,7 +29,8 @@
 #' 
 #'
 #'
-#' @import ggplot2 MASS fda plyr
+#' @import ggplot2 fda plyr
+#' @importFrom MASS ginv
 #' @export
 #' 
 BasisDimension.Choice<-function(data,p)

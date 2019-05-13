@@ -44,16 +44,17 @@ k<-4
 
 ####### Stability Analysis
 
-S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1, p = p ,runs=10)
+S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1, p = p ,runs=50)
 
-S.cl
+S.cl$ConsensusInfo$`h= 1`$`k= 4`$ConsensusPlot
+
 #######
 
 CONNECTORList.FCM.p3.k4.h1<- CONNECTORList.FCM$FCM_all[[paste("k=",4)]][[paste("h=",1)]]
 
 ### Plotting discriminant functions
 
-MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.k4.h1)
+MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.k4.h1$FCM)
 
 ### Plotting Mean Curves and Sample Curves depending on the cluster
 
