@@ -11,7 +11,7 @@ CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
 GrowthCurve(CONNECTORList,"Progeny")
 
-DataVisualization(CONNECTORList,feature="Progeny",labels = c("time","volume","Tumor Growth"))
+DataVisualization(CONNECTORList,feature="Progeny", labels = c("time","volume","Tumor Growth"))
 
 ### Truncation
 
@@ -47,6 +47,8 @@ k<-4
 S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1, p = p ,runs=50)
 
 S.cl$ConsensusInfo$`h= 1`$`k= 4`$ConsensusPlot
+
+CONNECTORList.FCM.p3.k4.h1<-S.cl$ConsensusInfo$`h= 1`$`k= 4`$MostProbabilyClustering
 
 #######
 

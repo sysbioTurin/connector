@@ -89,6 +89,41 @@ L2dist.mu2mu <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
 }
 
 ###############
+# L2dist.mu20 calculates the L2 distance between the cluster centers curves and zero.
+##############
+
+L2dist.mu20 <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
+  
+  itimeindex <- gauss.info$itimeindex
+  weights <- gauss.info$gauss$weights 
+  a<-gauss.info$a
+  b<-gauss.info$b
+  
+  fcm.curve$meancurves->meancurves
+  
+  k<-length(meancurves[1,])
+  
+  if(deriv==0)
+  {
+    fxk <- (meancurves[itimeindex,])^2
+  }else{
+    dspl <-basis.derivation(fcm.fit,deriv)
+    u.dspl<-dspl$u.dspl
+    dmeancurves<-dspl$dmeancurves
+    
+    fxk <- (dmeancurves[itimeindex,])^2
+    
+  }
+  
+  if(length(as.matrix(fxk)[1,] ) == 1 ){
+    int <- (b-a)/2 * sum(weights * fxk)
+  }else int <- (b-a)/2 * colSums(weights * fxk)
+  
+  dist.mu20 <- sqrt(int)
+  
+  return(dist.mu20)
+}
+###############
 # Sclust.coeff calculates the S coefficents for each cluster.
 ##############
 
@@ -116,16 +151,15 @@ Rclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   k<-length(fcm.curve$meancurves[1,])
   
   emme <- L2dist.mu2mu(fcm.curve,gauss.info,fcm.fit,deriv)
-
+  cl   <- L2dist.mu20(fcm.curve,gauss.info,fcm.fit,deriv)
   ######### Let name the cluster with A->Z from the lower mean curve to the higher.
-  
+ 
   M <- emme
+  
+  
   if( k !=1 )
   {
-    for(x in 1:length(M[1,]))
-    {
-      if( !all(!M[x,]%in%max(M[M!=0]) )) order(M[x,])-> Cl.order
-    }
+    Cl.order<-order(cl)
   }else{
     Cl.order<-1
   }

@@ -53,6 +53,16 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL)
   
     Consensus.Info<-lapply(k, function(kind) {
       
+      ############# first we found the most probably clustering:
+      ClustCounting<-sapply(1:runs,function(x) names(ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]$FCM$cluster$cluster.member ) )
+      
+      ClustString<-sapply(1:runs,function(x) paste ( table(ClustCounting[,x]) , collapse = "") )
+      IndexBestClustering<-which(ClustString==names(which.max(table(ClustString))))[1]
+      
+      BestClustering<-ALL.runs[[IndexBestClustering]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
+      ##########################################################
+      #### Let build the consensus matrix
+      
       a<-lapply(1:runs, function(x){
           consensusM<-diag(0,length(data$LenCurv))
           fcm.k<-ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
@@ -71,19 +81,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL)
 ################
 ### ordering the samples to have all curves in the same cluster close with each otehrs.
       
-      M <- ALL.runs[[1]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]$Cl.Info$Coefficents$emme
-      if( kind !=1 )
-      {
-        for(x in 1:length(M[1,]))
-        {
-          #if( !all(!M[x,]%in%min(M[M!=0]) ))
-            if( !all(!M[x,]%in%max(M[M!=0]) )) order(M[x,])-> Cl.order
-        }
-      }else{
-        Cl.order<-1
-      }
-      
-      cl.memer<-ALL.runs[[1]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]$FCM$cluster$cluster.m
+     cl.memer<-ALL.runs[[1]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]$FCM$cluster$cluster.m
       #  mat[do.call(order, as.data.frame(mat)),]
       
       fcm<-ALL.runs[[1]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
@@ -128,13 +126,15 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL)
               panel.background = element_blank(), axis.line = element_line(colour = "black"),axis.text.x = element_text(angle = 45, hjust = 1))
       
 
-      return(list(ConsensusMatrix=consensusM,ConsensusPlot=ConsensusPlot) )
+      return(list(ConsensusMatrix=consensusM,ConsensusPlot=ConsensusPlot,MostProbabilyClustering=BestClustering) )
       })
     
     names(Consensus.Info) <- c(paste("k=",k))
     ConsensusInfo[[paste("h=",h[hind])]]<-Consensus.Info
     
     #####################################
+    
+
   }
   
   Box.pl$seed <- seed

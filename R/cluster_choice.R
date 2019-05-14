@@ -116,20 +116,17 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit
       fcm.prediction$meancurves->meancurves
       
       distances <- L2dist.curve2mu(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 0)
+      distances.zero<-L2dist.mu20(fcm.prediction,gauss.info,fcm.fit,deriv=0)
       
       Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 0)
       Deriv.Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 1)
       Deriv2.Coefficents<-Rclust.coeff(clust=cluster, fcm.curve = fcm.prediction, gauss.info = gauss.info, fcm.fit = fcm.fit, deriv = 2)
       
       ######### Let name the cluster with A->Z from the lower mean curve to the higher.
-      
-      M <- Coefficents$emme
+
       if( k !=1 )
       {
-        for(x in 1:length(M[1,]))
-        {
-          if( !all(!M[x,]%in%max(M[M!=0]) ) ) order(M[x,])-> Cl.order
-        }
+        Cl.order<-order(distances.zero)
       }else{
         Cl.order<-1
       }
