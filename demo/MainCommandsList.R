@@ -9,9 +9,9 @@ CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
 ### Visualization
 
-GrowthCurve(CONNECTORList,"Progeny")
+gr<-GrowthCurve(CONNECTORList,"Progeny")
 
-DataVisualization(CONNECTORList,feature="Progeny", labels = c("time","volume","Tumor Growth"))
+datavisual<-DataVisualization(CONNECTORList,feature="Progeny", labels = c("time","volume","Tumor Growth"))
 
 ### Truncation
 

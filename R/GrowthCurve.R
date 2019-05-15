@@ -5,6 +5,8 @@
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
 #' @param feature The column name reported in the AnnotationFile containing the feature to be investigated.
 #' @param labels   The vector containing the text for the axis names and plot title.
+#' @param save If TRUE then the plot is saved into a pdf file.
+#' @param path The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
 #' @return GrowthCurve returns a list containing the line plot and the CONNECTORList.
 #' 
@@ -20,7 +22,7 @@
 #' @import ggplot2
 #' @export
 
-GrowthCurve <- function(data,feature,labels=NULL)
+GrowthCurve <- function(data,feature,labels=NULL,save=FALSE,path=NULL)
 {
   if(is.null(labels))
   {
@@ -53,6 +55,11 @@ GrowthCurve <- function(data,feature,labels=NULL)
   data$FeatureColour <- feature.palette
 
   GrowthCurve.ls <- list(GrowthCurve_plot=GrowthCurve,data=data)
+  
+  if(save==TRUE)
+  {
+    ggsave(filename="GrowthCurves.pdf",plot = GrowthCurve,width=29, height = 20, units = "cm",scale = 1,path=path )
+  }
 
   return( GrowthCurve.ls )
 }
