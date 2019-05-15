@@ -10,8 +10,10 @@
 #' @param p The dimension of the natural cubic spline basis.
 #' @param PCAperc The PCA percentages applied to the natural cubic spline coefficients, if  NULL then $h$ is needed (see \code{\link{PCA.Analysis}}).
 #' @param seed Seed for the kmeans function.
+#' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
+#' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #'  @return
-#' ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the Euclidian distance.
+#' ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
 #' 
 #' @seealso \code{\link[funcy]{funcit}}.
 #' 
@@ -42,7 +44,7 @@
 #' @import  ggplot2 flexclust Matrix splines statmod
 #' @export
 #' 
-ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit = 20)
+ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit = 20,save=FALSE,path=NULL)
 {
   K<-k
  
@@ -153,15 +155,35 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit
       output_k[[paste("k=",k)]]<-output_h
   }
   
-  ####### Elbow method with DB index
+  ####### Elbow method with L2 distances
   ############
   
-  DB.index.tot <- data.frame(dist=c(Tight.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
+ L2dist <- data.frame(dist=c(Tight.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
  
-  ElbowMethod<-ggplot(data=DB.index.tot,aes(x=k))+ geom_point(aes(y=dist,col=h))+
+  ElbowMethod<-ggplot(data=L2dist,aes(x=k))+ geom_point(aes(y=dist,col=h))+
     geom_line(aes(y=dist,col=h))+
     labs(title="Elbow method ",x="Cluster",y="Tightness")+
     theme(text = element_text(size=20))
   
-  return(list(FCM_all=output_k,matrix_BIC=matrix_BIC,matrix_AIC=matrix_AIC,ElbowMethod=ElbowMethod,DB.indexes=DB.indexes,Tight.indexes=Tight.indexes))
+  ####### DB indexes plot
+  ############
+  
+  L2dist <- data.frame(dist=c(DB.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
+  
+  DBplot <-ggplot(data=DB.indexes.4plot,aes(x=k))+ geom_point(aes(y=dist,col=h))+
+    labs(title="Elbow method ",x="Cluster",y="Tightness")+
+    theme(text = element_text(size=20))
+  ####################
+  
+  if(save==TRUE)
+  {
+    if(is.null(path))
+    {
+      path <- getwd()
+    }
+    ggsave(filename="ElbowMethod.pdf",plot =ElbowMethod,width=29, height = 20, units = "cm",scale = 1,path=path )
+    ggsave(filename="DBplot.pdf",plot = DBplot, width=29, height = 20, units = "cm",scale = 1,path=path )
+  }
+  
+  return(list(FCM_all=output_k,matrix_BIC=matrix_BIC,matrix_AIC=matrix_AIC,ElbowMethod=ElbowMethod,DBplot=DBplot,DB.indexes=DB.indexes,Tight.indexes=Tight.indexes))
 }

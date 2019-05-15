@@ -6,6 +6,8 @@
 #'
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
 #' @param p The vector of the dimension of the natural cubic spline basis.
+#' @param save If TRUE then the plot is saved into a pdf file.
+#' @param path The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
 #' @return
 #' DimensionBasis.Choice returns line plot of the cross-validated loglikelihood for each value of p, in grey the result of all ten repetitions of the likelihood calculation and in black the mean of them.
@@ -33,7 +35,7 @@
 #' @importFrom MASS ginv
 #' @export
 #' 
-BasisDimension.Choice<-function(data,p)
+BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
 {
   p.values<-p
   crossvalid<-list()
@@ -75,6 +77,12 @@ BasisDimension.Choice<-function(data,p)
                   scale_color_manual("",breaks=c("mean","test"),values = c("black","grey"))+
                   scale_linetype_manual("",breaks=c("mean","test"),values = c("solid","dashed"))+
                   theme(legend.title=element_blank())
+  
+  if(save==TRUE)
+  {
+    ggsave(filename="CrossLogLikePlot_Estimation_p.pdf",plot = ValidationPlot,width=29, height = 20, units = "cm",scale = 1,path=path )
+  }
+  
   
   return(list(CrossLogLikePlot=ValidationPlot))
 }

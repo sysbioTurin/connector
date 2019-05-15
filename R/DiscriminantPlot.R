@@ -6,6 +6,9 @@
 #' @param clusterdata Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). 
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
 #' @param h The  number between 1 or 2 representing the dimension of the cluster mean space(see \code{\link{PCA.Analysis}}).
+#' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
+#' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
+#' 
 #'  @return
 #' 
 #' @seealso \code{\link[funcy]{funcit}}.
@@ -20,7 +23,7 @@
 #' @export
 #' 
 
-DiscriminantPlot<-function(clusterdata,h,data,feature)
+DiscriminantPlot<-function(clusterdata,h,data,feature,save=FALSE,path=NULL)
 { 
   K<-length(clusterdata$FCM$prediction$meancurves[1,])
   discrplot<-list()
@@ -82,6 +85,16 @@ DiscriminantPlot<-function(clusterdata,h,data,feature)
       scale_colour_manual(values = col1,limits=col,breaks=col,name=feature )+
       scale_shape_manual("Cluster",values=cl.names,labels=paste(names(cl.names),", C",1:K,sep=""),breaks=names(cl.names)) +
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
+  }
+  
+  if(save==TRUE)
+  {
+    if(is.null(path))
+    {
+      path <- getwd()
+    }
+    ggsave(filename="DiscrPlot_ColFeature.pdf",plot =discrplot[["ColFeature"]],width=29, height = 20, units = "cm",scale = 1,path=path )
+    ggsave(filename="DiscrPlot_ColClust.pdf",plot =discrplot[["ColCluster"]],width=29, height = 20, units = "cm",scale = 1,path=path )
   }
   
   return(discrplot)

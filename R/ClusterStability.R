@@ -1,13 +1,23 @@
 #' Cluster Stability
-#'
 #'@description
 #'
+#'
+#' @param data CONNECTORList. (see \code{\link{DataImport}})
+#' @param k  The vector/number of clusters.
+#' @param h The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
+#' @param p The dimension of the natural cubic spline basis.
+#' @param runs Number of runs.
+#' @param seed Seed for the kmeans function.
+#' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
+#' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
+#'  @return
+#' 
 #' @examples
 #'
 #' @import ggplot2 reshape2 RColorBrewer statmod
 #' @export
 
-StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL)
+StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL,save=FALSE,path=NULL)
 {
   ALL.runs<-list()
   ConsensusInfo<-list()
@@ -133,11 +143,25 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL)
     ConsensusInfo[[paste("h=",h[hind])]]<-Consensus.Info
     
     #####################################
-    
+    if(save==TRUE)
+    {
+      if(is.null(path))
+      {
+        path <- getwd()
+      }
+      ggsave(filename=paste("BoxPlotDBindexes_H",hind,".pdf"),plot =pl$DBindex,width=29, height = 20, units = "cm",scale = 1,path=path )
+      ggsave(filename=paste("BoxPlotElbowMethod_H",hind,".pdf"),plot =pl$Tight,width=29, height = 20, units = "cm",scale = 1,path=path )
+      for(kind in k)
+      {
+        ggsave(filename=paste("ConsensusMatrix_H",hind,"K",kind,".pdf",sep=""),plot = Consensus.Info$ConsensusPlot,width=29, height = 20, units = "cm",scale = 1,path=path )
+      }
+      
+    }
 
   }
   
   Box.pl$seed <- seed
+  
   
   return( list(ConsensusInfo=ConsensusInfo,BoxPlots=Box.pl) )
 }

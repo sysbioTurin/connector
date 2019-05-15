@@ -9,9 +9,9 @@ CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
 ### Visualization
 
-GrowthCurve(CONNECTORList,"Progeny")
+gr<-GrowthCurve(CONNECTORList,"Progeny")
 
-DataVisualization(CONNECTORList,feature="Progeny", labels = c("time","volume","Tumor Growth"))
+datavisual<-DataVisualization(CONNECTORList,feature="Progeny", labels = c("time","volume","Tumor Growth"))
 
 ### Truncation
 
@@ -34,7 +34,7 @@ h<-1
 
 ### Calculation of k and fitting using FCM
 
-CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 4, h = 1:2, p = p,seed=2404)
+CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:7, h = 1, p = 3,seed=2404)
 
 CONNECTORList.FCM <- ClusterChoice(CONNECTORList, k = 2:6, PCAperc = pca$perc, p = p)
 
@@ -44,7 +44,7 @@ k<-4
 
 ####### Stability Analysis
 
-S.cl <-StabilityAnalysis(CONNECTORList, k = 2:7, h = 1, p = p ,runs=50)
+S.cl <-StabilityAnalysis(CONNECTORList, k =4, h = 1, p = 3 ,runs=50)
 
 S.cl$ConsensusInfo$`h= 1`$`k= 4`$ConsensusPlot
 
@@ -72,5 +72,5 @@ DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,h
 
 ### Counting samples distribution into the clusters
 
-NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h1,CONNECTORList,feature = "Progeny")
+NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h1$FCM,CONNECTORList,feature = "Progeny")
 

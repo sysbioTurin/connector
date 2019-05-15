@@ -4,7 +4,7 @@
 \alias{GrowthCurve}
 \title{Growth curves}
 \usage{
-GrowthCurve(data, feature, labels = NULL)
+GrowthCurve(data, feature, labels = NULL, save = FALSE, path = NULL)
 }
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
@@ -12,6 +12,10 @@ GrowthCurve(data, feature, labels = NULL)
 \item{feature}{The column name reported in the AnnotationFile containing the feature to be investigated.}
 
 \item{labels}{The vector containing the text for the axis names and plot title.}
+
+\item{save}{If TRUE then the plot is saved into a pdf file.}
+
+\item{path}{The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.}
 }
 \value{
 GrowthCurve returns a list containing the line plot and the CONNECTORList.
