@@ -44,7 +44,7 @@
 #' @import  ggplot2 flexclust Matrix splines statmod
 #' @export
 #' 
-ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit = 20,save=FALSE,path=NULL)
+ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit = 20,save=FALSE,path=NULL)
 {
   K<-k
  
@@ -162,7 +162,7 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit
  
   ElbowMethod<-ggplot(data=L2dist,aes(x=k))+ geom_point(aes(y=dist,col=h))+
     geom_line(aes(y=dist,col=h))+
-    labs(title="Elbow method ",x="Cluster",y="Tightness")+
+    labs(title="Elbow Plot ",x="Number of Clusters",y="Tightness")+
     theme(text = element_text(size=20))
   
   ####### DB indexes plot
@@ -193,5 +193,5 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit
     ggsave(filename="DBplot.pdf",plot = DBplot, width=29, height = 20, units = "cm",scale = 1,path=path )
   }
   
-  return(list(FCM_all=output_k,matrix_BIC=matrix_BIC,matrix_AIC=matrix_AIC,ElbowMethod=ElbowMethod,DBplot=DBplot,DB.indexes=DB.indexes,Tight.indexes=Tight.indexes))
+  return(list(FCM_all=output_k,matrix_BIC=matrix_BIC,matrix_AIC=matrix_AIC,ElbowMethod=ElbowMethod,DBplot=DBplot,DB.indexes=DB.indexes,Tight.indexes=Tight.indexes,seed=seed))
 }

@@ -46,7 +46,7 @@ k<-4
 
 S.cl <-StabilityAnalysis(CONNECTORList, k =2:6, h = 1, p = 3 ,runs=50)
 
-S.cl$ConsensusInfo$`h= 1`$`k= 4`$ConsensusPlot
+S.cl$ConsensusInfo$`h= 1`$`k= 3`$ConsensusPlot
 S.cl$BoxPlots$`h=  1`$Boxplot$Tight
 
 CONNECTORList.FCM.p3.k4.h1<-S.cl$ConsensusInfo$`h= 1`$`k= 4`$MostProbabilyClustering

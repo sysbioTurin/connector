@@ -24,7 +24,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL,save=FALSE,path=NULL)
   
   if( !is.null(seed)) set.seed(seed)
 
-  ALL.runs<-lapply(1:runs, function(i) ClusterChoice(CONNECTORList, k = k, h = h, p = p) )
+  ALL.runs<-lapply(1:runs, function(i) ClusterChoice(CONNECTORList, k = k, h = h, p = p,seed=NULL) )
 
 ###### box plot generation #####
   Box.pl<-list()
@@ -112,12 +112,26 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL,save=FALSE,path=NULL)
       fxk <- (curve[,itimeindex] )^2
       int <- (b-a)/2 * rowSums( gauss$weights * fxk )
       dist.curve <- sqrt(int)
-      curvename.ordered<-names(sort(dist.curve))
       
+      ################## Sorting the names!!!
       
+      #1) sorting depending by the l2 distance with the zero x-axis!
+      curvename.ordered<-names(sort(dist.curve)) 
+      
+      #2) Sorting depending on the cluster membership
       names(cl.memer)<-curvename
       
-     # curvename.ordered<-names(cl.memer[order(match(cl.memer,Cl.order))])
+      #3) Defining a dataframe in order to sort the curves depending by the cluster and distance!
+      
+      namefroml2<-1:length(curvename)
+      names(namefroml2)<-curvename.ordered
+      namefroml2<-namefroml2[names(cl.memer)]
+      
+      curve.name.dtfr<-data.frame(namefroml2=namefroml2,cl.mem=cl.memer,1:length(curvename.ordered))
+      
+      ind<-curve.name.dtfr[order(curve.name.dtfr$cl.mem,curve.name.dtfr$namefroml2,curve.name.dtfr$cl.mem),3]
+      
+      curvename.ordered<-names(cl.memer)[ind]
      
       consensusM <- consensusM[curvename.ordered,curvename.ordered]
       consensusM <- as.matrix(consensusM)
