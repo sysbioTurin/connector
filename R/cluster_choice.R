@@ -168,7 +168,7 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=NULL,tol = 0.001, maxit
   ####### DB indexes plot
   ############
   
-  L2dist <- data.frame(dist=c(DB.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
+  DB.indexes.4plot <- data.frame(dist=c(DB.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
   
   DBplot <-ggplot(data=DB.indexes.4plot,aes(x=k))+ geom_point(aes(y=dist,col=h))+
     labs(title="Elbow method ",x="Cluster",y="Tightness")+
