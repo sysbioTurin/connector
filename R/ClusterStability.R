@@ -17,7 +17,7 @@
 #' @import ggplot2 reshape2 RColorBrewer statmod
 #' @export
 
-StabilityAnalysis<-function(data,k,h,p,runs=50,seed=NULL,save=FALSE,path=NULL)
+StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
 {
   ALL.runs<-list()
   ConsensusInfo<-list()
