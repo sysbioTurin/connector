@@ -60,8 +60,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     Box.pl[[paste("h= ",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=dt.fr2)
     
     ######### Cluster Membership #########
-  
-    Consensus.Info<-lapply(k, function(kind) {
+    ConsM.generation<-function(kind,runs,ALL.runs,hind) {
       
       ############# first we found the most probably clustering:
       ClustCounting<-sapply(1:runs,function(x) names(ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]$FCM$cluster$cluster.member ) )
@@ -70,16 +69,17 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       IndexBestClustering<-which(ClustString==names(which.max(table(ClustString))))[1]
       
       BestClustering<-ALL.runs[[IndexBestClustering]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
+      
       ##########################################################
       #### Let build the consensus matrix
       
       a<-lapply(1:runs, function(x){
-          consensusM<-diag(0,length(data$LenCurv))
-          fcm.k<-ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
-          cl.vector<-fcm.k$FCM$cluster$cluster.member
-          for(i in 1:length(data$LenCurv)) consensusM[i,which(cl.vector%in%cl.vector[i])]<-1
-          consensusM
-          })
+        consensusM<-diag(0,length(data$LenCurv))
+        fcm.k<-ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
+        cl.vector<-fcm.k$FCM$cluster$cluster.member
+        for(i in 1:length(data$LenCurv)) consensusM[i,which(cl.vector%in%cl.vector[i])]<-1
+        consensusM
+      })
       
       consensusM<-Reduce("+",a)
       
@@ -88,72 +88,43 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       
       consensusM<-as.data.frame(consensusM)/runs
       
-################
-### ordering the samples to have all curves in the same cluster close with each otehrs.
+      ################
+      ### ordering the samples to have all curves in the same cluster close with each otehrs.
       
-     cl.memer<-ALL.runs[[1]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]$FCM$cluster$cluster.m
-      #  mat[do.call(order, as.data.frame(mat)),]
       
-      fcm<-ALL.runs[[1]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
-      curvename<-data$LabCurv$SampleName
-      curve<-fcm$FCM$prediction$gpred
-      rownames(curve)<-curvename
+      for(i in 1:length(consensusM[1,]))
+      {
+        l<-lapply(1:i,function(x) -consensusM[,x])
+        ind<-do.call(order,l)
+        consensusM<-consensusM[ind,] 
+        names.consensusM<-row.names(consensusM)
+        consensusM<-consensusM[,names.consensusM]
+      }
       
-      grid<-fcm$FCM$fit$grid
-      
-      gauss.quad(10) -> gauss
-      
-      a <- min(grid)
-      b <- max(grid)
-      itempi <- (a+b)/2 + (b-a)/2*gauss$nodes
-      
-      match(itempi,grid) -> itimeindex 
-      
-      fxk <- (curve[,itimeindex] )^2
-      int <- (b-a)/2 * rowSums( gauss$weights * fxk )
-      dist.curve <- sqrt(int)
-      
-      ################## Sorting the names!!!
-      
-      #1) sorting depending by the l2 distance with the zero x-axis!
-      curvename.ordered<-names(sort(dist.curve)) 
-      
-      #2) Sorting depending on the cluster membership
-      names(cl.memer)<-curvename
-      
-      #3) Defining a dataframe in order to sort the curves depending by the cluster and distance!
-      
-      namefroml2<-1:length(curvename)
-      names(namefroml2)<-curvename.ordered
-      namefroml2<-namefroml2[names(cl.memer)]
-      
-      curve.name.dtfr<-data.frame(namefroml2=namefroml2,cl.mem=cl.memer,1:length(curvename.ordered))
-      
-      ind<-curve.name.dtfr[order(curve.name.dtfr$cl.mem,curve.name.dtfr$namefroml2,curve.name.dtfr$cl.mem),3]
-      
-      curvename.ordered<-names(cl.memer)[ind]
-     
-      consensusM <- consensusM[curvename.ordered,curvename.ordered]
       consensusM <- as.matrix(consensusM)
       consensusM[upper.tri(consensusM)] <- NA
       
       m<-melt( as.matrix(consensusM) , na.rm = TRUE)
       
+      curvename.ordered<-row.names(consensusM)
       m$Var2<-factor(m$Var2,levels = curvename.ordered  )
       m$Var1<-factor(m$Var1,levels = rev(curvename.ordered )  )
       
-############
+      ############
       
       ConsensusPlot<- ggplot(m,aes(x = Var1, y = Var2,fill=value)) + 
         geom_tile()+labs(x="", y="",fill="Same cluster \ncounting") +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black"),axis.text.x = element_text(angle = 45, hjust = 1))
       
-
+      
       return(list(ConsensusMatrix=consensusM,ConsensusPlot=ConsensusPlot,MostProbabilyClustering=BestClustering) )
-      })
+    }
     
+    Consensus.Info<-lapply(k,runs=runs,ALL.runs=ALL.runs,hind=hind, ConsM.generation)
+
     names(Consensus.Info) <- c(paste("k=",k))
+    
     ConsensusInfo[[paste("h=",h[hind])]]<-Consensus.Info
     
     #####################################
@@ -179,3 +150,8 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
   
   return( list(ConsensusInfo=ConsensusInfo,BoxPlots=Box.pl) )
 }
+
+
+
+
+
