@@ -1,7 +1,8 @@
 #' Cluster Stability
 #'@description
 #'
-#'
+#'  Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.
+#'  
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
 #' @param k  The vector/number of clusters.
 #' @param h The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
@@ -11,10 +12,12 @@
 #' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #'  @return
+#'   StabilityAnalysis returns a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
 #' 
 #' @examples
 #'
 #' @import ggplot2 reshape2 RColorBrewer statmod
+#' @importFrom cowplot plot_grid
 #' @export
 
 StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
@@ -43,7 +46,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     counts<-count(dt.fr,vars=c("clust","y"))
     
     pl[["Tight"]]<-ggplot()+geom_boxplot(data= dt.fr,aes(x=clust,y=y))+geom_point(data=counts, col="red",aes(x=clust,y=y,size=freq/runs) )+
-      labs(title=paste("Elbow method with h=",h[hind] ),x="Cluster",y="Tightness")+
+      labs(title=paste("Elbow plot with h=",h[hind] ),x="Cluster",y="Tightness")+
       theme(text = element_text(size=20)) +labs(size="Counts freq.") 
     
     dt.fr2<-do.call(cbind, l.DB)
@@ -56,7 +59,9 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       labs(title=paste("DB indexes variability with h=",h[hind] ),x="Cluster",y="DB index",col="")+
       theme(text = element_text(size=20))+labs(size="Counts freq.") 
     
-    Box.pl[[paste("h= ",h[hind])]]$Boxplot<-pl
+    boxplots<-plot_grid(plotlist=pl)
+    
+    Box.pl[[paste("h= ",h[hind])]]$Plot<-boxplots
     Box.pl[[paste("h= ",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=dt.fr2)
     
     ######### Cluster Membership #########
@@ -74,7 +79,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       ##########################################################
       #### Let build the consensus matrix
       
-      a<-lapply(1:runs, function(x){
+      consensus.runs<-lapply(1:runs, function(x){
         consensusM<-diag(0,length(data$LenCurv))
         fcm.k<-ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
         cl.vector<-fcm.k$FCM$cluster$cluster.member
@@ -82,7 +87,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
         consensusM
       })
       
-      consensusM<-Reduce("+",a)
+      consensusM<-Reduce("+",consensus.runs)
       
       colnames(consensusM)<- data$LabCurv$SampleName
       row.names(consensusM)<- data$LabCurv$SampleName
@@ -113,7 +118,12 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       fxk <- (curve[,itimeindex] )^2
       int <- (b-a)/2 * rowSums( gauss$weights * fxk )
       dist.curve <- sqrt(int)
+      names(which.min(dist.curve))->lowest.curve
       
+      m.lowercurve<-matrix(curve[lowest.curve,itimeindex],nrow = length(curve[,1]),ncol = length(itimeindex),byrow = T)
+      fxk <- (curve[,itimeindex]-m.lowercurve )^2
+      int <- (b-a)/2 * rowSums( gauss$weights * fxk )
+      dist.curve <- sqrt(int)
       ################## Sorting the names!!!
       
       #1) sorting depending by the l2 distance with the zero x-axis!
@@ -130,7 +140,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       
       curve.name.dtfr<-data.frame(namefroml2=namefroml2,cl.mem=cl.memer,1:length(curvename.ordered))
       
-      ind<-curve.name.dtfr[order(curve.name.dtfr$cl.mem,curve.name.dtfr$namefroml2,curve.name.dtfr$cl.mem),3]
+      ind<-curve.name.dtfr[order(curve.name.dtfr$namefroml2,curve.name.dtfr$cl.mem,curve.name.dtfr$namefroml2),3]
       
       curvename.ordered<-names(cl.memer)[ind]
       
@@ -144,16 +154,22 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       m$Var1<-factor(m$Var1,levels = rev(curvename.ordered )  )
       
       ############
+      length.cl<-rev(as.numeric(table(cl.memer[ind])[unique(cl.memer[ind])]))
+      coor<-c(0,cumsum(length.cl))
+      coor.2<-sum(length.cl)-coor
+      
+      cluster.lines<-data.frame(x=c(coor[-length(coor)],coor[-length(coor)]), y=c(coor.2[-1],coor.2[-length(coor.2)]), xend=c(coor[-1],coor[-length(coor)]), yend=c(coor.2[-1],coor.2[-1] ) ) +.5
       
       ConsensusPlot<- ggplot(m,aes(x = Var1, y = Var2,fill=value)) + 
         geom_tile()+labs(x="", y="",fill="Same cluster \ncounting") +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black"),axis.text.x = element_text(angle = 45, hjust = 1))+
         scale_fill_gradient2(midpoint=0.5, low="blue", mid="yellow",
-                              high="red")
+                              high="red")+
+        geom_segment(data=cluster.lines, aes(x,y,xend=xend, yend=yend), size=1.5, inherit.aes=F)+
+        labs(title="Consensus Matrix",subtitle = "Black line for the most probable clustering" )  
       
-      
-      return(list(ConsensusMatrix=consensusM,ConsensusPlot=ConsensusPlot,MostProbabilyClustering=BestClustering) )
+      return(list(ConsensusMatrix=consensusM,ConsensusPlot=ConsensusPlot,MostProbableClustering=BestClustering) )
     } 
     
     

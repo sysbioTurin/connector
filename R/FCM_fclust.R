@@ -1,7 +1,7 @@
 #' FCM functions
 #'
 #' @import  fda splines 
-#' @export
+#' 
 #' 
 
 "fitfclust" <-

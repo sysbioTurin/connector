@@ -4,10 +4,30 @@
 \alias{StabilityAnalysis}
 \title{Cluster Stability}
 \usage{
-StabilityAnalysis(data, k, h, p, runs = 50, seed = NULL)
+StabilityAnalysis(data, k, h, p, runs = 50, seed = 2404, save = FALSE,
+  path = NULL)
+}
+\arguments{
+\item{data}{CONNECTORList. (see \code{\link{DataImport}})}
+
+\item{k}{The vector/number of clusters.}
+
+\item{h}{The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).}
+
+\item{p}{The dimension of the natural cubic spline basis.}
+
+\item{runs}{Number of runs.}
+
+\item{seed}{Seed for the kmeans function.}
+
+\item{save}{If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.}
+
+\item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
+@return
+ StabilityAnalysis returns a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.}
 }
 \description{
-
+Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.
 }
 \examples{
 

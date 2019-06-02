@@ -1,14 +1,14 @@
-###########################################################################
-###################### Davies–Bouldin index (DBI) #########################
-###########################################################################
-#' @import  splines statmod
-#' @export
+#' Davies–Bouldin index (DBI) and L2 distances
 #' 
-###############
-# L2dist.curve2mu calculates the L2 (or with derivatives) distance between all the spline estimated for each sample with
-# respect to the corresponding cluster center curve.
-##############
+#' @description L2dist.curve2mu calculates the L2 (or with derivatives) distance between all the spline estimated for each sample with respect to the corresponding cluster center curve.\n L2dist.mu2mu calculates the L2 distance between the cluster centers curves. \n L2dist.mu20 calculates the L2 distance between the cluster centers curves and zero.\n Sclust.coeff calculates the S coefficents for each cluster. \n Rclust.coeff calculates the R coefficents for each cluster.
+#' 
+#' @param clust is..
+#' 
+#' @name DBindexL2dist
+NULL
+#> NULL
 
+#' @rdname DBindexL2dist
 L2dist.curve2mu <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
 
   itimeindex <- gauss.info$itimeindex
@@ -48,10 +48,7 @@ L2dist.curve2mu <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   return(dist.curve2mu)
 }
 
-###############
-# L2dist.mu2mu calculates the L2 distance between the cluster centers curves.
-##############
-
+#' @rdname DBindexL2dist
 L2dist.mu2mu <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   
   itimeindex <- gauss.info$itimeindex
@@ -88,10 +85,7 @@ L2dist.mu2mu <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   return(dist.mu2mu)
 }
 
-###############
-# L2dist.mu20 calculates the L2 distance between the cluster centers curves and zero.
-##############
-
+#' @rdname DBindexL2dist
 L2dist.mu20 <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   
   itimeindex <- gauss.info$itimeindex
@@ -123,10 +117,8 @@ L2dist.mu20 <- function(fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   
   return(dist.mu20)
 }
-###############
-# Sclust.coeff calculates the S coefficents for each cluster.
-##############
 
+#' @rdname DBindexL2dist
 Sclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
 
   distances <- L2dist.curve2mu(clust,fcm.curve,gauss.info,fcm.fit,deriv)
@@ -143,10 +135,7 @@ Sclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   return(out)
 }
 
-###############
-# Rclust.coeff calculates the R coefficents for each cluster.
-###############
-
+#' @rdname DBindexL2dist
 Rclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   k<-length(fcm.curve$meancurves[1,])
   
@@ -184,8 +173,6 @@ Rclust.coeff <- function(clust,fcm.curve,gauss.info,fcm.fit=NULL,deriv=0){
   
   return(list(erre=erre,errei=errei,DB.index=errebar,emme=emme,esse=esse))
 }
-
-#######################################################################################à
 
 
 ###############

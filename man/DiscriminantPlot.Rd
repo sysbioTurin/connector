@@ -4,15 +4,20 @@
 \alias{DiscriminantPlot}
 \title{Discriminant Plot}
 \usage{
-DiscriminantPlot(clusterdata, h, data, feature)
+DiscriminantPlot(clusterdata, h, data, feature, save = FALSE, path = NULL)
 }
 \arguments{
 \item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}).}
 
-\item{h}{The  number between 1 or 2 representing the dimension of the cluster mean space(see \code{\link{PCA.Analysis}}).
-@return}
+\item{h}{The  number between 1 or 2 representing the dimension of the cluster mean space(see \code{\link{PCA.Analysis}}).}
 
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
+
+\item{save}{If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.}
+
+\item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
+
+ @return}
 }
 \description{
 

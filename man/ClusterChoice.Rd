@@ -4,8 +4,8 @@
 \alias{ClusterChoice}
 \title{Cluster Choice}
 \usage{
-ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL, seed = NULL,
-  tol = 0.001, maxit = 20)
+ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL, seed = 2404,
+  tol = 0.001, maxit = 20, save = FALSE, path = NULL)
 }
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
@@ -18,9 +18,13 @@ ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL, seed = NULL,
 
 \item{PCAperc}{The PCA percentages applied to the natural cubic spline coefficients, if  NULL then $h$ is needed (see \code{\link{PCA.Analysis}}).}
 
-\item{seed}{Seed for the kmeans function.
+\item{seed}{Seed for the kmeans function.}
+
+\item{save}{If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.}
+
+\item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
  @return
-ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the Euclidian distance.}
+ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.}
 }
 \description{
 Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.
