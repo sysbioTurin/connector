@@ -4,11 +4,14 @@
 \alias{ExtrapolationFuncs}
 \alias{BoxPlot.Extrapolation}
 \alias{ConsMatrix.Extrapolation}
+\alias{MostProbableClustering.Extrapolation}
 \title{Extrapolate objects from StabilityAnalysis}
 \usage{
 BoxPlot.Extrapolation(stability.list, h)
 
 ConsMatrix.Extrapolation(stability.list, h, k)
+
+MostProbableClustering.Extrapolation(stability.list, h, k)
 }
 \arguments{
 \item{stability.list}{CONNECTORList obtained from the StabilityAnalysis function. (see \code{\link{StabilityAnalysis}})}
@@ -18,5 +21,5 @@ ConsMatrix.Extrapolation(stability.list, h, k)
 \item{k}{The number of clusters.}
 }
 \description{
-Extrapolate objects from StabilityAnalysis
+Extrapolate objects from StabilityAnalysis output list (see \code{\link{StabilityAnalysis}}).
 }

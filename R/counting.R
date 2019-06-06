@@ -45,10 +45,14 @@
 #' 
 CountingSamples<-function(clusterdata,data,feature="ID")
 {
+  if( is.null(clusterdata$FCM) &  is.null(clusterdata$cluster) )
+  {
+    warning("In input is needed the FCM or StabilityAnalysis file. ",immediate. = T)
+  }else{
+    if(!is.null(clusterdata$FCM))    clusterdata <- clusterdata$FCM
+  }
   
-    ClustCurve <-clusterdata$cluster$ClustCurve
-    
-
+  ClustCurve <- clusterdata$cluster$ClustCurve
   
   ClustCurve <- data.frame(merge(ClustCurve,data$LabCurv,by="ID"))
   

@@ -23,12 +23,14 @@
 #' 
 MaximumDiscriminationFunction<-function(clusterdata,k=NULL,h=NULL,absvalue=TRUE)
 { 
-  if( is.null(clusterdata$fit) )
+  if( is.null(clusterdata$FCM) &  is.null(clusterdata$fit) )
   {
-    warning("In input is needed the file generated from FCM. ")
+    warning("In input is needed the FCM or StabilityAnalysis file. ",immediate. = T)
   }else{
-    fit<-clusterdata$fit
+    if(!is.null(clusterdata$FCM))    fit<-clusterdata$FCM$fit
+    if(!is.null(clusterdata$fit))    fit<-clusterdata$fit
   }
+    
   
   base <- fit$FullS
   sigma <- fit$par$sigma

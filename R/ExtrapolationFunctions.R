@@ -1,4 +1,6 @@
 #' Extrapolate objects from StabilityAnalysis
+#' 
+#' @description Extrapolate objects from StabilityAnalysis output list (see \code{\link{StabilityAnalysis}}).
 #'
 #' @param stability.list CONNECTORList obtained from the StabilityAnalysis function. (see \code{\link{StabilityAnalysis}})
 #' @param k  The number of clusters.
@@ -12,7 +14,7 @@ NULL
 #' @export
 BoxPlot.Extrapolation <- function(stability.list, h){
   
-  pl<-stability.list$BoxPlots[[paste("h= ",h)]]
+  pl<-stability.list$BoxPlots[[paste("h=",h)]]
     
   return(pl$Plot)
 }
@@ -21,8 +23,17 @@ BoxPlot.Extrapolation <- function(stability.list, h){
 #' @export
 ConsMatrix.Extrapolation <- function(stability.list, h, k){
   
-  pl<-stability.list$ConsensusInfo[[paste("h= ",h)]][[paste("k= ",k)]]
+  pl<-stability.list$ConsensusInfo[[paste("h=",h)]][[paste("k=",k)]]
   
   return(pl$ConsensusPlot)
+}
+
+#' @rdname ExtrapolationFuncs
+#' @export
+MostProbableClustering.Extrapolation <- function(stability.list, h, k){
+  
+  pl<-stability.list$ConsensusInfo[[paste("h=",h)]][[paste("k=",k)]]
+  
+  return(pl$MostProbableClustering)
 }
 

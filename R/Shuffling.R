@@ -2,7 +2,7 @@
 #'
 #' @import  statmod
 #' 
-#' @export
+#'
 ShuffleAnalysis<-function(clusterdata,nruns=10^3)
 {
   

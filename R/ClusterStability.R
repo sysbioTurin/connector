@@ -25,7 +25,9 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
   ALL.runs<-list()
   ConsensusInfo<-list()
   
-  if( !is.null(seed)) set.seed(seed)
+  set.seed(seed)
+  seed<-.Random.seed 
+  assign(x = ".Random.seed", value = seed, envir = .GlobalEnv)
 
   ALL.runs<-lapply(1:runs, function(i) ClusterChoice(CONNECTORList, k = k, h = h, p = p,seed=NULL) )
 
@@ -61,8 +63,8 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     
     boxplots<-plot_grid(plotlist=pl)
     
-    Box.pl[[paste("h= ",h[hind])]]$Plot<-boxplots
-    Box.pl[[paste("h= ",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=dt.fr2)
+    Box.pl[[paste("h=",h[hind])]]$Plot<-boxplots
+    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=dt.fr2)
     
     ######### Cluster Membership #########
     
@@ -200,7 +202,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
   Box.pl$seed <- seed
   
   
-  return( list(ConsensusInfo=ConsensusInfo,BoxPlots=Box.pl) )
+  return( list(ConsensusInfo=ConsensusInfo,BoxPlots=Box.pl,seed=seed) )
 }
 
 
