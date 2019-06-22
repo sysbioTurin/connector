@@ -14,7 +14,7 @@ GrowthCurve(CONNECTORList,"Progeny")
 datavisual<-DataVisualization(CONNECTORList,feature="Progeny", labels = c("time","volume","Tumor Growth"))
 
 ### Truncation
-CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",60,labels = c("time","volume","Tumor Growth"))
+CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",50,labels = c("time","volume","Tumor Growth"))
 
 ### Calculation of p
 CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:10)

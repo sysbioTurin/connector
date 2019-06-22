@@ -53,8 +53,7 @@ if(!is.null(truncTime)) data.tr <- DataTrunc(data,truncTime=truncTime)
 else data.tr <- data
 
 data.tr[["ColFeature"]]<-growth.curve.ls$data$FeatureColour
-
-#plot(growth.curve.tr)
+data.tr[["GrowthCurve_plot"]]<-growth.curve.tr
 
 return(data.tr)
 }
