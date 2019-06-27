@@ -197,10 +197,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     }
 
   }
-  
   Box.pl$seed <- seed
-  
-  
   return( list(ConsensusInfo=ConsensusInfo,BoxPlots=Box.pl,seed=seed) )
 }
 
