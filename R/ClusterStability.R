@@ -189,10 +189,10 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
         path <- getwd()
       }
       ggsave(filename=paste0("BoxPlotClusterGoodness_H",h[hind],".pdf"),plot =Box.pl,width=29, height = 20, units = "cm",scale = 1,path=path )
-      for(kind in k)
-      {
-        ggsave(filename=paste0("ConsensusMatrix_H",h[hind],"K",kind,".pdf",sep=""),plot = Consensus.Info$ConsensusPlot[[paste("k=",kind)]]$ConsensusPlot,width=29, height = 20, units = "cm",scale = 1,path=path )
-      }
+      # for(kind in k)
+      # {
+      #   ggsave(filename=paste0("ConsensusMatrix_H",h[hind],"K",kind,".pdf",sep=""),plot = Consensus.Info$ConsensusPlot[[paste("k=",kind)]]$ConsensusPlot,width=29, height = 20, units = "cm",scale = 1,path=path )
+      # }
       
     }
 
