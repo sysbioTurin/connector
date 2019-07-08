@@ -64,6 +64,8 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
   data.funcit <-matrix(c(database$ID,database$Vol,database$Time),ncol=3,byrow=F)
 ########## 
   DB.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
+  DB1deriv.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
+  DB2deriv.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
   Tight.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
   
   # return a list of K lists, in which is is stored the output for all h
@@ -147,6 +149,8 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
       output_h[[paste("h=",h)]]$Cl.Info<- list(Coefficents=Coefficents,Deriv.Coefficents=Deriv.Coefficents,Deriv2.Coefficents=Deriv2.Coefficents)
         
       DB.indexes[which(K==k),which(H==h)]<-Coefficents$DB.index
+      DB1deriv.indexes[which(K==k),which(H==h)]<-Deriv.Coefficents$DB.index
+      DB2deriv.indexes[which(K==k),which(H==h)]<-Deriv2.Coefficents$DB.index
       Tight.indexes[which(K==k),which(H==h)]<-sum(distances)
       
     }
@@ -192,5 +196,5 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
     ggsave(filename="DBplot.pdf",plot = DBplot, width=29, height = 20, units = "cm",scale = 1,path=path )
   }
   
-  return(list(FCM_all=output_k,matrix_BIC=matrix_BIC,matrix_AIC=matrix_AIC,ElbowMethod=ElbowMethod,DBplot=DBplot,DB.indexes=DB.indexes,Tight.indexes=Tight.indexes,seed=seed))
+  return(list(FCM_all=output_k,ElbowMethod=ElbowMethod,DBplot=DBplot,DB.indexes=DB.indexes,DB1deriv.indexes=DB1deriv.indexes,DB2deriv.indexes=DB2deriv.indexes,Tight.indexes=Tight.indexes,seed=seed))
 }

@@ -40,8 +40,11 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     
     l.tight<-lapply(1:runs,function(x) ALL.runs[[x]]$Tight.indexes[,hind])
     l.DB<-lapply(1:runs,function(x) ALL.runs[[x]]$DB.indexes[,hind])
+    l.DB1<-lapply(1:runs,function(x) ALL.runs[[x]]$DB2deriv.indexes[,hind])
+    l.DB2<-lapply(1:runs,function(x) ALL.runs[[x]]$DB2deriv.indexes[,hind])
     
     dt.fr<-do.call(cbind, l.tight)
+    
     if(length(dt.fr[,1])==1) row.names(dt.fr)=paste("k=",k) 
     
     dt.fr<-data.frame(clust=rep(row.names(dt.fr),length(dt.fr[1,])),y=round(c(dt.fr),digits = 3) )
@@ -51,10 +54,13 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       labs(title=paste("Elbow plot with h=",h[hind] ),x="Cluster",y="Tightness")+
       theme(text = element_text(size=20)) +labs(size="Counts freq.") 
     
-    dt.fr2<-do.call(cbind, l.DB)
-    if(length(dt.fr2[,1])==1) row.names(dt.fr2)=paste("k=",k) 
+    DB<-do.call(cbind, l.DB)
+    DB.der1<-do.call(cbind, l.DB1)
+    DB.der2<-do.call(cbind, l.DB2)
     
-    dt.fr2<-data.frame(clust=rep(row.names(dt.fr2),length(dt.fr2[1,])),y=round(c(dt.fr2),digits = 3) )
+    if(length(DB[,1])==1) row.names(DB)=paste("k=",k) 
+    
+    dt.fr2<-data.frame(clust=rep(row.names(DB),length(DB[1,])),y=round(c(DB),digits = 3) )
     counts2<-count(dt.fr2,vars=c("clust","y"))
     
     pl[["DBindex"]]<-ggplot()+geom_boxplot(data= dt.fr2,aes(x=clust,y=y))+geom_point(data=counts2, col="red",aes(x=clust,y=y,size=freq/runs) )+
@@ -64,7 +70,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     boxplots<-plot_grid(plotlist=pl)
     
     Box.pl[[paste("h=",h[hind])]]$Plot<-boxplots
-    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=dt.fr2)
+    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=DB,DBindexes.1deriv=DB.der1,DBindexes.2deriv=DB.der2)
     
     ######### Cluster Membership #########
     
