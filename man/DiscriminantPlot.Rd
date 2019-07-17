@@ -4,7 +4,8 @@
 \alias{DiscriminantPlot}
 \title{Discriminant Plot}
 \usage{
-DiscriminantPlot(clusterdata, h, data, feature, save = FALSE, path = NULL)
+DiscriminantPlot(clusterdata, h, data, feature, save = FALSE,
+  path = NULL)
 }
 \arguments{
 \item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}).}

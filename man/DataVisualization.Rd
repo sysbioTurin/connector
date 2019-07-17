@@ -4,7 +4,8 @@
 \alias{DataVisualization}
 \title{Data Visualitation}
 \usage{
-DataVisualization(data, feature, labels = NULL, save = FALSE, path = NULL)
+DataVisualization(data, feature, labels = NULL, save = FALSE,
+  path = NULL)
 }
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}

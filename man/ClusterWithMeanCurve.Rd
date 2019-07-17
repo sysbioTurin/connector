@@ -4,8 +4,8 @@
 \alias{ClusterWithMeanCurve}
 \title{Mean Cluster Curves}
 \usage{
-ClusterWithMeanCurve(clusterdata, data, feature, title = "", labels = c("",
-  ""), save = FALSE, path = NULL)
+ClusterWithMeanCurve(clusterdata, data, feature, title = "",
+  labels = c("", ""), save = FALSE, path = NULL)
 }
 \arguments{
 \item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).}

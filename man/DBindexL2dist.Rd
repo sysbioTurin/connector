@@ -9,7 +9,8 @@
 \alias{Rclust.coeff}
 \title{Davies–Bouldin index (DBI) and L2 distances}
 \usage{
-L2dist.curve2mu(clust, fcm.curve, gauss.info, fcm.fit = NULL, deriv = 0)
+L2dist.curve2mu(clust, fcm.curve, gauss.info, fcm.fit = NULL,
+  deriv = 0)
 
 L2dist.mu2mu(fcm.curve, gauss.info, fcm.fit = NULL, deriv = 0)
 
@@ -23,5 +24,5 @@ Rclust.coeff(clust, fcm.curve, gauss.info, fcm.fit = NULL, deriv = 0)
 \item{clust}{is..}
 }
 \description{
-L2dist.curve2mu calculates the L2 (or with derivatives) distance between all the spline estimated for each sample with respect to the corresponding cluster center curve.\n L2dist.mu2mu calculates the L2 distance between the cluster centers curves. \n L2dist.mu20 calculates the L2 distance between the cluster centers curves and zero.\n Sclust.coeff calculates the S coefficents for each cluster. \n Rclust.coeff calculates the R coefficents for each cluster.
+L2dist.curve2mu calculates the L2 (or with derivatives) distance between all the spline estimated for each sample with respect to the corresponding cluster center curve. L2dist.mu2mu calculates the L2 distance between the cluster centers curves. L2dist.mu20 calculates the L2 distance between the cluster centers curves and zero. Sclust.coeff calculates the S coefficents for each cluster. Rclust.coeff calculates the R coefficents for each cluster.
 }
