@@ -54,58 +54,61 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
 
 
   ### Inizialize :
+  dataset<-as.matrix(dataset)
+  
   ### vector for curves lenghts
   nvar       <- dim(dataset)[2]
   nobs       <- dim(dataset)[1]
-  tot        <- nobs*nvar
-  samplesize <- dim(dataset)[2]/2
+  
+  samplesize <- nvar/2
   lencurv    <- numeric(samplesize)
   ### vectors for times, volume and ID curves values
-  tot        <- length(dataset)
-  TimeIndex  <- seq(1,nvar,2)
-  VolIndex   <- seq(2,nvar,2)
-  TimeValue  <- as.matrix(dataset[TimeIndex])
-  VolValue   <- as.matrix(dataset[VolIndex])
 
-  times      <- numeric(tot)
-  vol        <- numeric(tot)
-  ID         <- numeric(tot)
-
-  ### Organize times, volume and ID curves values, removing NA
-  for (cappa in 1:samplesize)
+    TimeIndex  <- seq(1,nvar,2)
+  ObsIndex   <- seq(2,nvar,2)
+  
+  lencurv.time<-sapply(TimeIndex, function(x){length(dataset[!is.na(dataset[,x]),x])})
+  lencurv.obs<-sapply(ObsIndex, function(x){length(dataset[!is.na(dataset[,x]),x])})
+  
+  if(!all(lencurv.time==lencurv.obs)) # check if times are without observation
   {
-    tempv <- as.double(VolValue[,cappa])
-    tempv <- tempv[!is.na(tempv)]
-    lencurv[cappa] <- length(tempv)
-    tempt <-as.double(TimeValue[,cappa])
-    tempt <-tempt[!is.na(tempt)]
-
-    if (cappa == 1)
+    warning("Times without the corresponding observation (or viceversa) are present.\n These cases will be deleted.\n")
+    
+    ind.diff<-which(!lencurv.time==lencurv.obs)
+    lencurv.obs.diff<-lencurv.obs[ind.diff]
+    lencurv.time.diff<-lencurv.time[ind.diff]
+    
+    for(i in 1:length(ind.diff) )
     {
-      vol[1:lencurv[cappa]]    <- tempv
-      times[1:lencurv[cappa]]  <- tempt
-
-    }
-
-    else
-    {
-      lcum <- cumsum(lencurv)
-      vol[(lcum[cappa-1]+1):lcum[cappa]] <- tempv
-      times[(lcum[cappa-1]+1):lcum[cappa]] <- tempt
+      na.obs<-is.na(dataset[,ind.diff[i]*2 ] )
+      na.time<-is.na(dataset[,ind.diff[i]*2-1 ] )
+      i.different<-which(!(na.time==na.obs))
+      dataset[i.different,ind.diff[i]*2 ]<-NA
+      dataset[i.different,ind.diff[i]*2-1 ]<-NA
     }
   }
+  
+  lencurv<-sapply(ObsIndex, function(x){length(dataset[!is.na(dataset[,x]),x])})
+    
+  TimeValue  <- as.vector(dataset[,TimeIndex])
+  TimeValue<- as.double(TimeValue[!is.na(TimeValue)])
+  
+  VolValue  <- as.vector(dataset[,ObsIndex])
+  VolValue<-  as.double(VolValue[!is.na(VolValue)] )
 
-  ndata    <- sum(lencurv)
-  vol      <- vol[1:ndata]
-  times    <- times[1:ndata]
-  ID       <- rep(labcurv$ID,times=lencurv)
-  timegrid <- sort(unique(times))
+  
+  ID<- rep(labcurv$ID,times=lencurv)
+  
+  timegrid <- sort(unique(TimeValue))
 
   ### ID, volume and time data frame
 
-  dataset <- data.frame(ID=ID,Vol=vol,Time=times)
+  dataset <- data.frame(ID=ID,Vol=VolValue,Time=TimeValue)
   alldata <- list(Dataset=dataset,LenCurv=lencurv,LabCurv=labcurv,TimeGrid=timegrid)
-
+  
+  cat("############################### \n######## Summary ##############\n")
+  cat("\n Number of curves:",samplesize,";\n Min curve length: ",min(lencurv),"; Max curve length: ",max(lencurv),".\n")
+  cat("############################### \n")
 
   return(alldata)
 }

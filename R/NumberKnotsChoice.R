@@ -44,6 +44,13 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
   
   grid<-data$TimeGrid
   
+  pmax<-min(data$LenCurv)
+  
+  if(max(p)>pmax)
+  {
+    warning(paste("The maximum value of p should be:", pmax) )
+  }
+  
   for(step in 1:10)
   {
   
@@ -73,7 +80,7 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
                   geom_line(data=meandata,aes(x=p,y=mean,linetype="mean",col="mean"),size=1.2)+
                   geom_line(data=ALLcrossvalid,aes(x=p,y=CrossLikelihood,group=sim,linetype="test",col="test"),size=1.1)+
                   geom_point(data=meandata,aes(x=p,y=mean),size=2 )+
-                  ylab(" Cross-LogLikelihood ")+xlab("number of knots")+
+                  labs(title="Estimation of p",y= " Cross-LogLikelihood ", x= "number of knots")+
                   scale_color_manual("",breaks=c("mean","test"),values = c("black","grey"))+
                   scale_linetype_manual("",breaks=c("mean","test"),values = c("solid","dashed"))+
                   theme(legend.title=element_blank())
