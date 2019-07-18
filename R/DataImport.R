@@ -36,7 +36,7 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   
  ### Read Target File
   labcurv  <- read.csv(file=AnnotationFile,header=TRUE)
-  colnames(labcurv[,1:2])<-c("ID","SampleName")
+  colnames(labcurv)= c("ID", "SampleName",colnames(labcurv)[-(1:2)] )
 
  ###Check the column names
   c_names<-colnames(dataset[2*(1:(length(dataset[1,])/2))])
