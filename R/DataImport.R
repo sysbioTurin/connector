@@ -36,6 +36,7 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   
  ### Read Target File
   labcurv  <- read.csv(file=AnnotationFile,header=TRUE)
+  colnames(labcurv[,1:2])<-c("ID","SampleName")
 
  ###Check the column names
   c_names<-colnames(dataset[2*(1:(length(dataset[1,])/2))])
@@ -86,7 +87,7 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
       dataset[i.different,ind.diff[i]*2-1 ]<-NA
     }
     
-    warning(paste(length(ind.diff),"times without the corresponding observation (or viceversa) are present.\n These cases will be deleted.\n") )
+    warning(paste(length(ind.diff),"time(s) without the corresponding observation (or viceversa) is(are) present.\n These cases will be deleted.\n") )
   }
   
   lencurv<-sapply(ObsIndex, function(x){length(dataset[!is.na(dataset[,x]),x])})
