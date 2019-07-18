@@ -72,6 +72,7 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   
   if(!all(lencurv.time==lencurv.obs)) # check if times are without observation
   {
+
     ind.diff<-which(!lencurv.time==lencurv.obs)
     lencurv.obs.diff<-lencurv.obs[ind.diff]
     lencurv.time.diff<-lencurv.time[ind.diff]
@@ -96,7 +97,6 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   VolValue  <- as.vector(dataset[,ObsIndex])
   VolValue<-  as.double(VolValue[!is.na(VolValue)] )
 
-  
   ID<- rep(labcurv$ID,times=lencurv)
   
   timegrid <- sort(unique(TimeValue))

@@ -43,7 +43,7 @@ DataTruncation <- function(data,feature,truncTime=NULL,labels=NULL,save=FALSE,pa
    }
    ggsave(filename="DataTruncation.pdf",plot =growth.curve.tr,width=29, height = 20, units = "cm",scale = 1,path=path )
   }
-
+  
   # Data truncation
   if(!is.null(truncTime)) data.tr <- DataTrunc(data,truncTime=truncTime)
   else data.tr <- data
@@ -65,6 +65,7 @@ DataTruncation <- function(data,feature,truncTime=NULL,labels=NULL,save=FALSE,pa
   cat("\n Number of truncated curves:",length(Curve.cutted.ind),";\n Min points deleted: ",min(points.deleted),"; Max points deleted: ",max(points.deleted),";\n")
   
   cat("############################### \n")
+
 
   return(data.tr)
 }
