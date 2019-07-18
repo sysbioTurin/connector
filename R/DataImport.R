@@ -72,8 +72,6 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   
   if(!all(lencurv.time==lencurv.obs)) # check if times are without observation
   {
-    warning("Times without the corresponding observation (or viceversa) are present.\n These cases will be deleted.\n")
-    
     ind.diff<-which(!lencurv.time==lencurv.obs)
     lencurv.obs.diff<-lencurv.obs[ind.diff]
     lencurv.time.diff<-lencurv.time[ind.diff]
@@ -86,6 +84,8 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
       dataset[i.different,ind.diff[i]*2 ]<-NA
       dataset[i.different,ind.diff[i]*2-1 ]<-NA
     }
+    
+    warning(paste(length(ind.diff),"times without the corresponding observation (or viceversa) are present.\n These cases will be deleted.\n") )
   }
   
   lencurv<-sapply(ObsIndex, function(x){length(dataset[!is.na(dataset[,x]),x])})
