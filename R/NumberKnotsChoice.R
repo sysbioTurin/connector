@@ -43,12 +43,19 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
   perc<- as.integer(n_sample*0.1)
   
   grid<-data$TimeGrid
+  length(grid)->Lgrid
   
   pmax<-min(data$LenCurv)
   
   if(max(p)>pmax)
   {
-    warning(paste("The maximum value of p should be:", pmax) )
+    warning(paste("The maximum value of p should be:", pmax,"\n") )
+  }
+  
+  if(max(p)>Lgrid)
+  {
+    p.values<-min(p):Lgrid
+    warning(paste("The maximum value of p should not be larger than the length of the grid. Thus the range of p is fixed from",min(p),"to",Lgrid,".\n") )
   }
   
   for(step in 1:10)
