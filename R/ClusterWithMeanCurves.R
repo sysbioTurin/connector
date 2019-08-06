@@ -95,6 +95,7 @@ clusterdata<-clusterdata$FCM
       meancurves_truncated<-c(meancurves_truncated,m)
       cluster<-c(cluster,rep(symbols[clust],length(grid[grid%in%time2])))
     }
+    cl.names<-clusterdata$cluster$cluster.names
     
     #cluster<-rep(symbols,each=length(grid))
     #plot_data<-data.frame(time=rep(grid,k),means=c(meancurves),clusters=cluster)
@@ -102,9 +103,11 @@ clusterdata<-clusterdata$FCM
     plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
     
     PlotMeanCurve<-ggplot()+
-      geom_line(data=plot_data, aes(x=time,y=means,group=clusters,col= as.factor(clusters)) )+
-      labs(title=title, x=axis.x, y = axis.y,colour="Cluster")+
+      geom_line(data=plot_data, aes(x=time,y=means,group=clusters,linetype= as.factor(clusters)),size=1 )+  
+      scale_linetype_manual(values =1:k ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
+      labs(title=title, x=axis.x, y = axis.y,linetype="Cluster")+
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
+    
     #labs(subtitle = paste("Tight.E\ =\ ",as.integer(tightness$EucTight),"\ \ \ Tight.H\ =\ ",as.integer(tightness$HausTight),"\ \ \ coeff\ =\ ",signif(tightness$coeff , digits = 2)) )
     
       col<- as.character(unique(curves$Info))
@@ -121,21 +124,23 @@ clusterdata<-clusterdata$FCM
       erreid1<-clusterdata.info$Deriv.Coefficents$errei
       erreid2<-clusterdata.info$Deriv2.Coefficents$errei
       
-      
+     
       for(i in 1:k)
       {
+        order(symbols)[i]->index.symb # sorting from the lower to the higher mean curve w.r.t. the zero axis
+        
         plots[[i]]<- ggplot()+
-          geom_line(data=plot_data[plot_data$clusters==symbols[i],], aes(x=time,y=means),size = 1.2 )+
-          labs(title=paste(title,"",symbols[i],"Cluster"), x=axis.x, y = axis.y)+
-          geom_line(data = curves[curves$Cluster==i,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
+          geom_line(data=plot_data[plot_data$clusters==symbols[index.symb],], aes(x=time,y=means,linetype= as.factor(clusters)),size = 1.2 )+
+          scale_linetype_manual(values =1:k ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
+          labs(title=paste(title,"",symbols[index.symb],"Cluster"), x=axis.x, y = axis.y)+
+          geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
           scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+
           theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(0,ymax)+xlim(0,xmax)+ 
-          labs(subtitle = paste("Der0 S = " , signif(esse[symbols[i]], digits = 5),";   Der1 S = " , signif(essed1[symbols[i]], digits = 5),";   Der2 S = " , signif(essed2[symbols[i]], digits = 5),sep="" ) )  
+          labs(subtitle = paste("Der0 S = " , signif(esse[symbols[index.symb]], digits = 5),";   Der1 S = " , signif(essed1[symbols[index.symb]], digits = 5),";   Der2 S = " , signif(essed2[symbols[index.symb]], digits = 5),sep="" ) )  + guides( linetype = FALSE)
         
       }
       
-       allCl.plot<-plot_grid(plotlist = plots)
-       
+       allCl.plot<-plot_grid(plotlist = plots) 
        plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Der = 0 => ",paste("R_",names(errei)," = ",signif(errei, digits = 4) ,sep="",collapse="; "),"\nDer = 1 => ",paste("R_",names(erreid1)," = ",signif(erreid1, digits = 4) ,sep="",collapse="; "  ),"\nDer = 2 => ",paste("R_",names(erreid2)," = ",signif(erreid2, digits = 4) ,sep="",collapse="; "  ),sep = "")  ))
        
        
@@ -193,7 +198,6 @@ curve_prediction<-function(cluster,object)
     data.real<-data.frame(time=grid[timeIndx[curveIndx==i]],vol=object$data$x[curveIndx==i] )
     
     gpl<-
-      
       ggplot()+
       geom_ribbon(data=data.ggplot,aes(x=grid,ymin=lowci, ymax=upci), alpha=0.1)+
       geom_line(data=data.ggplot,aes(x=grid,y=gpred,linetype="Spline estimated",col="Spline estimated"))+
