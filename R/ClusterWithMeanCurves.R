@@ -97,9 +97,7 @@ clusterdata<-clusterdata$FCM
     }
     cl.names<-clusterdata$cluster$cluster.names
     
-    #cluster<-rep(symbols,each=length(grid))
-    #plot_data<-data.frame(time=rep(grid,k),means=c(meancurves),clusters=cluster)
-    
+
     plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
     
     PlotMeanCurve<-ggplot()+
@@ -107,8 +105,7 @@ clusterdata<-clusterdata$FCM
       scale_linetype_manual(values =1:k ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
       labs(title=title, x=axis.x, y = axis.y,linetype="Cluster")+
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
-    
-    #labs(subtitle = paste("Tight.E\ =\ ",as.integer(tightness$EucTight),"\ \ \ Tight.H\ =\ ",as.integer(tightness$HausTight),"\ \ \ coeff\ =\ ",signif(tightness$coeff , digits = 2)) )
+
     
       col<- as.character(unique(curves$Info))
       col1<- data$ColFeature

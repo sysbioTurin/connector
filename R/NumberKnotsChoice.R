@@ -40,7 +40,8 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
   p.values<-p
   crossvalid<-list()
   n_sample<-length(data$LenCurv)
-  perc<- as.integer(n_sample*0.1)
+  perc <- as.integer(n_sample*0.1)
+  if(perc<1) perc<-1
   
   grid<-data$TimeGrid
   length(grid)->Lgrid

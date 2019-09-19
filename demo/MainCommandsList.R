@@ -31,7 +31,7 @@ h<-1
 ####### Calculation of k and fitting using FCM
 
 ### Stability Analysis
-S.cl <-StabilityAnalysis(CONNECTORList, k =2:6, h = 1, p = 3 ,runs=50)
+S.cl <-StabilityAnalysis(CONNECTORList, k =2:6, h = 1, p = 3 ,runs=10)
 
 ### Using the Box Plots you can understand the optimal number of cluster, k.
 BoxPlot.Extrapolation(stability.list = S.cl, h = 1) 
@@ -47,7 +47,7 @@ CONNECTORList.FCM.p3.k4.h1<-MostProbableClustering.Extrapolation(stability.list 
 MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.k4.h1)
 
 ### Plotting Mean Curves and Sample Curves depending on the cluster
-FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= " FCM model h=1 ")
+FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= paste(" FCM model h=",h) )
 
 FCMplots$plotsCluster$ALL
 FCMplots$plotMeanCurve
