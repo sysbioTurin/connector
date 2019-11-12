@@ -56,7 +56,7 @@ DataTruncation <- function(data,feature,truncTime=NULL,labels=NULL,save=FALSE,pa
   data.tr[["ColFeature"]]<-growth.curve.ls$data$FeatureColour
   data.tr[["GrowthCurve_plot"]]<-growth.curve.tr
   
-  cat("############################### \n######## Summary of the trunc. data ############\n")
+  cat("############################################################## \n######## Summary of the trunc. data ############\n")
   cat("\n Number of curves:",length(data.tr$LenCurv),";\n Min curve length: ",min(data.tr$LenCurv),"; Max curve length: ",max(data.tr$LenCurv),";\n")
   
   Curve.cutted.ind<-which(!data.tr$LenCurv==lencurve.before)
@@ -64,7 +64,7 @@ DataTruncation <- function(data,feature,truncTime=NULL,labels=NULL,save=FALSE,pa
   
   cat("\n Number of truncated curves:",length(Curve.cutted.ind),";\n Min points deleted: ",min(points.deleted),"; Max points deleted: ",max(points.deleted),";\n")
   
-  cat("############################### \n")
+  cat("############################################################## \n")
 
 
   return(data.tr)

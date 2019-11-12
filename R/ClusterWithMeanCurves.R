@@ -28,28 +28,11 @@
 #'
 #'CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",60,labels = c("time","volume","Tumor Growth"))
 #'
-#'
-#' ###  FCM
-#'
-#'CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),h=2)
-#'
-#'CONNECTORList.FCM.k4.h2<- CONNECTORList.FCM$FCM_all$`k= 4`$`h= 2`
-#'
-#'FCMplots <- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.k4.h2,data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= " FCM model ")
-#'
-#' ###  Malthus
-#'
-#' lower<-c(10^(-5),0)
-#' upper<-c(10^2,10^3)
-#' init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=1)
-#'
-#'Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",feature="Progeny",fitting.method="optimr",lower=lower,upper=upper,init=init)
-#'MalthusPlots1<-ClusterWithMeanCurve(clusterdata=Malthus1,data = CONNECTORList, feature = "Progeny",labels = c("Time","Volume"),title= "Optimr Malthus model")
-#'
-#'MalthusPlots1$plotsCluster$ALL
-#'
-#' @import ggplot2 
+#' ...
+#' 
+#' @import ggplot2  gridExtra
 #' @importFrom cowplot plot_grid add_sub ggdraw
+#' @importFrom knitr kable
 #' @export
 ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c("","") ,save=FALSE,path=NULL )
 {
@@ -117,11 +100,41 @@ clusterdata<-clusterdata$FCM
       esse<-clusterdata.info$Coefficents$esse
       essed1<-clusterdata.info$Deriv.Coefficents$esse
       essed2<-clusterdata.info$Deriv2.Coefficents$esse
+      fDB<-clusterdata.info$Coefficents$DB.index
+      fDB1<-clusterdata.info$Deriv.Coefficents$DB.index
+      fDB2<-clusterdata.info$Deriv2.Coefficents$DB.index
       errei<-clusterdata.info$Coefficents$errei
       erreid1<-clusterdata.info$Deriv.Coefficents$errei
       erreid2<-clusterdata.info$Deriv2.Coefficents$errei
       
-     
+      emme<-clusterdata.info$Coefficents$emme
+      cat("############################################################## \n######## M indexes ############\n")
+      print(kable(emme))
+      cat("\n##############################################################")
+      
+      ##### Build the fDB data frame 
+      fDB.indexes<-data.frame(fDB=fDB,fDB_1=fDB1,fDB_2=fDB2)
+      cat("\n######## fDB indexes ############\n")
+      print(kable(fDB.indexes))
+      cat("\n##############################################################")
+      
+      ##### Build the S data frame  
+      S.indexes<-data.frame(S=esse,S_1=essed1,S_2=essed2)
+      row.names(S.indexes)=paste("Cluster",row.names(S.indexes))
+      cat("\n######## S indexes ############\n")
+      print(kable(S.indexes))
+      cat("\n##############################################################")
+      
+      ##### Build the R data frame  
+      R.indexes<-data.frame(R=errei,R_1=erreid1,R_2=erreid2)
+      row.names(R.indexes)=paste("Cluster",row.names(R.indexes))
+      cat("\n######## R indexes ############\n")
+      print(kable(R.indexes))
+      cat("\n##############################################################")
+      
+      ###########################
+      
+      
       for(i in 1:k)
       {
         order(symbols)[i]->index.symb # sorting from the lower to the higher mean curve w.r.t. the zero axis
@@ -129,19 +142,24 @@ clusterdata<-clusterdata$FCM
         plots[[i]]<- ggplot()+
           geom_line(data=plot_data[plot_data$clusters==symbols[index.symb],], aes(x=time,y=means,linetype= as.factor(clusters)),size = 1.2 )+
           scale_linetype_manual(values =1:k ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
-          labs(title=paste(title,"",symbols[index.symb],"Cluster"), x=axis.x, y = axis.y)+
+          labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
           geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
           scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+
-          theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(0,ymax)+xlim(0,xmax)+ 
-          labs(subtitle = paste("Der0 S = " , signif(esse[symbols[index.symb]], digits = 5),";   Der1 S = " , signif(essed1[symbols[index.symb]], digits = 5),";   Der2 S = " , signif(essed2[symbols[index.symb]], digits = 5),sep="" ) )  + guides( linetype = FALSE)
-        
+          theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(0,ymax)+xlim(0,xmax)
+
       }
       
+      ### grouping all the plot per cluster and print it
        allCl.plot<-plot_grid(plotlist = plots) 
-       plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Der = 0 => ",paste("R_",names(errei)," = ",signif(errei, digits = 4) ,sep="",collapse="; "),"\nDer = 1 => ",paste("R_",names(erreid1)," = ",signif(erreid1, digits = 4) ,sep="",collapse="; "  ),"\nDer = 2 => ",paste("R_",names(erreid2)," = ",signif(erreid2, digits = 4) ,sep="",collapse="; "  ),sep = "")  ))
        
+       h <- length(clusterdata$fit$parameters$Lambda[1,])
+       p <- length(clusterdata$fit$parameters$Lambda[,1])
        
+       plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Other parameters: p =", p, ", h = ", h, ", G = ", k  ,sep = ""))  )
        
+       print(plots[["ALL"]])
+       
+       ### 
        
        if(save)
        {
@@ -149,10 +167,28 @@ clusterdata<-clusterdata$FCM
          
          for(i in 1:k)
          {
+           #### Save the clusters and mean curves as pdf
+           
            ggsave(filename = paste(symbols[i],"Cluster.pdf",sep=""),plot=plots[[paste(symbols[i],"Cluster")]],width=29, height = 20, units = "cm",scale = 1,path = path)
          }
            ggsave(filename = "ALLCluster.pdf",plot=plots$ALL,width=29, height = 20, units = "cm",scale = 1,path = path)
            ggsave(filename = "MeanCurve.pdf",plot=PlotMeanCurve,width=29, height = 20, units = "cm",scale = 1,path = path)
+           
+           #### Save the fDB indexes as pdf
+           # Transform tables into grobs
+           tt3 <- ttheme_default(
+             rowhead=list(fg_params=list(fontface="bold"))
+           )
+           
+           Table1 <- grid.arrange(top="fDB indexes",tableGrob(fDB.indexes,theme=tt3))
+           Table2 <- grid.arrange(top="R indexes",tableGrob(R.indexes,theme=tt3))
+           Table3 <- grid.arrange(top="S indexes",tableGrob(S.indexes,theme=tt3))
+           Table4 <- grid.arrange(top="M indexes",tableGrob(emme,theme=tt3))
+           
+           pdf("Indexes.pdf")
+           grid.arrange(Table1, Table2, Table3, Table4,nrow=4,ncol=1)
+           dev.off()
+           
        }
          
 ######## Let's plot the spline fitting for each sample 

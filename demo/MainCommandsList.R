@@ -26,34 +26,31 @@ p<-3
 pca <- PCA.Analysis(CONNECTORList,p = p)
 
 pca$plot
-h<-1
+h<-2
 
 ####### Calculation of k and fitting using FCM
 
 ### Stability Analysis
-S.cl <-StabilityAnalysis(CONNECTORList, k =2:6, h = 1, p = 3 ,runs=10)
+S.cl <-StabilityAnalysis(CONNECTORList, k =2:6, h = h, p = p ,runs=10)
 
 ### Using the Box Plots you can understand the optimal number of cluster, k.
-BoxPlot.Extrapolation(stability.list = S.cl, h = 1) 
+BoxPlot.Extrapolation(stability.list = S.cl, h = h) 
 
 # Looking at the Consensus Matrix is possible to understand how much the clustering obtained is steable.
-ConsMatrix.Extrapolation(stability.list = S.cl3, h = 1, k = 6)
+ConsMatrix.Extrapolation(stability.list = S.cl, h = h, k = 4)
 
 # Fixed the h and k values, here we are able to extrapolate the most probable clustering.
-CONNECTORList.FCM.p3.k4.h1<-MostProbableClustering.Extrapolation(stability.list = S.cl, h = 1, k = 4)
+CONNECTORList.FCM.p3.h1.k4<-MostProbableClustering.Extrapolation(stability.list = S.cl, h = h, k = 4)
 
 ######
 ### Plotting discriminant functions
-MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.k4.h1)
+MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.p3.h1.k4)
 
 ### Plotting Mean Curves and Sample Curves depending on the cluster
-FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.k4.h1, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= paste(" FCM model h=",h) )
-
-FCMplots$plotsCluster$ALL
-FCMplots$plotMeanCurve
+FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.h1.k4, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= paste(" FCM model h=",h) )
 
 ### Disriminant Plot (goodness of the cluster) just for h = 1 or 2
-DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.k4.h1, data = CONNECTORList,h = h,feature = "Progeny")
+DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.h1.k4, data = CONNECTORList,h = h,feature = "Progeny")
 
 ### Counting samples distribution into the clusters
 NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.p3.k4.h1,CONNECTORList,feature = "Progeny")

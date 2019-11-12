@@ -38,39 +38,41 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
   {
     pl<-list()
     
+    ##### Calculation of the tightness and DB (0,1,2) indexes
     l.tight<-lapply(1:runs,function(x) ALL.runs[[x]]$Tight.indexes[,hind])
     l.DB<-lapply(1:runs,function(x) ALL.runs[[x]]$DB.indexes[,hind])
     l.DB1<-lapply(1:runs,function(x) ALL.runs[[x]]$DB2deriv.indexes[,hind])
     l.DB2<-lapply(1:runs,function(x) ALL.runs[[x]]$DB2deriv.indexes[,hind])
+    #####
     
     dt.fr<-do.call(cbind, l.tight)
     
-    if(length(dt.fr[,1])==1) row.names(dt.fr)=paste("k=",k) 
+    row.names(dt.fr)=paste("k=",k) 
     
-    dt.fr<-data.frame(clust=rep(row.names(dt.fr),length(dt.fr[1,])),y=round(c(dt.fr),digits = 3) )
+    dt.fr<-data.frame(clust=rep(paste("G=",k),length(dt.fr[1,])),y=round(c(dt.fr),digits = 3) )
     counts<-count(dt.fr,vars=c("clust","y"))
     
     pl[["Tight"]]<-ggplot()+geom_boxplot(data= dt.fr,aes(x=clust,y=y))+geom_point(data=counts, col="red",aes(x=clust,y=y,size=freq/runs) )+
-      labs(title=paste("Elbow plot with h=",h[hind] ),x="Cluster",y="Tightness")+
+      labs(title=paste("Elbow plot ( h =",h[hind],")" ),x="Number of Clusters",y="Tightness (T)")+
       theme(text = element_text(size=20)) +labs(size="Counts freq.") 
     
     DB<-do.call(cbind, l.DB)
     DB.der1<-do.call(cbind, l.DB1)
     DB.der2<-do.call(cbind, l.DB2)
     
-    if(length(DB[,1])==1) row.names(DB)=paste("k=",k) 
+    row.names(DB)=paste("k=",k) 
     
-    dt.fr2<-data.frame(clust=rep(row.names(DB),length(DB[1,])),y=round(c(DB),digits = 3) )
+    dt.fr2<-data.frame( clust=rep(paste("G=",k) ,length(DB[1,])) ,y=round(c(DB),digits = 3) )
     counts2<-count(dt.fr2,vars=c("clust","y"))
     
-    pl[["DBindex"]]<-ggplot()+geom_boxplot(data= dt.fr2,aes(x=clust,y=y))+geom_point(data=counts2, col="red",aes(x=clust,y=y,size=freq/runs) )+
-      labs(title=paste("DB indexes variability with h=",h[hind] ),x="Cluster",y="DB index",col="")+
+    pl[["fDBindex"]]<-ggplot()+geom_boxplot(data= dt.fr2,aes(x=clust,y=y))+geom_point(data=counts2, col="red",aes(x=clust,y=y,size=freq/runs) )+
+      labs(title=paste("fDB indexes ( h =",h[hind],")" ),x="Number of Clusters",y="fDB index",col="")+
       theme(text = element_text(size=20))+labs(size="Counts freq.") 
     
     boxplots<-plot_grid(plotlist=pl)
     
     Box.pl[[paste("h=",h[hind])]]$Plot<-boxplots
-    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,DBindexes=DB,DBindexes.1deriv=DB.der1,DBindexes.2deriv=DB.der2)
+    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,fDB=DB,fDB.1=DB.der1,fDB.2=DB.der2)
     
     ######### Cluster Membership #########
     

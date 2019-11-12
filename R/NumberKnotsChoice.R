@@ -88,7 +88,7 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
                   geom_line(data=meandata,aes(x=p,y=mean,linetype="mean",col="mean"),size=1.2)+
                   geom_line(data=ALLcrossvalid,aes(x=p,y=CrossLikelihood,group=sim,linetype="test",col="test"),size=1.1)+
                   geom_point(data=meandata,aes(x=p,y=mean),size=2 )+
-                  labs(title="Estimation of p",y= " Cross-LogLikelihood ", x= "number of knots")+
+                  labs(title="Setting p",y= " Cross-LogLikelihood ", x= "Natural Spline Dimension")+
                   scale_color_manual("",breaks=c("mean","test"),values = c("black","grey"))+
                   scale_linetype_manual("",breaks=c("mean","test"),values = c("solid","dashed"))+
                   theme(legend.title=element_blank())
