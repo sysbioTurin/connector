@@ -1,10 +1,10 @@
 #' Cluster Stability
 #'@description
 #'
-#'  Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.
+#'  Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering G number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,G-1)}.
 #'  
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
-#' @param k  The vector/number of clusters.
+#' @param G  The vector/number of clusters.
 #' @param h The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
 #' @param p The dimension of the natural cubic spline basis.
 #' @param runs Number of runs.
@@ -12,7 +12,7 @@
 #' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #'  @return
-#'   StabilityAnalysis returns a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
+#'   StabilityAnalysis returns a list of FCMList objects belonging to class funcyOutList for each \emph{h} and \emph{G}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
 #' 
 #' @examples
 #'
@@ -20,7 +20,7 @@
 #' @importFrom cowplot plot_grid
 #' @export
 
-StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
+StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
 {
   ALL.runs<-list()
   ConsensusInfo<-list()
@@ -29,7 +29,7 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
   seed<-.Random.seed 
   assign(x = ".Random.seed", value = seed, envir = .GlobalEnv)
 
-  ALL.runs<-lapply(1:runs, function(i) ClusterChoice(CONNECTORList, k = k, h = h, p = p,seed=NULL) )
+  ALL.runs<-lapply(1:runs, function(i) ClusterChoice(CONNECTORList, G = G, h = h, p = p,seed=NULL) )
 
 ###### box plot generation #####
   Box.pl<-list()
@@ -47,9 +47,9 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     
     dt.fr<-do.call(cbind, l.tight)
     
-    row.names(dt.fr)=paste("k=",k) 
+    row.names(dt.fr)=paste("G=",G) 
     
-    dt.fr<-data.frame(clust=rep(paste("G=",k),length(dt.fr[1,])),y=round(c(dt.fr),digits = 3) )
+    dt.fr<-data.frame(clust=rep(paste("G=",G),length(dt.fr[1,])),y=round(c(dt.fr),digits = 3) )
     counts<-count(dt.fr,vars=c("clust","y"))
     
     pl[["Tight"]]<-ggplot()+geom_boxplot(data= dt.fr,aes(x=clust,y=y))+geom_point(data=counts, col="red",aes(x=clust,y=y,size=freq/runs) )+
@@ -60,9 +60,9 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     DB.der1<-do.call(cbind, l.DB1)
     DB.der2<-do.call(cbind, l.DB2)
     
-    row.names(DB)=paste("k=",k) 
+    row.names(DB)=paste("G=",G) 
     
-    dt.fr2<-data.frame( clust=rep(paste("G=",k) ,length(DB[1,])) ,y=round(c(DB),digits = 3) )
+    dt.fr2<-data.frame( clust=rep(paste("G=",G) ,length(DB[1,])) ,y=round(c(DB),digits = 3) )
     counts2<-count(dt.fr2,vars=c("clust","y"))
     
     pl[["fDBindex"]]<-ggplot()+geom_boxplot(data= dt.fr2,aes(x=clust,y=y))+geom_point(data=counts2, col="red",aes(x=clust,y=y,size=freq/runs) )+
@@ -76,23 +76,23 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     
     ######### Cluster Membership #########
     
-    ConsM.generation<-function(kind,runs,ALL.runs,hind=hind) {
+    ConsM.generation<-function(Gind,runs,ALL.runs,hind=hind) {
       
       ############# first we found the most probably clustering:
-      ClustCounting<-sapply(1:runs,function(x) names(ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]$FCM$cluster$cluster.member ) )
+      ClustCounting<-sapply(1:runs,function(x) names(ALL.runs[[x]]$FCM_all[[paste("G=",Gind)]][[paste("h=",h[hind])]]$FCM$cluster$cluster.member ) )
       
       ClustString<-sapply(1:runs,function(x) paste ( table(ClustCounting[,x]) , collapse = "") )
       IndexBestClustering<-which(ClustString==names(which.max(table(ClustString))))[1]
       
-      BestClustering<-ALL.runs[[IndexBestClustering]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
+      BestClustering<-ALL.runs[[IndexBestClustering]]$FCM_all[[paste("G=",Gind)]][[paste("h=",h[hind])]]
       
       ##########################################################
       #### Let build the consensus matrix
       
       consensus.runs<-lapply(1:runs, function(x){
         consensusM<-diag(0,length(data$LenCurv))
-        fcm.k<-ALL.runs[[x]]$FCM_all[[paste("k=",kind)]][[paste("h=",h[hind])]]
-        cl.vector<-fcm.k$FCM$cluster$cluster.member
+        fcm.G<-ALL.runs[[x]]$FCM_all[[paste("G=",Gind)]][[paste("h=",h[hind])]]
+        cl.vector<-fcm.G$FCM$cluster$cluster.member
         for(i in 1:length(data$LenCurv)) consensusM[i,which(cl.vector%in%cl.vector[i])]<-1
         consensusM
       })
@@ -125,14 +125,14 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       
       match(itempi,grid) -> itimeindex 
       
-      fxk <- (curve[,itimeindex] )^2
-      int <- (b-a)/2 * rowSums( gauss$weights * fxk )
+      fxG <- (curve[,itimeindex] )^2
+      int <- (b-a)/2 * rowSums( gauss$weights * fxG )
       dist.curve <- sqrt(int)
       names(which.min(dist.curve))->lowest.curve
       
       m.lowercurve<-matrix(curve[lowest.curve,itimeindex],nrow = length(curve[,1]),ncol = length(itimeindex),byrow = T)
-      fxk <- (curve[,itimeindex]-m.lowercurve )^2
-      int <- (b-a)/2 * rowSums( gauss$weights * fxk )
+      fxG <- (curve[,itimeindex]-m.lowercurve )^2
+      int <- (b-a)/2 * rowSums( gauss$weights * fxG )
       dist.curve <- sqrt(int)
       ################## Sorting the names!!!
       
@@ -183,9 +183,9 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     } 
     
     
-    Consensus.Info<-lapply(k,runs=runs,ALL.runs=ALL.runs,hind=hind, ConsM.generation)
+    Consensus.Info<-lapply(G,runs=runs,ALL.runs=ALL.runs,hind=hind, ConsM.generation)
 
-    names(Consensus.Info) <- c(paste("k=",k))
+    names(Consensus.Info) <- c(paste("G=",G))
     
     ConsensusInfo[[paste("h=",h[hind])]]<-Consensus.Info
     
@@ -199,9 +199,9 @@ StabilityAnalysis<-function(data,k,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       
       ggsave(filename=paste0("BoxPlotClusterGoodness_H",h[hind],".pdf"),plot =Box.pl[[hind]]$Plot,width=50, height = 20, units = "cm",scale = 1,path=path )
 
-      # for(kind in k)
+      # for(Gind in G)
       # {
-      #   ggsave(filename=paste0("ConsensusMatrix_H",h[hind],"K",kind,".pdf",sep=""),plot = Consensus.Info$ConsensusPlot[[paste("k=",kind)]]$ConsensusPlot,width=29, height = 20, units = "cm",scale = 1,path=path )
+      #   ggsave(filename=paste0("ConsensusMatrix_H",h[hind],"G",Gind,".pdf",sep=""),plot = Consensus.Info$ConsensusPlot[[paste("G=",Gind)]]$ConsensusPlot,width=29, height = 20, units = "cm",scale = 1,path=path )
       # }
       
     }

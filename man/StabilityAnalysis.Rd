@@ -24,7 +24,7 @@ StabilityAnalysis(data, k, h, p, runs = 50, seed = 2404,
 
 \item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 @return
- StabilityAnalysis returns a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.}
+ StabilityAnalysis returns a list of FCMList objects belonging to class funcyOutList for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.}
 }
 \description{
 Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.

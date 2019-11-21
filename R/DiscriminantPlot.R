@@ -25,7 +25,7 @@
 
 DiscriminantPlot<-function(clusterdata,h,data,feature,save=FALSE,path=NULL)
 { 
-  K<-length(clusterdata$FCM$prediction$meancurves[1,])
+  G<-length(clusterdata$FCM$prediction$meancurves[1,])
   discrplot<-list()
   
   outpred<-clusterdata$FCM$cluster$cl.info
@@ -46,7 +46,7 @@ DiscriminantPlot<-function(clusterdata,h,data,feature,save=FALSE,path=NULL)
   {     
     DataFrame<-data.frame(PrjCurv=projectedcurve,stdaplh=stdevalpha,Feature=unlist(Feature),Cluster=symbols[classes] )
     
-    cl.names<-1:K-1
+    cl.names<-1:G-1
     names(cl.names)<-symbols
     
     discrplot[["ColCluster"]]<-ggplot(data = DataFrame)+
@@ -71,14 +71,14 @@ DiscriminantPlot<-function(clusterdata,h,data,feature,save=FALSE,path=NULL)
     DataFrameSamples<-data.frame(PrjCurv1=projectedcurve[,1],PrjCurv2=projectedcurve[,2],Feature=unlist(Feature),Cluster=symbols[classes] )
     DataFrameCluster<-data.frame(projectedclustcenters1=projectedclustcenters[,1],projectedclustcenters2=projectedclustcenters[,2],Cluster=symbols,Center=paste("c.",symbols,sep=""))
     
-    cl.names<-1:K-1
+    cl.names<-1:G-1
     names(cl.names)<-symbols
     
     discrplot[["ColCluster"]]<-ggplot()+
       geom_point(data = DataFrameSamples,aes(x=PrjCurv1,y=PrjCurv2,colour=Cluster,pch=Cluster),size=4)+
-      geom_text(data = DataFrameCluster,aes(x=projectedclustcenters1,y=projectedclustcenters2,label=paste("c.",symbols,sep=""),colour=Cluster),size=5,show.legend = F)+
-      scale_shape_manual("Cluster",values=cl.names,labels=paste(names(cl.names),", c.",symbols,sep=""),breaks=names(cl.names)) +
-      scale_colour_manual("Cluster",values = ,limits=names(cl.names),breaks=names(cl.names),labels=paste(names(cl.names),", c.",symbols,sep="") )+
+      geom_text(data = DataFrameCluster,aes(x=projectedclustcenters1,y=projectedclustcenters2,label=paste("c",symbols,sep=""),colour=Cluster),size=5,show.legend = F)+
+      scale_shape_manual("Cluster",values=cl.names,labels=paste(names(cl.names)," (c",symbols,")",sep=""),breaks=names(cl.names)) +
+      scale_colour_discrete("Cluster",limits=names(cl.names),breaks=names(cl.names),labels=paste(names(cl.names)," (c",symbols,")",sep=""))+
       xlab("Alpha 1")+ylab('Alpha 2')+
       labs(title="Discriminant plot")+
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())

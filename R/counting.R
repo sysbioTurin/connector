@@ -3,7 +3,7 @@
 #' @description
 #' Counts for each combination of cluster and feature the number of samples and their name are returned.
 #'
-#' @param clusterdata Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).
+#' @param clusterdata Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see ?). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).
 #' @param data CONNECTORList.  (see \code{\link{DataImport}})
 #' @param feature the column name reported in the AnnotationFile containing the feature  to be investigated.
 #' 
@@ -58,10 +58,12 @@ CountingSamples<-function(clusterdata,data,feature="ID")
   
   ClustCurve$Cluster <- clusterdata$cluster$cluster.names[ClustCurve$Cluster]
   
-  a<-count(ClustCurve, c("ID", "Cluster",feature))[,-length(count(ClustCurve, c("ID", "Cluster",feature)))]
+  countRes<-count(ClustCurve,
+                  c("ID", "Cluster",feature))
+  countRes<-countRes[,-length(count(ClustCurve, c("ID", "Cluster",feature)))]
   
   
-  Counting<-count(a,c( "Cluster",feature))
+  Counting<-count(countRes,c( "Cluster",feature))
 
   return(list(Counting=Counting,ClusterNames=data.frame(Cluster=ClustCurve$Cluster[cumsum(CONNECTORList$LenCurv)],SampleName=unique(ClustCurve$SampleName))))
 }

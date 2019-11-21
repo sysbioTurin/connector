@@ -1,7 +1,13 @@
 ---
 title: "CONNECTOR"
-author: "Pernice Simone"
-output: rmarkdown::html_vignette
+author: "Pernice Simone, Sirovich Roberta, Cordero Francesca"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    fig_caption: yes
+    
+bibliography: biblio.bib  
 vignette: >
   %\VignetteIndexEntry{my-vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,6 +21,287 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+## How to install 
+
+  To install **CONNECTOR** you can use devtools:
+
+```{r}
+# install.packages("devtools")
+# library(devtools)
+
+# install github("qBioTurin/connector", ref="master",dependencies=TRUE)
 library(connector)
+```
+
+## Data import 
+
+### An example of connector analys
+
+The MainCommandsList.R script contains the list of commands that can be used to reproduce the analysis described in the paper *”CONNECTOR: ....”*.
+To execute this script you can use *demo()*
+
+```{r}
+# demo("MainCommandsList", package = "connector")
+```
+
+```{r,echo=FALSE}
+#
+# Saving in GrowDataFile and AnnotationFile the path of the respective files
+#
+
+GrowDataFile<-system.file("data", "475dataset.xlsx", package = "connector")
+AnnotationFile <-system.file("data", "475info.txt", package = "connector")
+CONNECTORList<-DataImport(GrowDataFile = GrowDataFile,
+                          AnnotationFile = AnnotationFile)
+```
+
+
+
+The tumour growth data must be organized in two files: 
+
+1. the excel file **GrowDataFile** reporting the tumour growth evolution data,
+2. the csv file **AnnotationFile** containing the annotation information associated with the samples.
+
+The **GrowDataFile** is composed from two columns for each sample (i.e. PDX), containing the time points and the measure volume respectively. In our example, we have 24 PDXs then the **GrowDataFile** is composed by 48 columns.
+The columns names must be *Time* and *SampleName*, respectively.
+![Example of **GrowDataFile**.](./Fig/excel_file.png){ width=100% }
+
+
+The **AnnotationFile** is a comma-delimited file composed by a number of rows equal to the number of samples stored. In the example, **AnnotationFile** is composed by `r length(CONNECTORList$LabCurv[,1])` rows containing 
+
+.(i) the sample identifier, 
+.(ii) the sample name (the same used in the **GrowDataFile**), 
+.(iii) the feature(s) associated with each sample (in our data is the indication of the the progeny).
+The column names must be *ID*, *SampleName*, and *Name of the Feature(s)*. 
+
+![Example of **GrowDataFile**.](./Fig/txt_file.png)
+
+
+```{r}
+#
+# Saving in GrowDataFile and AnnotationFile the path of the respective files
+#
+
+GrowDataFile<-system.file("data", "475dataset.xlsx", package = "connector")
+AnnotationFile <-system.file("data", "475info.txt", package = "connector")
+```
+
+
+To import the data *DataImport*  function must be used.
+
+```{r}
+CONNECTORList<-DataImport(GrowDataFile = GrowDataFile,
+                          AnnotationFile = AnnotationFile)
+
+# Showing the CONNECTORList structure
+str(CONNECTORList, max.level = 1)
+```
+
+The components of the **CONNECTORList** are:
+
+1. the data frame reporting ID, data and time values,
+2. the vector with the number of observations collected per sample, 
+3. the data frame matching the sample with their annotation reported in the **AnnotationFile**,
+4. the vector reporting the time grid points (i.e. time grid).
+
+
+## Data pre-processing 
+
+Through the *GrowthCurve* function is possible to plot the  growth evolution for each sample, which are coloured with respect to the feature selected from the **AnnotationFile**. 
+```{r}
+### Growth curves visualization
+
+GrowPlot<-GrowthCurve(data = CONNECTORList,
+                      feature = "Progeny")
+
+```
+
+To inspect the data available, the *DataVisualization* can be executed. This funciton plots the growth evolution for each sample and the time grid. The manner can be used to insect the growth trend of the original samples, while the latter is used to verify the density of the observations collected.
+
+In detail, a point $z$ is defined by a pair of coordinates $z=\left( x,y\right)$ and by a colour. The point $z$ is defined if only if exists at least one sample with the first observation at time $x$ and the next at time $y$. The colour associates with it encodes the number of samples in which $z$ is present. 
+
+```{r}
+
+### Growth curves and time grid visualization 
+Datavisual<-DataVisualization(data = CONNECTORList,
+                              feature = "Progeny", 
+                              labels = c("Time","Volume","Tumor Growth"))
+```
+
+
+```{r, fig.height = 3, fig.width = 7, fig.align = "center"}
+Datavisual
+
+```
+```{r, echo=F}
+truncTime = 50
+```
+We developed the function *DataTruncation* to truncate the growth data at a specific time point considering their sparsity observed on the time grid. According to the observation from *Datavisual*, we truncated our growth data at `r truncTime` days.
+
+```{r}
+# Data truncation at time 50
+CONNECTORList<-DataTruncation(data = CONNECTORList,
+                              feature="Progeny",
+                              truncTime = 50,
+                              labels = c("Time","Volume","Tumor Growth"))
+
+# Showing the new CONNECTORList structure
+str(CONNECTORList, max.level = 1)
+
+# 
+CONNECTORList$GrowthCurve_plot
+
+```
+
+
+
+The plot stored in *CONNECTORList$GrowthCurve_plot* shows the growth curve plot with a vertical line at the truncating time; this plot and the updated version of the **CONNECTORList** are the output of *DataTruncation*. 
+
+
+
+## Data fitting and clustering
+
+The Functional Clustering Model (FCM) is implemented exploiting the data model proposed by James and Sugar @James.  This approach is particularly effective when the observations are sparse, irregularly spaced, and curves are sampled at different times. 
+
+The FCM is based on two-steps procedure:
+
+.(i) the original infinite-dimensional problem is converted into a finite-dimensional problem using basis functions (natural cubic splines) with a random-effects model for the coefficients,
+.(ii) a classical clustering tools for finite dimensional data is applied. 
+
+However, before performing the FCM analysis, it is necessary to identify:
+**the number of knots**  (denoted as $p$)  to use in the spline basis, **the dimension of the mean space** (denoted as $h$), **the number of clusters** (denoted as $G$) to fit the data.
+Then, the unknown cluster memberships are treated as missing data and included into the expectation and maximization algorithm for the estimation of the functional clustering model parameters. 
+
+### Choice of the spline basis dimension, p.
+
+The first important issue to cope with is the selection of the spline basis. The approach proposed consists to take the dimension of the basis, $p$, to corresponding to the largest cross-validated likelihood. 
+
+As input is necessary to pass the range ..... cuols be usefull to consider the console output generated from the *DataTruncation* ....
+
+In details, for each number of knots 10\% of the curves from the whole data set are removed and treated as a test set, then the remaining curves are fitted using the FCM and the loglikelihood on the test set is calculated. The process is then repeated nine more times. Finally the $p$ corresponding to the maximum loglikelihood has to be selected. In particular, to guide this choice  *BasisDimension.Choice*  returns a line plot in which the loglikelihood for each value of $p$, in grey the result of all ten tests and in black the mean.
+
+```{r, fig.height = 3, fig.width = 7, fig.align = "center"}
+### Calculation of p
+CrossLogLike<-BasisDimension.Choice(data = CONNECTORList,
+                                    p = 2:6 )
+
+CrossLogLike$CrossLogLikePlot
+
+# p is 
+p=3
+```
+
+Considering our experiment, the number of knots ($p$) varies from two to six and analysing the plot *CrossLogLikePlot*,  it is possible to deduce that the sub optimal value for $p$ is between three and six. Although the true $p$ corresponding to the maximum loglikelihood is six,  it is better to opt for the smallest value in favor of a more parsimonious model, so we decide to choice $p$ equal to three.
+
+### Choice of dimension of the mean space, h.
+
+ The *PCA.Analysis* function applies the Principal Component Analysis (PCA) to the spline coefficients of each curve in order to capture the variance in the set of variables. This function returns the bar plot and a vector describing the percentage of data variability associated with each component.
+
+```{r, fig.height = 5, fig.width = 6, fig.align = "center"}
+### Calculation of h
+pca <- PCA.Analysis(data = CONNECTORList,
+                    p = p)
+
+pca$plot
+
+# h is 
+h=1
+```
+
+The plot shows the percentage of variability of our PDX data, so the number of components that we considered was equal to `r h` in order to cover `r sum(pca$perc[1:h])`\% of the variability. 
+ 
+
+### Choice of the number of clusters, G.
+```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
+### Stability Analysis
+Stability.clustering <-StabilityAnalysis(data = CONNECTORList,
+                                         G = 2:6, 
+                                         h = h,
+                                         p = p,
+                                         runs = 10)
+
+# Showing the Stability.clustering structure
+str(Stability.clustering, max.level = 1, vec.len=1)
+```
+
+
+```{r, fig.height = 7, fig.width = 16, fig.align = "center"}
+### Using the Box Plots you can understand the optimal number of cluster, G.
+BoxPlot.Extrapolation(stability.list = Stability.clustering,
+                      h = h)
+# Both G = 4 or 5 are characterized by a low fDB index and
+# a small variation in the Elbow plot
+```
+
+```{r, fig.height =4, fig.width = 6, fig.align = "center",fig.cap=c("\\label{fig:ConsMatg4} Consensus Matrix for G = 4. ","\\label{fig:ConsMatg5} Consensus Matrix for G = 5. ")}
+# Looking at the Consensus Matrix is possible to understand how much the clustering
+# obtained is steable.
+ConsMatrix.Extrapolation(stability.list = Stability.clustering,
+                         h = h,
+                         G = 4)
+
+ConsMatrix.Extrapolation(stability.list = Stability.clustering,
+                         h = h,
+                         G = 5)
+
+# G is
+G =4
+```
+
+```{r, fig.height = 6, fig.width = 6, fig.align = "center", out.width= '90%'}
+# Fixed the h and G values, here we are able to extrapolate the most probable clustering.
+CONNECTORList.FCM.opt<-MostProbableClustering.Extrapolation(
+                                                  stability.list = Stability.clustering,
+                                                  h = h,
+                                                  G = G )
+```
+
+## Clustering visualization
+
+When the user has identified the (sub)optimal values $optp$, $opth$ and $optG$ for the parameters $p$, $h$ and $G$, it is possible to visualize the plot reporting the mean curves for each cluster and the original growth curves separated according to the obtained clusters.
+
+```{r, fig.height = 10, fig.width = 15, fig.align = "center"}
+FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.opt,
+                                data = CONNECTORList,
+                                feature = "Progeny",
+                                labels = c("Time","Volume"),
+                                title = paste("FCM model h=",h))
+```
+
+In our case of study, the $optG $ and $opth$ are equal to four and one, respectively.  Figure ... reports the four cluster mean, while the Figure ... reports the PDX growth curves separated in the four clusters. \\
+To help the user to understand the goodness of the clustering obtained, using *DiscriminantPlot* is possible to identify with a simple visualization which cluster each sample belongs, for more details @James. Specifically, two versions of the same discriminant linear plot are generated showing in a $h-$dimensional space the cluster membership of each curve. In the first case the symbols identifying the elements of different clusters are colored depending on the cluster membership (Figure \ref{fig:DiscrPlotCL}), and in the second plot the symbols are colored depending the selected feature  (Figure \ref{fig:DiscrPlotF}).
+
+In our experiment, since `r paste("h =",h)`, an one dimensional discriminant linear plot is generated, where the dotted vertical lines represent the cluster centers. Thus, what we expect is no presence of significant and elements in the same cluster near to the vertical line representing the corresponding cluster center, as in Figure \ref{fig:DiscrPlotCL}.
+
+```{r, fig.height = 4, fig.width = 6, fig.align = "center",fig.cap=c("\\label{fig:DiscrPlotCL} Discrimination Linear plots colored depending on the cluster membersheep.", "\\label{fig:DiscrPlotF} Discrimination Linear plots colored depending on the feature.") }
+### Disriminant Plot (goodness of the cluster) 
+DiscrPlt<-DiscriminantPlot(clusterdata = CONNECTORList.FCM.opt,
+                           data = CONNECTORList,
+                           h = h,
+                           feature = "Progeny")
+
+DiscrPlt$ColCluster
+
+DiscrPlt$ColFeature
+```
+
+In the end, to inspect the composition of the clusters obtained, the function *CountingSamples* reports the number and the name of samples in each cluster according to the feature selected by the user.
+
+```{r, fig.height = 6, fig.width = 6, fig.align = "center"}
+### Counting samples distribution into the clusters
+NumberSamples<-CountingSamples(clusterdata = CONNECTORList.FCM.opt,
+                               data = CONNECTORList,
+                               feature = "Progeny")
+
+# Showing the NumberSamples structure
+str(NumberSamples, max.level = 2)
+```
+
+## Advanced analysis
+
+```{r, fig.height = 6, fig.width = 6, fig.align = "center"}
+### Plotting discriminant functions
+MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.opt)
+
+MaxDiscrPlots
 ```

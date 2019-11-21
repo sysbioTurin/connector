@@ -44,7 +44,7 @@ clusterdata<-clusterdata$FCM
 
     if(!is.null(clusterdata$fit))
     {
-      k<-length(clusterdata$prediction$meancurves[1,])
+      G<-length(clusterdata$prediction$meancurves[1,])
       
       clusterdata$cluster$cluster.member -> classes
       clusterdata$prediction$meancurves -> meancurves
@@ -70,7 +70,7 @@ clusterdata<-clusterdata$FCM
     time3<-c()
     cluster<-c()
     
-    for(clust in 1:k)
+    for(clust in 1:G)
     {
       time2<-sort(unique(curves[curves$Cluster==clust,]$Times))
       m<-meancurves[,clust][grid%in%time2]
@@ -85,7 +85,7 @@ clusterdata<-clusterdata$FCM
     
     PlotMeanCurve<-ggplot()+
       geom_line(data=plot_data, aes(x=time,y=means,group=clusters,linetype= as.factor(clusters)),size=1 )+  
-      scale_linetype_manual(values =1:k ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
+      scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
       labs(title=title, x=axis.x, y = axis.y,linetype="Cluster")+
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
 
@@ -108,6 +108,8 @@ clusterdata<-clusterdata$FCM
       erreid2<-clusterdata.info$Deriv2.Coefficents$errei
       
       emme<-clusterdata.info$Coefficents$emme
+      row.names(emme)=paste("Cluster",row.names(emme))
+      colnames(emme)=paste("Cluster",colnames(emme))
       cat("############################################################## \n######## M indexes ############\n")
       print(kable(emme))
       cat("\n##############################################################")
@@ -135,13 +137,13 @@ clusterdata<-clusterdata$FCM
       ###########################
       
       
-      for(i in 1:k)
+      for(i in 1:G)
       {
         order(symbols)[i]->index.symb # sorting from the lower to the higher mean curve w.r.t. the zero axis
         
         plots[[i]]<- ggplot()+
           geom_line(data=plot_data[plot_data$clusters==symbols[index.symb],], aes(x=time,y=means,linetype= as.factor(clusters)),size = 1.2 )+
-          scale_linetype_manual(values =1:k ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
+          scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
           labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
           geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
           scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+
@@ -155,7 +157,7 @@ clusterdata<-clusterdata$FCM
        h <- length(clusterdata$fit$parameters$Lambda[1,])
        p <- length(clusterdata$fit$parameters$Lambda[,1])
        
-       plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Other parameters: p =", p, ", h = ", h, ", G = ", k  ,sep = ""))  )
+       plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Other parameters: p = ", p, ", h = ", h, ", G = ", G  ,sep = ""))  )
        
        print(plots[["ALL"]])
        
@@ -165,7 +167,7 @@ clusterdata<-clusterdata$FCM
        {
          if(is.null(path)) path <- getwd()
          
-         for(i in 1:k)
+         for(i in 1:G)
          {
            #### Save the clusters and mean curves as pdf
            
@@ -185,7 +187,7 @@ clusterdata<-clusterdata$FCM
            Table3 <- grid.arrange(top="S indexes",tableGrob(S.indexes,theme=tt3))
            Table4 <- grid.arrange(top="M indexes",tableGrob(emme,theme=tt3))
            
-           pdf("Indexes.pdf")
+           pdf(paste0(path,"Indexes.pdf"))
            grid.arrange(Table1, Table2, Table3, Table4,nrow=4,ncol=1)
            dev.off()
            

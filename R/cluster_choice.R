@@ -2,10 +2,10 @@
 #'
 #'@description
 #'
-#'  Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.
+#'  Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering G number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,G-1)}.
 #'
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
-#' @param k  The vector/number of clusters.
+#' @param G  The vector/number of clusters.
 #' @param h The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
 #' @param p The dimension of the natural cubic spline basis.
 #' @param PCAperc The PCA percentages applied to the natural cubic spline coefficients, if  NULL then $h$ is needed (see \code{\link{PCA.Analysis}}).
@@ -43,32 +43,29 @@
 #'
 #' @import  ggplot2 flexclust Matrix splines statmod
 #' 
-ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit = 20,save=FALSE,path=NULL)
+ClusterChoice<-function(data,G,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit = 20,save=FALSE,path=NULL)
 {
-  K<-k
- 
   database<-data$Dataset
   
-
   if(!is.null(PCAperc)){ h<-min(which(cumsum(PCAperc)>=95)) }
  
   H<-h
   
   output_k<-list()
-  row_names <-c(paste("k=",K))
+  row_names <-c(paste("G=",G))
   col_names<-c(paste("h=",H))
-  matrix_AIC<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
-  matrix_BIC<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
+  matrix_AIC<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
+  matrix_BIC<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
   
   
   data.funcit <-matrix(c(database$ID,database$Vol,database$Time),ncol=3,byrow=F)
 ########## 
-  DB.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
-  DB1deriv.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
-  DB2deriv.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
-  Tight.indexes<-matrix(0,nrow = length(K),ncol = length(H),dimnames=list(row_names,col_names))
+  DB.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
+  DB1deriv.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
+  DB2deriv.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
+  Tight.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
   
-  # return a list of K lists, in which is is stored the output for all h
+  # return a list of G lists, in which is is stored the output for all h
   # We also create two matrixes with the BIC and AIC values
   
   grid <- data$TimeGrid
@@ -96,7 +93,7 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
   times<-database$Time
   match(times,grid) -> timeindex
  
-  for(k in K)
+  for(k in G)
   {
     output_h<-list()
     for(h in H)
@@ -148,22 +145,22 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
       output_h[[paste("h=",h)]]$FCM <- out.funcit
       output_h[[paste("h=",h)]]$Cl.Info<- list(Coefficents=Coefficents,Deriv.Coefficents=Deriv.Coefficents,Deriv2.Coefficents=Deriv2.Coefficents)
         
-      DB.indexes[which(K==k),which(H==h)]<-Coefficents$DB.index
-      DB1deriv.indexes[which(K==k),which(H==h)]<-Deriv.Coefficents$DB.index
-      DB2deriv.indexes[which(K==k),which(H==h)]<-Deriv2.Coefficents$DB.index
-      Tight.indexes[which(K==k),which(H==h)]<-sum(distances)
+      DB.indexes[which(G==k),which(H==h)]<-Coefficents$DB.index
+      DB1deriv.indexes[which(G==k),which(H==h)]<-Deriv.Coefficents$DB.index
+      DB2deriv.indexes[which(G==k),which(H==h)]<-Deriv2.Coefficents$DB.index
+      Tight.indexes[which(G==k),which(H==h)]<-sum(distances)
       
     }
 
-      output_k[[paste("k=",k)]]<-output_h
+      output_k[[paste("G=",k)]]<-output_h
   }
   
   ####### Elbow method with L2 distances
   ############
   
- L2dist <- data.frame(dist=c(Tight.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
+ L2dist <- data.frame(dist=c(Tight.indexes),G=rep(G,length(H)),h=factor(rep(H,each=length(G))))
  
-  ElbowMethod<-ggplot(data=L2dist,aes(x=k))+ geom_point(aes(y=dist,col=h))+
+  ElbowMethod<-ggplot(data=L2dist,aes(x=G))+ geom_point(aes(y=dist,col=h))+
     geom_line(aes(y=dist,col=h))+
     labs(title="Elbow Plot ",x="Number of Clusters",y="Tightness")+
     theme(text = element_text(size=20))
@@ -171,9 +168,9 @@ ClusterChoice<-function(data,k,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
   ####### DB indexes plot
   ############
   
-  DB.indexes.4plot <- data.frame(dist=c(DB.indexes),k=rep(K,length(H)),h=factor(rep(H,each=length(K))))
+  DB.indexes.4plot <- data.frame(dist=c(DB.indexes),G=rep(G,length(H)),h=factor(rep(H,each=length(G))))
   
-  DBplot <-ggplot(data=DB.indexes.4plot,aes(x=k))+ geom_point(aes(y=dist,col=h))+
+  DBplot <-ggplot(data=DB.indexes.4plot,aes(x=G))+ geom_point(aes(y=dist,col=h))+
     geom_line(aes(y=dist,col=h))+
     labs(title="Elbow method ",x="Cluster",y="Tightness")+
     theme(text = element_text(size=20))
