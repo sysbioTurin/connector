@@ -1,34 +1,47 @@
 #' Mean Cluster Curves
 #'
 #'@description
-#' Visualizes the plots regarding the fitted and clustered data with respect to one model among FCM, Malthus, Gompertz and Logistic.
+#' Visualizes the plots regarding the fitted and clustered data by exploiting the FCM.
 #'
-#' @param clusterdata Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).
-#' @param data CONNECTORList. (see \code{\link{DataImport}})
-#' @param feature he column name reported in the AnnotationFile containing the feature  to be investigated.
-#' @param title The  string containing  the plot title. 
+#' @param clusterdata CONNECTORList obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).
+#' @param data CONNECTORList. (see \code{\link{DataImport}}).
+#' @param feature The column name reported in the AnnotationFile containing the feature  to be investigated.
+#' @param title The string containing  the plot title. 
 #' @param labels  The vector containing the axis names. 
-#' @param save If TRUE then the plots of the fitted and clustered growth curves are saved into two  pdf files.
+#' @param save If TRUE then the following objects are saved: (i) the mean curves plot, (ii) the plots of each cluster showing the correspondive mean curve and the samples belonging to the cluster, (iii) one plot storing all the clustering plots, and (iv) the tables reporting the M, S, R and fDB indexes considering the 0, 1 and 2 derivatives.
 #' @param path  The folder path where the plots will be saved. If it is missing, the plots are saved in the current working  directory.
 #' 
 #' @return ClusterWithMeanCurve returns a list with two objects, (i) a list storing the growth curves plots partitioned according to cluster membership and (ii) the cluster mean curves plot.
+#' \itemize{
+#' \item{PlotsCluster:}{ a list collecting (separaterly and all together in one plot) the growth curves separated in each cluster; }
+#' \item{PlotMeanCurve:}{the plot showing the cluster mean curves; }
+#' \item{spline.plots:}{a list of N plots, where N is the number of samples, showing: (i) in blue the sample curve, (ii) in red the cubic spline estimated from the FCM, (iii) in black the correspondive cluster mean curve, and finally (iv) the grey area represents the confidence interval. } 
+#' }
 #'
-#' @details   ADD THE COEFFS MEANING, to check the distance used in kmeans to calculate withtot 
-#' @seealso \code{\link{ClusterChoice}},  \code{\link{FittingAndClustering}}.
+#' @details We define the following indexes for obtaining a cluster separation measure:
+#' \itemize{
+#'  \item{S_k:}{ 
+#'  \deqn{ S_k = \sqrt{\frac{1}{G_k} \sum_{i=1}^{G_k} D_q^2(\hat{g}_i, \bar{g}^k);} }
+#'  with G_k the number of curves in the k-th cluster;
+#'  }
+#'  \item{M_{hk}:}{ the distance between centroids (mean-curves) of h-th and k-th cluster 
+#'  \deqn{M_{hk} =  D_q(\bar{g}^h, \bar{g}^k);}
+#'  }
+#'  \item{R_{hk}:}{  a measure of how good the clustering is,
+#'  \deqn{R_{hk} =   \frac{S_h + S_k}{M_{hk}};}
+#'  }  
+#'  \item{fDB_q:}{ functional Davies-Bouldin index, the cluster separation measure
+#'  \deqn{fDB_q = \frac{1}{G} \sum_{k=1}^G \max_{h \neq k} { R_{hk} }. }
+#'  }
+#' }
+#' Where the proximities measures choosen is defined as follow
+#'  \deqn{D_q(f,g) = \sqrt( \integral | f^{(q)}(s)-g^{(q)}(s) |^2 ds ), d=0,1,2}
+#' with f and g are two curves and f^{(q)} and g^{(q)} are their q-th derivatives. Note that for q=0, the equation becomes the distance induced by the classical L^2-norm.
+#' 
+#' 
+#' @seealso MostProbableClustering.Extrapolation, StabilityAnalysis.
 #'
 #' @examples
-#'
-#'GrowDataFile<-"data/1864dataset.xls"
-#'AnnotationFile <-"data/1864info.txt"
-#'
-#'### Merge curves and target file
-#'CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
-#'
-#'### Truncation
-#'
-#'CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",60,labels = c("time","volume","Tumor Growth"))
-#'
-#' ...
 #' 
 #' @import ggplot2  gridExtra
 #' @importFrom cowplot plot_grid add_sub ggdraw
@@ -110,15 +123,7 @@ clusterdata<-clusterdata$FCM
       emme<-clusterdata.info$Coefficents$emme
       row.names(emme)=paste("Cluster",row.names(emme))
       colnames(emme)=paste("Cluster",colnames(emme))
-      cat("############################################################## \n######## M indexes ############\n")
-      print(kable(emme))
-      cat("\n##############################################################")
       
-      ##### Build the fDB data frame 
-      fDB.indexes<-data.frame(fDB=fDB,fDB_1=fDB1,fDB_2=fDB2)
-      cat("\n######## fDB indexes ############\n")
-      print(kable(fDB.indexes))
-      cat("\n##############################################################")
       
       ##### Build the S data frame  
       S.indexes<-data.frame(S=esse,S_1=essed1,S_2=essed2)
@@ -127,11 +132,22 @@ clusterdata<-clusterdata$FCM
       print(kable(S.indexes))
       cat("\n##############################################################")
       
+      ##### Build the M data frame
+      cat("############################################################## \n######## M indexes ############\n")
+      print(kable(emme))
+      cat("\n##############################################################")
+      
       ##### Build the R data frame  
       R.indexes<-data.frame(R=errei,R_1=erreid1,R_2=erreid2)
       row.names(R.indexes)=paste("Cluster",row.names(R.indexes))
       cat("\n######## R indexes ############\n")
       print(kable(R.indexes))
+      cat("\n##############################################################")
+      
+      ##### Build the fDB data frame 
+      fDB.indexes<-data.frame(fDB=fDB,fDB_1=fDB1,fDB_2=fDB2)
+      cat("\n######## fDB indexes ############\n")
+      print(kable(fDB.indexes))
       cat("\n##############################################################")
       
       ###########################

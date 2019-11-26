@@ -18,17 +18,17 @@ GrowthCurve(data, feature, labels = NULL, save = FALSE, path = NULL)
 \item{path}{The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.}
 }
 \value{
-GrowthCurve returns a list containing the line plot and the CONNECTORList.
+GrowthCurve returns a list containing the line plot as ggplot object, namely GrowthCurve_plot, and data, i.e. the CONNECTORList.
 }
 \description{
 Generates the line plot of the growth data. The curves are colored with respect to the feature chosen by the user and/or reported in the AnnotationFile.
 }
 \examples{
-GrowDataFile<-"data/1864dataset.xls"
-AnnotationFile <-"data/1864info.txt"
+GrowDataFile<-"data/745dataset.xls"
+AnnotationFile <-"data/745info.txt"
 
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
-GrowthCurve(CONNECTORLis,"Progeny",labels=c("time","volume","Tumor Growth"))
+GrowthCurve(CONNECTORLis,"Progeny",labels=c("Time","Volume","Tumor Growth"))
 
 }

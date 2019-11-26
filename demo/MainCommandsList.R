@@ -58,9 +58,9 @@ CONNECTORList.FCM.p3.h1.G4 <-MostProbableClustering.Extrapolation(stability.list
 
 ### Plotting Mean Curves and Sample Curves depending on the cluster
 
-# path and cluster in A B C D
+FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.h1.G4, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= paste(" FCM model h=",h))
 
-FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.p3.h1.G4, data= CONNECTORList,feature = "Progeny",labels = c("Time","Volume"),title= paste(" FCM model h=",h),save = T,path = "~/Desktop/" )
+Spline.plots(FCMplots,All=T,path="~/Desktop/")
 
 ### Disriminant Plot (goodness of the cluster) just for h = 1 or 2
 DiscriminantPlot(clusterdata = CONNECTORList.FCM.p3.h1.G4, data = CONNECTORList,h = h,feature = "Progeny")

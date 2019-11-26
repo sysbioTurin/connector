@@ -20,8 +20,8 @@ Time Grid Density returns the time grid density plot as a ggplot object.
 Plots the grid of the time points at which the growth data are collected. Each point of the grid is colored with respect to its frequency in the input data.
 }
 \examples{
-GrowDataFile<-"data/1864dataset.xls"
-AnnotationFile <-"data/1864info.txt"
+GrowDataFile<-"data/745dataset.xls"
+AnnotationFile <-"data/745info.txt"
 
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 TimeGridDensity(CONNECTORList)

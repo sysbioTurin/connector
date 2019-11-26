@@ -8,16 +8,16 @@
 #' @param save If TRUE then the plot is saved into a pdf file.
 #' @param path The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
-#' @return GrowthCurve returns a list containing the line plot and the CONNECTORList.
+#' @return GrowthCurve returns a list containing the line plot as ggplot object, namely GrowthCurve_plot, and data, i.e. the CONNECTORList.
 #' 
 #' 
 #' @examples
-#' GrowDataFile<-"data/1864dataset.xls"
-#' AnnotationFile <-"data/1864info.txt"
+#' GrowDataFile<-"data/745dataset.xls"
+#' AnnotationFile <-"data/745info.txt"
 #'
 #' CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 #'
-#' GrowthCurve(CONNECTORLis,"Progeny",labels=c("time","volume","Tumor Growth"))
+#' GrowthCurve(CONNECTORLis,"Progeny",labels=c("Time","Volume","Tumor Growth"))
 #'
 #' @import ggplot2
 #' @export

@@ -9,16 +9,16 @@
 \usage{
 BoxPlot.Extrapolation(stability.list, h)
 
-ConsMatrix.Extrapolation(stability.list, h, k)
+ConsMatrix.Extrapolation(stability.list, h, G)
 
-MostProbableClustering.Extrapolation(stability.list, h, k)
+MostProbableClustering.Extrapolation(stability.list, h, G)
 }
 \arguments{
 \item{stability.list}{CONNECTORList obtained from the StabilityAnalysis function. (see \code{\link{StabilityAnalysis}})}
 
 \item{h}{The  number representing the dimension of the cluster mean space (see \code{\link{PCA.Analysis}}).}
 
-\item{k}{The number of clusters.}
+\item{G}{The number of clusters.}
 }
 \description{
 Extrapolate objects from StabilityAnalysis output list (see \code{\link{StabilityAnalysis}}).

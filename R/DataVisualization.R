@@ -13,8 +13,8 @@
 #' 
 #' @examples
 #'
-#'GrowDataFile<-"data/1864dataset.xls"
-#'AnnotationFile <-"data/1864info.txt"
+#'GrowDataFile<-"data/745dataset.xls"
+#'AnnotationFile <-"data/745info.txt"
 #'
 #'CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 #'

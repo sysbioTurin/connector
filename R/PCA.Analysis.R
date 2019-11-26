@@ -5,19 +5,19 @@
 #'Generates a bar plot reporting the percentage values associated with each component identified by the Principal Component Analysis (PCA). Considering the Functional Clustering Model [Sugar and James] the PCA is applied on the natural cubic spline coefficients to estimate the dimension of the subspace, h, in which the cluster means lie. This is due to a parameterization of the cluster means for producing low-dimensional representations of the curves, for this reason \eqn{h\le p}.
 #'
 #' @param data CONNECTORList.  (see \code{\link{DataImport}})
-#' @param p The dimension of the natural cubic spline basis.
+#' @param p The dimension of the natural cubic spline basis.  (see \code{\link{BasisDimension.Choice}})
 #' @param save  If TRUE the bar plot of the PCA components is saved into a pdf file.
 #' @param path The folder path   where the plot will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
 #' @return  PCA Analysis returns the bar plot of the PCA components and the vector of percentage values associated with the PCA components.
 #' @examples
 #'
-#' GrowDataFile<-"data/1864dataset.xls"
-#' AnnotationFile <-"data/1864info.txt"
+#' GrowDataFile<-"data/745dataset.xls"
+#' AnnotationFile <-"data/745info.txt"
 #'
 #' CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 #'
-#' CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=60,labels = c("time","volume","Tumor Growth"))
+#' CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("time","volume","Tumor Growth"))
 #'
 #' PCA<-PCA.Analysis(CONNECTORList)
 #' PCA$plot

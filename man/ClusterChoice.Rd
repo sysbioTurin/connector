@@ -4,13 +4,13 @@
 \alias{ClusterChoice}
 \title{Cluster Choice}
 \usage{
-ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL, seed = 2404,
+ClusterChoice(data, G, h = 1, p = 5, PCAperc = NULL, seed = 2404,
   tol = 0.001, maxit = 20, save = FALSE, path = NULL)
 }
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
 
-\item{k}{The vector/number of clusters.}
+\item{G}{The vector/number of clusters.}
 
 \item{h}{The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).}
 
@@ -24,10 +24,10 @@ ClusterChoice(data, k, h = 1, p = 5, PCAperc = NULL, seed = 2404,
 
 \item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
  @return
-ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.}
+ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.}
 }
 \description{
-Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering k number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,k-1)}.
+Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering G number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{\min(p,G-1)}.
 }
 \examples{
 

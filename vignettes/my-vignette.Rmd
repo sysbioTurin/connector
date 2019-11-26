@@ -62,7 +62,7 @@ The tumour growth data must be organized in two files:
 1. the excel file **GrowDataFile** reporting the tumour growth evolution data,
 2. the csv file **AnnotationFile** containing the annotation information associated with the samples.
 
-The **GrowDataFile** is composed from two columns for each sample (i.e. PDX), containing the time points and the measure volume respectively. In our example, we have 24 PDXs then the **GrowDataFile** is composed by 48 columns.
+The **GrowDataFile** is composed from two columns for each sample (i.e. PDX), containing the time points and the measure volume respectively. In our example, we have `r length(CONNECTORList$LabCurv[,1])` PDXs then the **GrowDataFile** is composed by `r length(CONNECTORList$LabCurv[,1])*2` columns.
 The columns names must be *Time* and *SampleName*, respectively.
 ![Example of **GrowDataFile**.](./Fig/excel_file.png){ width=100% }
 
@@ -218,7 +218,7 @@ Stability.clustering <-StabilityAnalysis(data = CONNECTORList,
                                          G = 2:6, 
                                          h = h,
                                          p = p,
-                                         runs = 10)
+                                         runs = 100)
 
 # Showing the Stability.clustering structure
 str(Stability.clustering, max.level = 1, vec.len=1)
@@ -268,7 +268,7 @@ FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.opt,
                                 title = paste("FCM model h=",h))
 ```
 
-In our case of study, the $optG $ and $opth$ are equal to four and one, respectively.  Figure ... reports the four cluster mean, while the Figure ... reports the PDX growth curves separated in the four clusters. \\
+In our case of study, the $optG $ and $opth$ are equal to four and one, respectively. Figure ... reports the four cluster mean, while the Figure ... reports the PDX growth curves separated in the four clusters. \\
 To help the user to understand the goodness of the clustering obtained, using *DiscriminantPlot* is possible to identify with a simple visualization which cluster each sample belongs, for more details @James. Specifically, two versions of the same discriminant linear plot are generated showing in a $h-$dimensional space the cluster membership of each curve. In the first case the symbols identifying the elements of different clusters are colored depending on the cluster membership (Figure \ref{fig:DiscrPlotCL}), and in the second plot the symbols are colored depending the selected feature  (Figure \ref{fig:DiscrPlotF}).
 
 In our experiment, since `r paste("h =",h)`, an one dimensional discriminant linear plot is generated, where the dotted vertical lines represent the cluster centers. Thus, what we expect is no presence of significant and elements in the same cluster near to the vertical line representing the corresponding cluster center, as in Figure \ref{fig:DiscrPlotCL}.

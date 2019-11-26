@@ -13,7 +13,7 @@
 #' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #'  @return
-#' ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects belonging to class funcyOutList (see \code{\link[funcy]{funcyOutList-class}}) for each \emph{h} and \emph{k}, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
+#' ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
 #' 
 #' @seealso \code{\link[funcy]{funcit}}.
 #' 

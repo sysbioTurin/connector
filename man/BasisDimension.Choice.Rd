@@ -23,14 +23,14 @@ Generates a line plot reporting the cross-validated loglikelihood value for each
 }
 \examples{
 
-GrowDataFile<-"data/1864dataset.xls"
-AnnotationFile <-"data/1864info.txt"
+GrowDataFile<-"data/745dataset.xls"
+AnnotationFile <-"data/745info.txt"
 
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
-CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=60,labels = c("time","volume","Tumor Growth"))
+CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("time","volume","Tumor Growth"))
 
-CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:10)
+CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:6)
 CrossLogLike$CrossLogLikePlot
 
 

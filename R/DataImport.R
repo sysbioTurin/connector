@@ -8,7 +8,7 @@
 #'
 #' @param AnnotationFile The name of a csv file storing  the annotation data. See \sQuote{Details}.
 #'
-#' @return   DataImport returns a list called CONNECTORList, with four arguments: (i) data frame with three columns (i.e. ID, data and time values) encoding the growth data for each sample, (ii) the vector reporting the number of observations collected per sample  (iii) the data frame matching the samples with their annotations, (iv) the vector storing all the sample time points (i.e. time grid).
+#' @return   DataImport returns a list, called ConnectorList, with four arguments: (i) Dataset: data frame with three columns (i.e. ID, data and time values) encoding the growth data for each sample, (ii) LenCurv: the vector reporting the number of observations collected per sample  (iii) LabCurv: the data frame matching the samples with their annotations, (iv) TimeGrid: the vector storing all the sample time points (i.e. time grid). Furthermore, it prints a brief summary of the input data, i.e. the total number of curves (samples), the minimum and the maximum curve length.
 #' 
 #' @details Two files are requested to run the data analysis exploiting the CONNECTOR package:
 #' \itemize{
@@ -22,8 +22,8 @@
 #'
 #' @examples
 #'
-#' GrowDataFile<-"data/1864dataset.xls"
-#' AnnotationFile <-"data/1864info.txt"
+#' GrowDataFile<-"data/475dataset.xls"
+#' AnnotationFile <-"data/475info.txt"
 #'
 #' CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 #'

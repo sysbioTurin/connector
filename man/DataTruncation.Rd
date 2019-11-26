@@ -21,18 +21,19 @@ DataTruncation(data, feature, truncTime = NULL, labels = NULL,
 \item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.}
 }
 \value{
-DataTruncation returns the line plot of growth curves with a vertical line at the truncation time and the CONNECTORList updated with the following elements: (i)a data frame with three variables (ID curves, volume and time values truncated at the chosen time), (ii) a vector collecting the number of truncated observations collected per sample, a data frame matching curses  with the chosen feature, (iv) the vector storing all the truncated time points of the samples (i.e. truncated time grid).
+DataTruncation returns the line plot of growth curves with a vertical line at the truncation time and the CONNECTORList updated with the following elements: (i) a data frame with three variables (ID curves, volume and time values truncated at the chosen time), (ii) a vector collecting the number of truncated observations collected per sample, a data frame matching curses  with the chosen feature, (iv) the vector storing all the truncated time points of the samples (i.e. truncated time grid).
+Furthermore, it prints an updated summary of the input data, updating the minimum and the maximum curve length after the data truncation.
 }
 \description{
 Truncates the growth data at a specific time point chosen by the user.
 }
 \examples{
 
-GrowDataFile<-"data/1864dataset.xls"
-AnnotationFile <-"data/1864info.txt"
+GrowDataFile<-"data/475dataset.xls"
+AnnotationFile <-"data/475info.txt"
 
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
-CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=60,labels = c("time","volume","Tumor Growth"))
+CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("time","volume","Tumor Growth"))
 
 }

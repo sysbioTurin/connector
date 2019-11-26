@@ -9,7 +9,7 @@ PCA.Analysis(data, p = 5, save = FALSE, path = NULL)
 \arguments{
 \item{data}{CONNECTORList.  (see \code{\link{DataImport}})}
 
-\item{p}{The dimension of the natural cubic spline basis.}
+\item{p}{The dimension of the natural cubic spline basis.  (see \code{\link{BasisDimension.Choice}})}
 
 \item{save}{If TRUE the bar plot of the PCA components is saved into a pdf file.}
 
@@ -23,12 +23,12 @@ Generates a bar plot reporting the percentage values associated with each compon
 }
 \examples{
 
-GrowDataFile<-"data/1864dataset.xls"
-AnnotationFile <-"data/1864info.txt"
+GrowDataFile<-"data/745dataset.xls"
+AnnotationFile <-"data/745info.txt"
 
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
-CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=60,labels = c("time","volume","Tumor Growth"))
+CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("time","volume","Tumor Growth"))
 
 PCA<-PCA.Analysis(CONNECTORList)
 PCA$plot

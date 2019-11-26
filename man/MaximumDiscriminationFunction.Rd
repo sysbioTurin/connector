@@ -4,15 +4,10 @@
 \alias{MaximumDiscriminationFunction}
 \title{Maximum Discrimination Function}
 \usage{
-MaximumDiscriminationFunction(clusterdata, k = NULL, h = NULL,
-  absvalue = TRUE)
+MaximumDiscriminationFunction(clusterdata, absvalue = TRUE)
 }
 \arguments{
 \item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}).}
-
-\item{k}{The number of clusters.}
-
-\item{h}{The  vector/number representing the dimension of the cluster mean space.}
 
 \item{absvalue}{@return}
 }
@@ -25,7 +20,4 @@ MaximumDiscriminationFunction(clusterdata, k = NULL, h = NULL,
 }
 \references{
 Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
-}
-\seealso{
-\code{\link[funcy]{funcit}}.
 }
