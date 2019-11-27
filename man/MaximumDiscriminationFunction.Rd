@@ -7,12 +7,14 @@
 MaximumDiscriminationFunction(clusterdata, absvalue = TRUE)
 }
 \arguments{
-\item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}).}
+\item{clusterdata}{The list obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).}
 
-\item{absvalue}{@return}
+\item{absvalue}{If TRUE, the absolute values of the weights are plotted.
+ @return
+MaximumDiscriminationFunction generates h plots as ggplot objects, showing the      the weights, applied to each dimension for determining the cluster membership, plotted as a single curve.}
 }
 \description{
-
+Visualizes the h curve(s) representing the optimal weights to apply to each dimension for determining the cluster membership.
 }
 \examples{
 

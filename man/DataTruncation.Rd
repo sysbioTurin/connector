@@ -16,7 +16,7 @@ DataTruncation(data, feature, truncTime = NULL, labels = NULL,
 
 \item{labels}{Vector containing the text for the title of axis names and plot title.}
 
-\item{save}{If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.}
+\item{save}{If TRUE then the growth curves plot truncated at the "TruncTime" is saved into a pdf file.}
 
 \item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.}
 }

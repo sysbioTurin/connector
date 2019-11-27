@@ -2,15 +2,15 @@
 % Please edit documentation in R/ClusterWithMeanCurves.R
 \name{ClusterWithMeanCurve}
 \alias{ClusterWithMeanCurve}
-\title{Mean Cluster Curves}
+\title{Cluster Curves}
 \usage{
 ClusterWithMeanCurve(clusterdata, data, feature, title = "",
   labels = c("", ""), save = FALSE, path = NULL)
 }
 \arguments{
-\item{clusterdata}{CONNECTORList obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).}
+\item{clusterdata}{The list obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).}
 
-\item{data}{CONNECTORList. (see \code{\link{DataImport}}).}
+\item{data}{CONNECTORList. (see \code{\link{DataImport}} or \code{\link{DataTruncation}}).}
 
 \item{feature}{The column name reported in the AnnotationFile containing the feature  to be investigated.}
 
@@ -23,10 +23,10 @@ ClusterWithMeanCurve(clusterdata, data, feature, title = "",
 \item{path}{The folder path where the plots will be saved. If it is missing, the plots are saved in the current working  directory.}
 }
 \value{
-ClusterWithMeanCurve returns a list with two objects, (i) a list storing the growth curves plots partitioned according to cluster membership and (ii) the cluster mean curves plot.
+ClusterWithMeanCurve returns a list with three objects:
 \itemize{
-\item{PlotsCluster:}{ a list collecting (separaterly and all together in one plot) the growth curves separated in each cluster; }
-\item{PlotMeanCurve:}{the plot showing the cluster mean curves; }
+\item{PlotsCluster:}{a list storing the growth curves plots partitioned according to the cluster membership; }
+\item{PlotMeanCurve:}{the cluster mean curves plot; }
 \item{spline.plots:}{a list of N plots, where N is the number of samples, showing: (i) in blue the sample curve, (ii) in red the cubic spline estimated from the FCM, (iii) in black the correspondive cluster mean curve, and finally (iv) the grey area represents the confidence interval. } 
 }
 }
@@ -58,5 +58,5 @@ with f and g are two curves and f^{(q)} and g^{(q)} are their q-th derivatives. 
 
 }
 \seealso{
-MostProbableClustering.Extrapolation, StabilityAnalysis.
+MostProbableClustering.Extrapolation, StabilityAnalysis, Spline.plots.
 }

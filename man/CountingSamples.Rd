@@ -7,14 +7,14 @@
 CountingSamples(clusterdata, data, feature = "ID")
 }
 \arguments{
-\item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see ?). Otherwise a list derived from fitting and clustering the data using Malthus, Gompertz or Logistic model storing the parameters and the cluster membership for each sample, the  parameters of the center and the mean curve values for each cluster (see \code{\link{FittingAndClustering}}).}
+\item{clusterdata}{The list obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).}
 
-\item{data}{CONNECTORList.  (see \code{\link{DataImport}})}
+\item{data}{CONNECTORList.  (see \code{\link{DataImport}} or \code{\link{DataTruncation}})}
 
-\item{feature}{the column name reported in the AnnotationFile containing the feature  to be investigated.}
+\item{feature}{The column name reported in the AnnotationFile containing the feature  to be investigated.}
 }
 \value{
-CountingSample returns a list containing  a matrix composed by three columns: (i) cluster, (ii) the feature name, and (iii) the number of samples, and a dataframe storing the sample names reported in the AnnotationFile and the corresponding  cluster membership.
+CountingSample returns a list containing  1) a matrix composed by three columns: (i) cluster, (ii) the feature name, and (iii) the number of samples, and 2) a dataframe storing the sample names reported in the AnnotationFile and the corresponding  cluster membership.
 }
 \description{
 Counts for each combination of cluster and feature the number of samples and their name are returned.

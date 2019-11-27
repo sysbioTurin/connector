@@ -54,6 +54,3 @@ CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),PCAperc = pca$perc)
 \references{
 Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
 }
-\seealso{
-\code{\link[funcy]{funcit}}.
-}

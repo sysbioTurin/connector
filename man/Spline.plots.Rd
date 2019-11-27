@@ -9,9 +9,9 @@ Spline.plots(FCM.plots, All = TRUE, SampleNumber = NULL, path = NULL)
 \arguments{
 \item{FCM.plots}{CONNECTORList obtained from the ClusterWithMeanCurve function. (see \code{\link{ClusterWithMeanCurve}})}
 
-\item{All}{}
+\item{All}{If TRUE then all the plots, for each sample curve, are saved.}
 
-\item{SampleNumber}{}
+\item{SampleNumber}{The number/vector of the sample ID(s) referring to the curve(s) that will be saved.}
 
 \item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.}
 }

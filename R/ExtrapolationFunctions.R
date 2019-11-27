@@ -2,9 +2,16 @@
 #' 
 #' @description Extrapolate objects from StabilityAnalysis output list (see \code{\link{StabilityAnalysis}}).
 #'
-#' @param stability.list CONNECTORList obtained from the StabilityAnalysis function. (see \code{\link{StabilityAnalysis}})
+#' @param stability.list The list obtained from the StabilityAnalysis function. (see \code{\link{StabilityAnalysis}})
 #' @param G  The number of clusters.
-#' @param h  The  number representing the dimension of the cluster mean space (see \code{\link{PCA.Analysis}}).
+#' @param h  The number representing the dimension of the cluster mean space (see \code{\link{PCA.Analysis}}).
+#' 
+#' @details 
+#' \itemize{
+#' \item{BoxPlot.Extrapolation}{ extrapolates from StabilityAnalysis output list the box plot fixing the h value.}
+#' \item{ConsMatrix.Extrapolation}{extrapolates from StabilityAnalysis output list the Consensus Matrix for G and h fixed.}
+#' \item{MostProbableClustering.Extrapolation}{extrapolates from StabilityAnalysis output list the most probable cluster among the several runs obtained  for G and h fixed.}
+#' }
 #' 
 #' @name ExtrapolationFuncs
 NULL

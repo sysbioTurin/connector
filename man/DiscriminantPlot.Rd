@@ -8,20 +8,21 @@ DiscriminantPlot(clusterdata, h, data, feature, save = FALSE,
   path = NULL)
 }
 \arguments{
-\item{clusterdata}{Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}).}
+\item{clusterdata}{The list obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).}
 
-\item{h}{The  number between 1 or 2 representing the dimension of the cluster mean space(see \code{\link{PCA.Analysis}}).}
+\item{h}{The number between 1 or 2 representing the dimension of the cluster mean space (see \code{\link{PCA.Analysis}}).}
 
-\item{data}{CONNECTORList. (see \code{\link{DataImport}})}
+\item{data}{CONNECTORList. (see \code{\link{DataImport}} or \code{\link{DataTruncation}})}
 
-\item{save}{If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.}
+\item{save}{If TRUE then the discriminant plots colored depending on the feature and the cluster membership are saved.}
 
 \item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 
- @return}
+ @return
+ DiscriminantPlot visualizes two versions of the same discriminant linear plot, showing in a h-dimensional space the cluster membership of each curve. In the first case the symbols identifying the elements of different clusters are colored depending on the cluster membership, and in the second plot the symbols are colored depending the selected feature.}
 }
 \description{
-
+Gives a simple visualization regarding in which cluster each sample belongs.
 }
 \examples{
 
@@ -29,7 +30,4 @@ DiscriminantPlot(clusterdata, h, data, feature, save = FALSE,
 }
 \references{
 Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
-}
-\seealso{
-\code{\link[funcy]{funcit}}.
 }

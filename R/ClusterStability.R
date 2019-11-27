@@ -2,22 +2,22 @@
 #' 
 #'@description
 #'
-#'  Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The BIC and AIC values considering G number of clusters and h dimension of the cluster mean space are calculated, and the plot based on the Elbow Method is generated. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{min(p,G-1)}.
+#'  Fits and clusters the data with respect to the Functional Clustering Model [Sugar and James]. The plots based on the Elbow Method and on the functional Davies Bouldin (fDB) indexes are generated to properly guide the choice of the number of clusters. As explained in [Sugar and James], to have a simple low-dimensional representation of the individual curves and to reduce the number of parameters to be estimated, h value must be equals or lower than \eqn{min(p,G-1)}.
 #'  
-#' @param data CONNECTORList. (see \code{\link{DataImport}})
-#' @param G  The vector/number of clusters.
-#' @param h The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the $h$ value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
+#' @param data CONNECTORList. (see \code{\link{DataImport}} or \code{\link{DataTruncation}})
+#' @param G  The vector/number of possible clusters.
+#' @param h  The  vector/number representing the dimension of the cluster mean space. If NULL, ClusterChoice set the h value equals to the number of PCA components needed to explain the 95\% of variability of the natural cubic spline coefficients, but the \emph{PCAperc} is needed (see \code{\link{PCA.Analysis}}).
 #' @param p The dimension of the natural cubic spline basis. (see \code{\link{BasisDimension.Choice}})
 #' @param runs Number of runs.
 #' @param seed Seed for the kmeans function.
 #' @param save If TRUE then the growth curves plot truncated at the "TruncTime" is saved into a pdf file.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
-#' @return StabilityAnalysis returns a list of (i) lists, called ConsensusInfo, storing for each G and h the Consensus Matrix, either as a matrix of number of sample times number of samples or plot as a ggplot object, and the most probable clustering obtained from running several times the method; (ii) the box plots storing both the elbow plot and the box plots for each G; and finally, (iii) the seed. See \code{\link{BoxPlot.Extrapolation}} and \code{\link{MostProbableClustering.Extrapolation}}.
+#' @return StabilityAnalysis returns a list of (i) lists, called ConsensusInfo, reporting for each G and h: the Consensus Matrix, either as a NxN matrix, where N is the number of samples, or plot, and the most probable clustering obtained from running several times the method; (ii) the box plots showing both the Elbow plot considering the total tightness and the box plots of the fDB indexes for each G; and finally, (iii) the seed. See \code{\link{BoxPlot.Extrapolation}} and \code{\link{MostProbableClustering.Extrapolation}}.
 #' 
 #' @details 
 #'  Connector provides two different plots to properly guide the choice of the number of clusters:
-#'  \itemize
+#'  \itemize{
 #'  \item{Elbow Plot:}{ a plot in which the total tightness against the number of clusters is plotted. A proper number of clusters can be inferred as large enough to let the total tightness drop down to relatively little values but as the smallest over which the total tightness does not decrease substantially (we look for the location of an "elbow" in the plot). }
 #'  \item{Box Plot:}{ a plot in which for each number of clusters , G, the functional Davies-Buldin (fDB), the cluster separation measure index, is plotted as a boxplot. A proper number of clusters can be associated to the minimum fDB value. }
 #'  }
@@ -28,7 +28,7 @@
 #' Hence, we can define the following indexes for obtaining a cluster separation measure:
 #' \itemize{
 #' \item{T:}{ the total tightness representing the dispersion measure given by
-#' \deqn{ T = \sum_{k=1}^G \sum_{i=1}^n D_0(\hat{g}_i, \bar{g}^k)};
+#' \deqn{ T = \sum_{k=1}^G \sum_{i=1}^n D_0(\hat{g}_i, \bar{g}^k)}; }
 #'  \item{S_k:}{ 
 #'  \deqn{ S_k = \sqrt{\frac{1}{G_k} \sum_{i=1}^{G_k} D_q^2(\hat{g}_i, \bar{g}^k);} }
 #'  with G_k the number of curves in the k-th cluster;
@@ -44,8 +44,9 @@
 #'  }
 #' }
 #' 
-#' @examples
 #'
+#' @seealso MostProbableClustering.Extrapolation, BoxPlot.Extrapolation, ConsMatrix.Extrapolation.
+#' 
 #' @import ggplot2 reshape2 RColorBrewer statmod
 #' @importFrom cowplot plot_grid
 #' @export
@@ -70,9 +71,9 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     
     ##### Calculation of the tightness and DB (0,1,2) indexes
     l.tight<-lapply(1:runs,function(x) ALL.runs[[x]]$Tight.indexes[,hind])
-    l.DB<-lapply(1:runs,function(x) ALL.runs[[x]]$DB.indexes[,hind])
-    l.DB1<-lapply(1:runs,function(x) ALL.runs[[x]]$DB2deriv.indexes[,hind])
-    l.DB2<-lapply(1:runs,function(x) ALL.runs[[x]]$DB2deriv.indexes[,hind])
+    l.fDB<-lapply(1:runs,function(x) ALL.runs[[x]]$fDB.indexes[,hind])
+    l.fDB1<-lapply(1:runs,function(x) ALL.runs[[x]]$fDB2deriv.indexes[,hind])
+    l.fDB2<-lapply(1:runs,function(x) ALL.runs[[x]]$fDB2deriv.indexes[,hind])
     #####
     
     dt.fr<-do.call(cbind, l.tight)
@@ -86,13 +87,13 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       labs(title=paste("Elbow plot ( h =",h[hind],")" ),x="Number of Clusters",y="Tightness (T)")+
       theme(text = element_text(size=20)) +labs(size="Counts freq.") 
     
-    DB<-do.call(cbind, l.DB)
-    DB.der1<-do.call(cbind, l.DB1)
-    DB.der2<-do.call(cbind, l.DB2)
+    fDB<-do.call(cbind, l.fDB)
+    fDB.der1<-do.call(cbind, l.fDB1)
+    fDB.der2<-do.call(cbind, l.fDB2)
     
-    row.names(DB)=paste("G=",G) 
+    row.names(fDB)=paste("G=",G) 
     
-    dt.fr2<-data.frame( clust=rep(paste("G=",G) ,length(DB[1,])) ,y=round(c(DB),digits = 3) )
+    dt.fr2<-data.frame( clust=rep(paste("G=",G) ,length(fDB[1,])) ,y=round(c(fDB),digits = 3) )
     counts2<-count(dt.fr2,vars=c("clust","y"))
     
     pl[["fDBindex"]]<-ggplot()+geom_boxplot(data= dt.fr2,aes(x=clust,y=y))+geom_point(data=counts2, col="red",aes(x=clust,y=y,size=freq/runs) )+
@@ -102,7 +103,7 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     boxplots<-plot_grid(plotlist=pl)
     
     Box.pl[[paste("h=",h[hind])]]$Plot<-boxplots
-    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,fDB=DB,fDB.1=DB.der1,fDB.2=DB.der2)
+    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,fDB=fDB,fDB.1=fDB.der1,fDB.2=fDB.der2)
     
     ######### Cluster Membership #########
     

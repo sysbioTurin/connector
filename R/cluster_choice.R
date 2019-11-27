@@ -15,7 +15,6 @@
 #'  @return
 #' ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
 #' 
-#' @seealso \code{\link[funcy]{funcit}}.
 #' 
 #' @references
 #' Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
@@ -60,9 +59,9 @@ ClusterChoice<-function(data,G,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
   
   data.funcit <-matrix(c(database$ID,database$Vol,database$Time),ncol=3,byrow=F)
 ########## 
-  DB.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
-  DB1deriv.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
-  DB2deriv.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
+  fDB.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
+  fDB1deriv.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
+  fDB2deriv.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
   Tight.indexes<-matrix(0,nrow = length(G),ncol = length(H),dimnames=list(row_names,col_names))
   
   # return a list of G lists, in which is is stored the output for all h
@@ -145,9 +144,9 @@ ClusterChoice<-function(data,G,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
       output_h[[paste("h=",h)]]$FCM <- out.funcit
       output_h[[paste("h=",h)]]$Cl.Info<- list(Coefficents=Coefficents,Deriv.Coefficents=Deriv.Coefficents,Deriv2.Coefficents=Deriv2.Coefficents)
         
-      DB.indexes[which(G==k),which(H==h)]<-Coefficents$DB.index
-      DB1deriv.indexes[which(G==k),which(H==h)]<-Deriv.Coefficents$DB.index
-      DB2deriv.indexes[which(G==k),which(H==h)]<-Deriv2.Coefficents$DB.index
+      fDB.indexes[which(G==k),which(H==h)]<-Coefficents$fDB.index
+      fDB1deriv.indexes[which(G==k),which(H==h)]<-Deriv.Coefficents$fDB.index
+      fDB2deriv.indexes[which(G==k),which(H==h)]<-Deriv2.Coefficents$fDB.index
       Tight.indexes[which(G==k),which(H==h)]<-sum(distances)
       
     }
@@ -168,9 +167,9 @@ ClusterChoice<-function(data,G,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
   ####### DB indexes plot
   ############
   
-  DB.indexes.4plot <- data.frame(dist=c(DB.indexes),G=rep(G,length(H)),h=factor(rep(H,each=length(G))))
+  fDB.indexes.4plot <- data.frame(dist=c(fDB.indexes),G=rep(G,length(H)),h=factor(rep(H,each=length(G))))
   
-  DBplot <-ggplot(data=DB.indexes.4plot,aes(x=G))+ geom_point(aes(y=dist,col=h))+
+  DBplot <-ggplot(data=fDB.indexes.4plot,aes(x=G))+ geom_point(aes(y=dist,col=h))+
     geom_line(aes(y=dist,col=h))+
     labs(title="Elbow method ",x="Cluster",y="Tightness")+
     theme(text = element_text(size=20))
@@ -193,5 +192,5 @@ ClusterChoice<-function(data,G,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit
     ggsave(filename="DBplot.pdf",plot = DBplot, width=29, height = 20, units = "cm",scale = 1,path=path )
   }
   
-  return(list(FCM_all=output_k,ElbowMethod=ElbowMethod,DBplot=DBplot,DB.indexes=DB.indexes,DB1deriv.indexes=DB1deriv.indexes,DB2deriv.indexes=DB2deriv.indexes,Tight.indexes=Tight.indexes,seed=seed))
+  return(list(FCM_all=output_k,ElbowMethod=ElbowMethod,DBplot=DBplot,fDB.indexes=fDB.indexes,fDB1deriv.indexes=fDB1deriv.indexes,fDB2deriv.indexes=fDB2deriv.indexes,Tight.indexes=Tight.indexes,seed=seed))
 }

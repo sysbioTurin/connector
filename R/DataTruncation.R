@@ -8,7 +8,7 @@
 #' @param feature The column name reported in the AnnotationFile containing the feature  to be investigated.
 #' @param truncTime  An integer number corresponding to the time where  the curves will be truncated.
 #' @param labels  Vector containing the text for the title of axis names and plot title.
-#' @param save If TRUE then the growth curves plot truncated at the ``truncTime'' is saved into a pdf file.
+#' @param save If TRUE then the growth curves plot truncated at the "TruncTime" is saved into a pdf file.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
 #' @return  DataTruncation returns the line plot of growth curves with a vertical line at the truncation time and the CONNECTORList updated with the following elements: (i) a data frame with three variables (ID curves, volume and time values truncated at the chosen time), (ii) a vector collecting the number of truncated observations collected per sample, a data frame matching curses  with the chosen feature, (iv) the vector storing all the truncated time points of the samples (i.e. truncated time grid).

@@ -14,12 +14,19 @@ ConsMatrix.Extrapolation(stability.list, h, G)
 MostProbableClustering.Extrapolation(stability.list, h, G)
 }
 \arguments{
-\item{stability.list}{CONNECTORList obtained from the StabilityAnalysis function. (see \code{\link{StabilityAnalysis}})}
+\item{stability.list}{The list obtained from the StabilityAnalysis function. (see \code{\link{StabilityAnalysis}})}
 
-\item{h}{The  number representing the dimension of the cluster mean space (see \code{\link{PCA.Analysis}}).}
+\item{h}{The number representing the dimension of the cluster mean space (see \code{\link{PCA.Analysis}}).}
 
 \item{G}{The number of clusters.}
 }
 \description{
 Extrapolate objects from StabilityAnalysis output list (see \code{\link{StabilityAnalysis}}).
+}
+\details{
+\itemize{
+\item{BoxPlot.Extrapolation}{ extrapolates from StabilityAnalysis output list the box plot fixing the h value.}
+\item{ConsMatrix.Extrapolation}{extrapolates from StabilityAnalysis output list the Consensus Matrix for G and h fixed.}
+\item{MostProbableClustering.Extrapolation}{extrapolates from StabilityAnalysis output list the most probable cluster among the several runs obtained  for G and h fixed.}
+}
 }

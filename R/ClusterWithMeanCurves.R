@@ -1,20 +1,20 @@
-#' Mean Cluster Curves
+#' Cluster Curves
 #'
 #'@description
 #' Visualizes the plots regarding the fitted and clustered data by exploiting the FCM.
 #'
-#' @param clusterdata CONNECTORList obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).
-#' @param data CONNECTORList. (see \code{\link{DataImport}}).
+#' @param clusterdata The list obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).
+#' @param data CONNECTORList. (see \code{\link{DataImport}} or \code{\link{DataTruncation}}).
 #' @param feature The column name reported in the AnnotationFile containing the feature  to be investigated.
 #' @param title The string containing  the plot title. 
 #' @param labels  The vector containing the axis names. 
 #' @param save If TRUE then the following objects are saved: (i) the mean curves plot, (ii) the plots of each cluster showing the correspondive mean curve and the samples belonging to the cluster, (iii) one plot storing all the clustering plots, and (iv) the tables reporting the M, S, R and fDB indexes considering the 0, 1 and 2 derivatives.
 #' @param path  The folder path where the plots will be saved. If it is missing, the plots are saved in the current working  directory.
 #' 
-#' @return ClusterWithMeanCurve returns a list with two objects, (i) a list storing the growth curves plots partitioned according to cluster membership and (ii) the cluster mean curves plot.
+#' @return ClusterWithMeanCurve returns a list with three objects:
 #' \itemize{
-#' \item{PlotsCluster:}{ a list collecting (separaterly and all together in one plot) the growth curves separated in each cluster; }
-#' \item{PlotMeanCurve:}{the plot showing the cluster mean curves; }
+#' \item{PlotsCluster:}{a list storing the growth curves plots partitioned according to the cluster membership; }
+#' \item{PlotMeanCurve:}{the cluster mean curves plot; }
 #' \item{spline.plots:}{a list of N plots, where N is the number of samples, showing: (i) in blue the sample curve, (ii) in red the cubic spline estimated from the FCM, (iii) in black the correspondive cluster mean curve, and finally (iv) the grey area represents the confidence interval. } 
 #' }
 #'
@@ -39,7 +39,7 @@
 #' with f and g are two curves and f^{(q)} and g^{(q)} are their q-th derivatives. Note that for q=0, the equation becomes the distance induced by the classical L^2-norm.
 #' 
 #' 
-#' @seealso MostProbableClustering.Extrapolation, StabilityAnalysis.
+#' @seealso MostProbableClustering.Extrapolation, StabilityAnalysis, Spline.plots.
 #'
 #' @examples
 #' 

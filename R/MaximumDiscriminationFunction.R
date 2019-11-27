@@ -1,12 +1,12 @@
 #' Maximum Discrimination Function
 #'
 #'@description
+#' Visualizes the h curve(s) representing the optimal weights to apply to each dimension for determining the cluster membership.
 #'
-#'
-#' @param clusterdata Object belonging to the class funcyOutList if the model in study is the Functional Clustering Model (see \code{\link[funcy]{funcyOutList-class}}).
-#' @param absvalue 
+#' @param clusterdata The list obtained from extrapolating the most probable clustering from the StabilityAnalysis function output. (see \code{\link{StabilityAnalysis}} and \code{\link{MostProbableClustering.Extrapolation}}).
+#' @param absvalue If TRUE, the absolute values of the weights are plotted.
 #'  @return
-#' 
+#' MaximumDiscriminationFunction generates h plots as ggplot objects, showing the      the weights, applied to each dimension for determining the cluster membership, plotted as a single curve. 
 #' 
 #' @references
 #' Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
