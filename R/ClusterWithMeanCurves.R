@@ -198,14 +198,14 @@ clusterdata<-clusterdata$FCM
              rowhead=list(fg_params=list(fontface="bold"))
            )
            
-           Table1 <- grid.arrange(top="fDB indexes",tableGrob(fDB.indexes,theme=tt3))
-           Table2 <- grid.arrange(top="R indexes",tableGrob(R.indexes,theme=tt3))
-           Table3 <- grid.arrange(top="S indexes",tableGrob(S.indexes,theme=tt3))
-           Table4 <- grid.arrange(top="M indexes",tableGrob(emme,theme=tt3))
+           Table1 <- arrangeGrob(top="fDB indexes",tableGrob(fDB.indexes,theme=tt3))
+           Table2 <- arrangeGrob(top="R indexes",tableGrob(R.indexes,theme=tt3))
+           Table3 <- arrangeGrob(top="S indexes",tableGrob(S.indexes,theme=tt3))
+           Table4 <- arrangeGrob(top="M indexes",tableGrob(emme,theme=tt3))
+
+           ml <- marrangeGrob(list(Table1, Table2, Table3, Table4),nrow=4,ncol=1)
            
-           pdf(paste0(path,"Indexes.pdf"))
-           grid.arrange(Table1, Table2, Table3, Table4,nrow=4,ncol=1)
-           dev.off()
+           ggsave(paste0(path,"Indexes.pdf"),width=29, height = 20, units = "cm", ml)
            
        }
          

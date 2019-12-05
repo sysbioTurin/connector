@@ -87,6 +87,8 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       labs(title=paste("Elbow plot ( h =",h[hind],")" ),x="Number of Clusters",y="Tightness (T)")+
       theme(text = element_text(size=20)) +labs(size="Counts freq.") 
     
+    
+    Tight<-do.call(cbind, l.tight)
     fDB<-do.call(cbind, l.fDB)
     fDB.der1<-do.call(cbind, l.fDB1)
     fDB.der2<-do.call(cbind, l.fDB2)
@@ -103,7 +105,7 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     boxplots<-plot_grid(plotlist=pl)
     
     Box.pl[[paste("h=",h[hind])]]$Plot<-boxplots
-    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=dt.fr,fDB=fDB,fDB.1=fDB.der1,fDB.2=fDB.der2)
+    Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=Tight,fDB=fDB,fDB.1=fDB.der1,fDB.2=fDB.der2)
     
     ######### Cluster Membership #########
     

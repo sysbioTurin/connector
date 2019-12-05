@@ -40,7 +40,7 @@
 #'
 #'
 #'
-#' @import  ggplot2 flexclust Matrix splines statmod
+#' @import  ggplot2  Matrix splines statmod
 #' 
 ClusterChoice<-function(data,G,h=1,p=5,PCAperc=NULL,seed=2404,tol = 0.001, maxit = 20,save=FALSE,path=NULL)
 {
