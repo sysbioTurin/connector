@@ -230,7 +230,7 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
         path <- getwd()
       }
       
-      ggsave(filename=paste0("BoxPlotClusterGoodness_H",h[hind],".pdf"),plot =Box.pl[[hind]]$Plot,width=50, height = 20, units = "cm",scale = 1,path=path )
+      ggsave(filename=paste0("BoxPlotClusterGoodness_p",p,"_h",h[hind],"_runs",runs,"_G_",min(G),"_",max(G),".pdf"),plot =Box.pl[[hind]]$Plot,width=50, height = 20, units = "cm",scale = 1,path=path )
 
       # for(Gind in G)
       # {
