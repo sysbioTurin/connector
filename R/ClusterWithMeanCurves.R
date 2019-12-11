@@ -113,9 +113,9 @@ clusterdata<-clusterdata$FCM
       esse<-clusterdata.info$Coefficents$esse
       essed1<-clusterdata.info$Deriv.Coefficents$esse
       essed2<-clusterdata.info$Deriv2.Coefficents$esse
-      fDB<-clusterdata.info$Coefficents$DB.index
-      fDB1<-clusterdata.info$Deriv.Coefficents$DB.index
-      fDB2<-clusterdata.info$Deriv2.Coefficents$DB.index
+      fDB<-clusterdata.info$Coefficents$fDB.index
+      fDB1<-clusterdata.info$Deriv.Coefficents$fDB.index
+      fDB2<-clusterdata.info$Deriv2.Coefficents$fDB.index
       errei<-clusterdata.info$Coefficents$errei
       erreid1<-clusterdata.info$Deriv.Coefficents$errei
       erreid2<-clusterdata.info$Deriv2.Coefficents$errei
@@ -149,7 +149,6 @@ clusterdata<-clusterdata$FCM
       cat("\n######## fDB indexes ############\n")
       print(kable(fDB.indexes))
       cat("\n##############################################################")
-      
       ###########################
       
       

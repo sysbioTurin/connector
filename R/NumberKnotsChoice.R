@@ -65,14 +65,14 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
   SampleTestSet<-sample(1:n_sample,perc)
   SampleTestSet<-SampleTestSet[order(SampleTestSet)]
   
-  TestSet<-CONNECTORList$Dataset[CONNECTORList$Dataset$ID%in%SampleTestSet,]
-  TestSet <-data.frame(ID=rep(1:(length(SampleTestSet)),CONNECTORList$LenCurv[SampleTestSet]),Vol=TestSet$Vol[],Time=TestSet$Time)
+  TestSet<-data$Dataset[data$Dataset$ID%in%SampleTestSet,]
+  TestSet <-data.frame(ID=rep(1:(length(SampleTestSet)),data$LenCurv[SampleTestSet]),Vol=TestSet$Vol[],Time=TestSet$Time)
   
-  TrainingSet<-CONNECTORList$Dataset[-which(CONNECTORList$Dataset$ID%in%SampleTestSet),]
+  TrainingSet<-data$Dataset[-which(data$Dataset$ID%in%SampleTestSet),]
 
   #### Let define the FCM input matrix of ID sample, Points and time indexes per sample into the grid.
   
-  data.funcit <-matrix(c(rep(1:(n_sample-length(SampleTestSet)),CONNECTORList$LenCurv[-SampleTestSet]),TrainingSet$Vol,match(TrainingSet$Time,grid)),ncol=3,byrow=F)
+  data.funcit <-matrix(c(rep(1:(n_sample-length(SampleTestSet)),data$LenCurv[-SampleTestSet]),TrainingSet$Vol,match(TrainingSet$Time,grid)),ncol=3,byrow=F)
  
   CrossLikelihood<-sapply(p.values, CalcLikelihood, data.funcit,TestSet,grid)
   
