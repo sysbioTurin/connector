@@ -9,6 +9,8 @@
 #' @param save  If TRUE the bar plot of the PCA components is saved into a pdf file.
 #' @param path The folder path   where the plot will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#'  
 #' @return  PCA Analysis returns the bar plot of the PCA components and the vector of percentage values associated with the PCA components.
 #' @examples
 #'

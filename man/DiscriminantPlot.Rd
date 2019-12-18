@@ -24,10 +24,9 @@ DiscriminantPlot(clusterdata, h, data, feature, save = FALSE,
 \description{
 Gives a simple visualization regarding in which cluster each sample belongs.
 }
-\examples{
-
-
-}
 \references{
 Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
+}
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
 }

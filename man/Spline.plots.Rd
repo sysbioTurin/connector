@@ -18,3 +18,6 @@ Spline.plots(FCM.plots, All = TRUE, SampleNumber = NULL, path = NULL)
 \description{
 Saves the Cubic Spline plots from the ClusterWithMeanCurve output list (see \code{\link{ClusterWithMeanCurve}}). Each plot shows (i) in blue the sample curve, (ii) in red the cubic spline estimated from the FCM, (iii) in black the correspondive cluster mean curve, and finally (iv) the grey area represents the confidence interval.
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

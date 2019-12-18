@@ -23,3 +23,6 @@ Visualizes the h curve(s) representing the optimal weights to apply to each dime
 \references{
 Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

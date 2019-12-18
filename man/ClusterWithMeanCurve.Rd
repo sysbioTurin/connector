@@ -60,3 +60,6 @@ with f and g are two curves and f^{(q)} and g^{(q)} are their q-th derivatives. 
 \seealso{
 MostProbableClustering.Extrapolation, StabilityAnalysis, Spline.plots.
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

@@ -8,6 +8,7 @@
 #' @param SampleNumber The number/vector of the sample ID(s) referring to the curve(s) that will be saved.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #'  
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
 #'  
 #' @import ggplot2
 #' 

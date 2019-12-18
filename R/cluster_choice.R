@@ -15,6 +15,7 @@
 #'  @return
 #' ClusterChoice returns the matrices of the AIC and BIC values, a list of FCMList objects, the Elbow Method plot and the matrix containing the total withinness measures. The distance used to calculate the two last objects is the L2 distance.
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
 #' 
 #' @references
 #' Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.

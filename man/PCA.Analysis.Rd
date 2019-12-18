@@ -40,3 +40,6 @@ Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled 
 \seealso{
 \code{\link[fda]{create.bspline.irregular}}.
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

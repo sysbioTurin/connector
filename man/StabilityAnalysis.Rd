@@ -62,3 +62,6 @@ Hence, we can define the following indexes for obtaining a cluster separation me
 \seealso{
 MostProbableClustering.Extrapolation, BoxPlot.Extrapolation, ConsMatrix.Extrapolation.
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

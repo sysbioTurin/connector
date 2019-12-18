@@ -29,7 +29,7 @@
 #'CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:6)
 #'CrossLogLike$CrossLogLikePlot
 #' 
-#'
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
 #'
 #' @import ggplot2 fda plyr
 #' @importFrom MASS ginv

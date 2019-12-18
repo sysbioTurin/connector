@@ -27,3 +27,6 @@ CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 TimeGridDensity(CONNECTORList)
 
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

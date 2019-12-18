@@ -11,6 +11,8 @@
 #' @param save If TRUE then the following objects are saved: (i) the mean curves plot, (ii) the plots of each cluster showing the correspondive mean curve and the samples belonging to the cluster, (iii) one plot storing all the clustering plots, and (iv) the tables reporting the M, S, R and fDB indexes considering the 0, 1 and 2 derivatives.
 #' @param path  The folder path where the plots will be saved. If it is missing, the plots are saved in the current working  directory.
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#' 
 #' @return ClusterWithMeanCurve returns a list with three objects:
 #' \itemize{
 #' \item{PlotsCluster:}{a list storing the growth curves plots partitioned according to the cluster membership; }

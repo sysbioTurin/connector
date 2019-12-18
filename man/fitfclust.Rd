@@ -12,3 +12,6 @@ fitfclust(x = NULL, curve = NULL, timeindex = NULL, data = NULL,
 \description{
 FCM functions
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

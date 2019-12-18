@@ -19,7 +19,9 @@
 #' The first column, labeled  \emph{Time}, contains the time points of a sample. The second column, labeled by the sample name, contains  the data volume over the time.
 #' 
 #' Instead, the second file (i.e. AnnotationFile)  stores  the annotated information associated with the samples as a table in csv format so that  number of rows is equals to the total number of samples.
-#'
+#' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#' 
 #' @examples
 #'
 #' GrowDataFile<-"data/475dataset.xls"

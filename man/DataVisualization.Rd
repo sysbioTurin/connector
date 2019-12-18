@@ -37,3 +37,6 @@ DataVisualization(CONNECTORList,"Progeny",labels = c("time","volume","Tumor Grow
 \seealso{
 \code{\link{GrowthCurve}}, code{\link{TimeGridDensity}}.
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

@@ -33,9 +33,10 @@ CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("
 CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:6)
 CrossLogLike$CrossLogLikePlot
 
-
-
 }
 \references{
 Gareth M. James and Catherine A. Sugar, (2000). Principal component models for sparse functional data.
+}
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
 }
