@@ -20,6 +20,8 @@
 #'
 #'DataVisualization(CONNECTORList,"Progeny",labels = c("time","volume","Tumor Growth"))
 #'
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#' 
 #' @seealso  \code{\link{GrowthCurve}}, code{\link{TimeGridDensity}}.
 #' @import ggplot2
 #' @importFrom cowplot plot_grid

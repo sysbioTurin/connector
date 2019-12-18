@@ -37,3 +37,6 @@ CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("time","volume","Tumor Growth"))
 
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

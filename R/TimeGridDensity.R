@@ -7,6 +7,8 @@
 #' @param  save If TRUE then the density time grid plot is saved into a pdf file.
 #' @param  path	 The folder path where the plot will be saved. If it is missing, the plot is saved in the current working  directory.
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#'  
 #' @return Time Grid Density returns the time grid density plot as a ggplot object.
 #' 
 #' @examples

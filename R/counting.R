@@ -7,7 +7,10 @@
 #' @param data CONNECTORList.  (see \code{\link{DataImport}} or \code{\link{DataTruncation}})
 #' @param feature The column name reported in the AnnotationFile containing the feature  to be investigated.
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#'  
 #' @return CountingSample returns a list containing  1) a matrix composed by three columns: (i) cluster, (ii) the feature name, and (iii) the number of samples, and 2) a dataframe storing the sample names reported in the AnnotationFile and the corresponding  cluster membership.
+#' 
 #' 
 #' @examples
 #'

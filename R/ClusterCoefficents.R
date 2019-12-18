@@ -8,6 +8,8 @@
 #' @param fcm.fit The fitfclust output, the FCM algorithm, more details in [Sugar and James].
 #' @param deriv The derivative values (0, 1 or 2).
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#'  
 #' @return 
 #'     The following indexes are calculated for obtaining a cluster separation measure:
 #' \itemize{

@@ -14,6 +14,8 @@
 #' @return  DataTruncation returns the line plot of growth curves with a vertical line at the truncation time and the CONNECTORList updated with the following elements: (i) a data frame with three variables (ID curves, volume and time values truncated at the chosen time), (ii) a vector collecting the number of truncated observations collected per sample, a data frame matching curses  with the chosen feature, (iv) the vector storing all the truncated time points of the samples (i.e. truncated time grid).
 #' Furthermore, it prints an updated summary of the input data, updating the minimum and the maximum curve length after the data truncation.
 #'
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#' 
 #' @examples
 #'
 #'GrowDataFile<-"data/475dataset.xls"

@@ -10,7 +10,8 @@
 #' 
 #' @return GrowthCurve returns a list containing the line plot as ggplot object, namely GrowthCurve_plot, and data, i.e. the CONNECTORList.
 #' 
-#' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#'  
 #' @examples
 #' GrowDataFile<-"data/745dataset.xls"
 #' AnnotationFile <-"data/745info.txt"

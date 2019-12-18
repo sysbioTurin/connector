@@ -36,3 +36,6 @@ AnnotationFile <-"data/475info.txt"
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

@@ -8,14 +8,16 @@
 #' @param SampleNumber The number/vector of the sample ID(s) referring to the curve(s) that will be saved.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
 #'  
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
 #'  
 #' @import ggplot2
+#' @export
 #' 
 Spline.plots <- function(FCM.plots, All=TRUE, SampleNumber = NULL, path = NULL){
   
   n.samples<-length(FCM.plots$spline.plots)
   
-  if(ALL){ 
+  if(All){ 
     samplesIndexes<- 1:n.samples
   }else if(!is.null(SampleNumber)) {
     # select only the sample number between 1 and n.samples
@@ -25,7 +27,7 @@ Spline.plots <- function(FCM.plots, All=TRUE, SampleNumber = NULL, path = NULL){
       samplesIndexes<-1
     }
   }else{
-    warning(paste0("Select a number of the sample between 0 and ",n.samples,", or put the parameter ALL = True. Since neither the parameter All or SampleNumber were selected, it will be saved only the first curve."),immediate. = TRUE)
+    warning(paste0("Select a number of the sample between 0 and ",n.samples,", or put the parameter All = True. Since neither the parameter All or SampleNumber were selected, it will be saved only the first curve."),immediate. = TRUE)
     samplesIndexes<-1
   }
   

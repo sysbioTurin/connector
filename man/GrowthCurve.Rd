@@ -32,3 +32,6 @@ CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 GrowthCurve(CONNECTORLis,"Progeny",labels=c("Time","Volume","Tumor Growth"))
 
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

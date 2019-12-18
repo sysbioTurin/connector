@@ -8,6 +8,8 @@
 #'  @return
 #' MaximumDiscriminationFunction generates h plots as ggplot objects, showing the      the weights, applied to each dimension for determining the cluster membership, plotted as a single curve. 
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#'  
 #' @references
 #' Gareth M. James and Catherine A. Sugar, (2003). Clustering for Sparsely Sampled Functional Data. Journal of the American Statistical Association.
 #' 

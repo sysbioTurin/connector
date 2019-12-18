@@ -51,3 +51,6 @@ Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",fea
 NumberSamples<-CountingSamples(clusterdata=Malthus1,CONNECTORList,feature = "Progeny")
 
 }
+\author{
+Cordero Francesca, Pernice Simone, Sirovich Roberta
+}

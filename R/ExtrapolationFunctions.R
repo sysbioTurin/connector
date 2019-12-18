@@ -13,6 +13,8 @@
 #' \item{MostProbableClustering.Extrapolation}{extrapolates from StabilityAnalysis output list the most probable cluster among the several runs obtained  for G and h fixed.}
 #' }
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#'  
 #' @name ExtrapolationFuncs
 NULL
 #> NULL

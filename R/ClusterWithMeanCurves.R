@@ -11,6 +11,8 @@
 #' @param save If TRUE then the following objects are saved: (i) the mean curves plot, (ii) the plots of each cluster showing the correspondive mean curve and the samples belonging to the cluster, (iii) one plot storing all the clustering plots, and (iv) the tables reporting the M, S, R and fDB indexes considering the 0, 1 and 2 derivatives.
 #' @param path  The folder path where the plots will be saved. If it is missing, the plots are saved in the current working  directory.
 #' 
+#' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
+#' 
 #' @return ClusterWithMeanCurve returns a list with three objects:
 #' \itemize{
 #' \item{PlotsCluster:}{a list storing the growth curves plots partitioned according to the cluster membership; }
@@ -156,7 +158,7 @@ clusterdata<-clusterdata$FCM
       {
         order(symbols)[i]->index.symb # sorting from the lower to the higher mean curve w.r.t. the zero axis
         
-        plots[[i]]<- ggplot()+
+        plots[[paste(symbols[index.symb],"Cluster")]]<- ggplot()+
           geom_line(data=plot_data[plot_data$clusters==symbols[index.symb],], aes(x=time,y=means,linetype= as.factor(clusters)),size = 1.2 )+
           scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
           labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
@@ -204,7 +206,7 @@ clusterdata<-clusterdata$FCM
 
            ml <- marrangeGrob(list(Table1, Table2, Table3, Table4),nrow=4,ncol=1)
            
-           ggsave(paste0(path,"Indexes.pdf"),width=29, height = 20, units = "cm", ml)
+           ggsave(filename="Indexes.pdf",width=29, height = 20, units = "cm", ml, path=path)
            
        }
          
