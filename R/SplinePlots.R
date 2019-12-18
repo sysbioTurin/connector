@@ -35,7 +35,7 @@ Spline.plots <- function(FCM.plots, All=TRUE, SampleNumber = NULL, path = NULL){
       
       for(i in samplesIndexes)
       {
-        ggsave(filename = paste("Spline",i,"sample.pdf",sep="_"),plot=FCM.plots$spline.plots[[paste("Sample",i)]],width=29, height = 20, units = "cm",scale = 1,path = path)
+        ggsave(filename = paste("Spline",i,"sample.pdf",sep="_"),plot=FCM.plots$spline.plots[[paste("Sample ",i)]],width=29, height = 20, units = "cm",scale = 1,path = path)
       }
       
 }
