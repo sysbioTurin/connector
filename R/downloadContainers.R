@@ -18,11 +18,14 @@ downloadContainers <- function(containers.file=NULL){
     }
     else{
         containers <-read.table(containers.file,header=TRUE,row.names = 1)
+        #writeLines(containers, paste(path.package(package="connector"),"Containers/containersNames.txt",sep="/"))
+        
     }
 
 
     for(i in 1:dim(containers)[1]){
         system(paste("docker pull ",containers[i,1], sep=""))
     }
-    writeLines(containers, paste(path.package(package="connector"),"Containers/containersNames.txt",sep="/"))
+    
+ 
 }
