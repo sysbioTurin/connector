@@ -111,6 +111,8 @@ clusterdata<-clusterdata$FCM
       plots_spline<-list()
       ymax<-max(plot_data$means,curves$Vol)
       xmax<-max(grid)
+      ymin<-min(plot_data$means,curves$Vol)
+      xmin<-min(grid)
       
       esse<-clusterdata.info$Coefficents$esse
       essed1<-clusterdata.info$Deriv.Coefficents$esse
@@ -132,10 +134,11 @@ clusterdata<-clusterdata$FCM
       row.names(S.indexes)=paste("Cluster",row.names(S.indexes))
       cat("\n######## S indexes ############\n")
       print(kable(S.indexes))
-      cat("\n##############################################################")
+      cat("\n##############################################################\n")
       
       ##### Build the M data frame
-      cat("############################################################## \n######## M indexes ############\n")
+      cat("############################################################## \n
+          ######## M indexes ############\n")
       print(kable(emme))
       cat("\n##############################################################")
       
@@ -164,7 +167,7 @@ clusterdata<-clusterdata$FCM
           labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
           geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
           scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+
-          theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(0,ymax)+xlim(0,xmax)
+          theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(ymin,ymax)+xlim(xmin,xmax)
 
       }
       

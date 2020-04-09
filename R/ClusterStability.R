@@ -62,7 +62,7 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
   seed<-.Random.seed 
   assign(x = ".Random.seed", value = seed, envir = .GlobalEnv)
 
-  ALL.runs<-lapply(1:runs, function(i) ClusterChoice(CONNECTORList, G = G, h = h, p = p,seed=NULL) )
+  ALL.runs<-lapply(1:runs, function(i) ClusterChoice(data = data, G = G, h = h, p = p,seed=NULL) )
 
 ###### box plot generation #####
   Box.pl<-list()

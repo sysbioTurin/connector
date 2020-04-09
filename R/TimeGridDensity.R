@@ -44,17 +44,16 @@ TimeGridDensity <- function(data,save=FALSE,path=NULL)
   Time2 <- PointsCoord[,2]
   
   df <- data.frame(Time1=Time1,Time2=Time2)
-  df<-ddply(df,.(Time1,Time2),nrow)
+  #df<-ddply(df,.(Time1,Time2),nrow)
   
 
   ### Plot density grid
-  TimeGrid_plot <- ggplot(df) +
-                   geom_point(aes(Time1, Time2,col=V1), size = 4) +
-	               coord_fixed(ratio = 1) +
-                scale_color_gradientn(colours = c("#baffc9","#FF0000"),name="Number of \nobservations")+
-                 theme_bw() +
-	               labs(title="Time grid",x="Time", y = "Time")+
-                   theme(plot.title = element_text(hjust = 0.5),title =element_text(size=12, face='bold'))
+  TimeGrid_plot <- ggplot(df,aes(Time1, Time2)) +
+                    stat_density_2d( aes(fill=stat(nlevel)), geom = "polygon" )+
+                    scale_fill_gradientn(colours = c("#baffc9","#FF0000"),name="Freq. of \nobservations")+
+                  theme_bw() +
+	                labs(title="Time grid",x="Time", y = "Time")+
+                  theme(plot.title = element_text(hjust = 0.5),title =element_text(size=12, face='bold'))
 
   if(save==TRUE)
   {

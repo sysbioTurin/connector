@@ -1,6 +1,9 @@
 ---
-title: "CONNECTOR"
-author: "Pernice Simone, Sirovich Roberta, Cordero Francesca"
+title: "An Introduction to `connector`"
+author: "Simone Pernice, Roberta Sirovich and Francesca Cordero"
+date: "february 11, 2020"
+header-includes:
+   - \usepackage{amsfonts,amsmath}
 output: 
   pdf_document:
     toc: true
@@ -17,266 +20,330 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "##",
+  results = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  highlight = TRUE,
+  background = 'grey',
+  fig.cap = TRUE
 )
+rm(list=ls())
 ```
+# Introduction
 
-## How to install 
+Connector is built on the model-based approach for clustering functional data presented in [@james2003clustering]. Such method is particularly effective when the observations are sparse and irregularly spaced, as growth curves usually are. A review on the method and on the tools developed by the authors to suitably set the free parameters, please refer to [our NM paper].
 
-  To install **CONNECTOR** you can use devtools:
+[qui magari due parole sulla rilevanza biologica?] 
 
-```{r}
-# install.packages("devtools")
-# library(devtools)
+The method models individual curves $g_i$ using basis functions
+\begin{equation}\label{eq:gspline}
+	g_i(t) = \mathbf{s}(t)^T  \boldsymbol{\eta}_i,
+\end{equation}
+where $\mathbf{s}(t)$ is a $p-$dimensional spline basis vector and $\boldsymbol{\eta}_i$ is a vector of spline coefficients. The $\boldsymbol{\eta}_i$'s are treated with a random-effects model rather than considering them as parameters and fitting a separate spline curve for each individual. Moreover, a suitable parametrization of the mean curves allows a lower-dimensional representation of the curves with means in a restricted subspace. The model is fitted through an EM procedure.
 
-# install github("qBioTurin/connector", ref="master",dependencies=TRUE)
+Particular attention will be devoted to model selection. In particular, one must choose the number of clusters to fit, the dimension of the spline basis and the reduced dimension of the mean space. `connector` provides a complete toolkit to lead the user through such decisions, one of the most difficult problems in cluster analysis.
+
+
+
+
+# Installation
+
+The `connector` package is hosted on the GitHub platform. The simplest way to obtain `connector` is to install it using `devtools`. Type the following commands in R console:  
+
+```{r, eval=FALSE}
+
+# Install
+install.packages("devtools",repos = "http://cran.us.r-project.org")
+library(devtools)
+install_github("qBioTurin/connector", ref="master",dependencies=TRUE)
+# Load
 library(connector)
+
 ```
 
-## Data import 
+Users may change the `repos` options depending on their locations and preferences. For more details, see `help(install.packages)`.  
 
-### An example of connector analys
+```{r, echo=FALSE, results=FALSE}
 
-The MainCommandsList.R script contains the list of commands that can be used to reproduce the analysis described in the paper *”CONNECTOR: ....”*.
-To execute this script you can use *demo()*
+library(connector)
+
+```
+
+# Quick Start
+
+A demo is available to provide the list of commands to perform the analysis of one of the datasets considered in [ref: connector paper]. To run the example just type:  
+
+```{r, eval=FALSE}
+
+demo("MainCommandsList", package = "connector")
+
+```
+
+# Use case: tumor growth dataset
+
+We illustrate the functionalities and the usage of the `connector` package on a tumor growth curves dataset. It is included in the package's data and it is organized as any observed curves are expected by the package's functions.
+
+Observations should be saved into two distinct files:
+
+1. an excel file reporting the discretely sampled curve data. As functional data are longitudinal, we respect the convention of parametrizing the models in terms of time $t$ and y-values $y$. Each sample is represented as two columns of the excel file, the first one named *time* includes the lags list and the second one named with the *sample name* (each sample has different ID name, for example 475_P1b is the ID name of the first sample in the following figure) includes the list of observed $y$ values. Hence, if we record 24 tumor growth curves, the file have 48 columns. See Figure \ref{fig:xlsx}.
+
+1. a csv file containing the annotations associated to the sampled curves. It is composed by a number of rows equal to the number of samples. The first row gives the columns names as follows: the first twos must be a numerical ID and the corresponding ID name *sample name*. The remaing ones codify for the annotated features. Notice that the column *sample name* should contain the same ID names which appear in the sampled curve excel file. See Figure \ref{fig:csv}.
+
+
+![First lines of the excel file of the sampled curve data.\label{fig:xlsx}](./Fig/excel_file.png){ width=90% }
+
+![First lines of the csv file of the annotated features.\label{fig:csv}](./Fig/txt_file.png)
+
+## Data Importing
+
+Once data have been prepared in the two files above described, they are imported by the `DataImport` function. Two arguments, with the file names respectively, should be specified. In this example the full path names have been saved in the `GrwoDatFile` and `AnnotationFile` strings.
 
 ```{r}
-# demo("MainCommandsList", package = "connector")
-```
 
-```{r,echo=FALSE}
-#
-# Saving in GrowDataFile and AnnotationFile the path of the respective files
-#
-
+# find the full path names of the example files
 GrowDataFile<-system.file("data", "475dataset.xlsx", package = "connector")
 AnnotationFile <-system.file("data", "475info.txt", package = "connector")
-CONNECTORList<-DataImport(GrowDataFile = GrowDataFile,
-                          AnnotationFile = AnnotationFile)
-```
-
-
-
-The tumour growth data must be organized in two files: 
-
-1. the excel file **GrowDataFile** reporting the tumour growth evolution data,
-2. the csv file **AnnotationFile** containing the annotation information associated with the samples.
-
-The **GrowDataFile** is composed from two columns for each sample (i.e. PDX), containing the time points and the measure volume respectively. In our example, we have `r length(CONNECTORList$LabCurv[,1])` PDXs then the **GrowDataFile** is composed by `r length(CONNECTORList$LabCurv[,1])*2` columns.
-The columns names must be *Time* and *SampleName*, respectively.
-![Example of **GrowDataFile**.](./Fig/excel_file.png){ width=100% }
-
-
-The **AnnotationFile** is a comma-delimited file composed by a number of rows equal to the number of samples stored. In the example, **AnnotationFile** is composed by `r length(CONNECTORList$LabCurv[,1])` rows containing 
-
-.(i) the sample identifier, 
-.(ii) the sample name (the same used in the **GrowDataFile**), 
-.(iii) the feature(s) associated with each sample (in our data is the indication of the the progeny).
-The column names must be *ID*, *SampleName*, and *Name of the Feature(s)*. 
-
-![Example of **GrowDataFile**.](./Fig/txt_file.png)
-
-
-```{r}
-#
-# Saving in GrowDataFile and AnnotationFile the path of the respective files
-#
-
-GrowDataFile<-system.file("data", "475dataset.xlsx", package = "connector")
-AnnotationFile <-system.file("data", "475info.txt", package = "connector")
-```
-
-
-To import the data *DataImport*  function must be used.
-
-```{r}
+# import the samples
 CONNECTORList<-DataImport(GrowDataFile = GrowDataFile,
                           AnnotationFile = AnnotationFile)
 
-# Showing the CONNECTORList structure
-str(CONNECTORList, max.level = 1)
 ```
 
-The components of the **CONNECTORList** are:
+A list of four object is created:
 
-1. the data frame reporting ID, data and time values,
-2. the vector with the number of observations collected per sample, 
-3. the data frame matching the sample with their annotation reported in the **AnnotationFile**,
-4. the vector reporting the time grid points (i.e. time grid).
-
-
-## Data pre-processing 
-
-Through the *GrowthCurve* function is possible to plot the  growth evolution for each sample, which are coloured with respect to the feature selected from the **AnnotationFile**. 
 ```{r}
-### Growth curves visualization
+
+# show the CONNECTORList structure
+str(CONNECTORList)
+
+```
+
+The components of the `CONNECTORList` are:
+
+1. `$Dataset`, a data frame with three variables: `ID` of the curve, `Vol` the $y$ values and `Time` the time lags;
+
+2. `$LenCurv`, the vector of the number of observations per sample;
+
+3. `$LabCurv`, a data frame matching the sample with the corresponding annotated features. Hence the variables are extracted and named from the `AnnotationFile`;
+
+4. `$TimeGrid`, the vector of the complete time grid points.
+
+## Data Visualization 
+
+The `GrowthCurve` function provides a plot of the sampled curves coloured by a user selected feature out of the ones given in the `AnnotationFile`. In Figure \ref{fig:growthcurves} an example is illustrated. It has been produced by the following code:
+
+```{r, results="hide", fig.cap="Sampled curves, coloured by progeny feature. \\label{fig:growthcurves}"}
 
 GrowPlot<-GrowthCurve(data = CONNECTORList,
                       feature = "Progeny")
+GrowPlot
 
 ```
 
-To inspect the data available, the *DataVisualization* can be executed. This funciton plots the growth evolution for each sample and the time grid. The manner can be used to insect the growth trend of the original samples, while the latter is used to verify the density of the observations collected.
+The `DataVisualization` function plots the sampled curves and the density of the time grid. This latter plot may be used to verify the density of the collected observations and eventually decide for a truncation.
 
-In detail, a point $z$ is defined by a pair of coordinates $z=\left( x,y\right)$ and by a colour. The point $z$ is defined if only if exists at least one sample with the first observation at time $x$ and the next at time $y$. The colour associates with it encodes the number of samples in which $z$ is present. 
+```{r, fig.height = 3, fig.width = 7, fig.align = "center", fig.cap="Sampled curves, coloured by progeny feature (left panel) and time grid density (right panel). \\label{fig:gridDensity}"}
 
-```{r}
-
-### Growth curves and time grid visualization 
+# Growth curves and time grid visualization 
 Datavisual<-DataVisualization(data = CONNECTORList,
                               feature = "Progeny", 
                               labels = c("Time","Volume","Tumor Growth"))
-```
-
-
-```{r, fig.height = 3, fig.width = 7, fig.align = "center"}
 Datavisual
 
 ```
+
 ```{r, echo=F}
-truncTime = 50
+
+tronca = 70
+
 ```
-We developed the function *DataTruncation* to truncate the growth data at a specific time point considering their sparsity observed on the time grid. According to the observation from *Datavisual*, we truncated our growth data at `r truncTime` days.
+
+Curves may be (and it is often the case) irregularly and sparsely sampled. As a preliminary step, it may be useful to check whether the assembled pairs $(t_{i_j},t_{i_k})$, for alla subjects $i=1, \dots, n$ and lags $i_1,\dots,i_{n_i}$, are sufficiently dense in the domain plane. Low-density subregions may be excluded from the analysis and hence a truncation time for the observations imposed. The function `DataTruncation` have been developed to this aim. According to Figure \ref{fig:gridDensity}, we decide to truncate the observations at `r tronca` days.
 
 ```{r}
-# Data truncation at time 50
-CONNECTORList<-DataTruncation(data = CONNECTORList,
+
+# data truncation
+trCONNECTORList<-DataTruncation(data = CONNECTORList,
                               feature="Progeny",
-                              truncTime = 50,
+                              truncTime = 70,
                               labels = c("Time","Volume","Tumor Growth"))
+# the trCONNECTORList structure
+str(trCONNECTORList, max.level = 1)
 
-# Showing the new CONNECTORList structure
-str(CONNECTORList, max.level = 1)
+```
 
-# 
-CONNECTORList$GrowthCurve_plot
+The output of the function `DataTruncation` is a list of six objects. The firt four of which are the truncated versions of the `DataImport` function. The plot stored in `$GrowthCurve_plot` shows the sampled curves plot with a vertical line at the truncation time, see Figure \ref{fig:truncation}.
+
+```{r, fig.cap="Sampled curves, coloured by progeny feature and truncation lag (vertical solid black line). \\label{fig:truncation}"}
+
+# plot
+trCONNECTORList$GrowthCurve_plot
 
 ```
 
 
+## Model Selection Tools
 
-The plot stored in *CONNECTORList$GrowthCurve_plot* shows the growth curve plot with a vertical line at the truncating time; this plot and the updated version of the **CONNECTORList** are the output of *DataTruncation*. 
+Several model selection questions need a tool set to be addressed. In particular the free parameters to be set are:
+
+1. the spline basis dimension, $p$;
+
+2. the the mean space dimension, $h$;
+
+3. the number of clusters, $G$.
+
+We developed a tool to help the user define each of the above parameters. Let us stress out that rough choices for the free parameters may compromise the full analysis. 
+
+### The spline basis dimension
+
+As proposed in [@james2000principal], the dimension of the spline basis $p$ can be taken to corresponding to the largest cross-validated likelihood. The function `BasisDimension.Choice` performs a ten-fold crossvalidation for each of the values of `p` decided by the user. The `$CrossLogLikePlot` element of the output gives a visual representation of the results, see Figure \ref{fig:crossloglike}. Each gray dashed line corresponds to the crossloglkelihood values obtained on different test/learning sets and the solid black line is their mean value. The user should choose the the smallest value of `p` that ensures larger values of the mean crossloglikelihood function. It may be useful to keep in mind that working with sparse data encourage to spare parameters and hence smaller values of $p$ are preferable. 
 
 
+```{r, fig.height = 3, fig.width = 7, fig.align = "center",fig.cap="Cross-validated loglikelihood functions. \\label{fig:crossloglike}"}
 
-## Data fitting and clustering
-
-The Functional Clustering Model (FCM) is implemented exploiting the data model proposed by James and Sugar @James.  This approach is particularly effective when the observations are sparse, irregularly spaced, and curves are sampled at different times. 
-
-The FCM is based on two-steps procedure:
-
-.(i) the original infinite-dimensional problem is converted into a finite-dimensional problem using basis functions (natural cubic splines) with a random-effects model for the coefficients,
-.(ii) a classical clustering tools for finite dimensional data is applied. 
-
-However, before performing the FCM analysis, it is necessary to identify:
-**the number of knots**  (denoted as $p$)  to use in the spline basis, **the dimension of the mean space** (denoted as $h$), **the number of clusters** (denoted as $G$) to fit the data.
-Then, the unknown cluster memberships are treated as missing data and included into the expectation and maximization algorithm for the estimation of the functional clustering model parameters. 
-
-### Choice of the spline basis dimension, p.
-
-The first important issue to cope with is the selection of the spline basis. The approach proposed consists to take the dimension of the basis, $p$, to corresponding to the largest cross-validated likelihood. 
-
-As input is necessary to pass the range ..... cuols be usefull to consider the console output generated from the *DataTruncation* ....
-
-In details, for each number of knots 10\% of the curves from the whole data set are removed and treated as a test set, then the remaining curves are fitted using the FCM and the loglikelihood on the test set is calculated. The process is then repeated nine more times. Finally the $p$ corresponding to the maximum loglikelihood has to be selected. In particular, to guide this choice  *BasisDimension.Choice*  returns a line plot in which the loglikelihood for each value of $p$, in grey the result of all ten tests and in black the mean.
-
-```{r, fig.height = 3, fig.width = 7, fig.align = "center"}
-### Calculation of p
-CrossLogLike<-BasisDimension.Choice(data = CONNECTORList,
+# ten-fold crossvalidation 
+CrossLogLike<-BasisDimension.Choice(data = trCONNECTORList,
                                     p = 2:6 )
-
 CrossLogLike$CrossLogLikePlot
 
-# p is 
-p=3
+# set p
+p <- 3
+
 ```
+Hence, in the current example, we set $p=3$, as it is the smallest value that ensures a large loglikelihood.
 
-Considering our experiment, the number of knots ($p$) varies from two to six and analysing the plot *CrossLogLikePlot*,  it is possible to deduce that the sub optimal value for $p$ is between three and six. Although the true $p$ corresponding to the maximum loglikelihood is six,  it is better to opt for the smallest value in favor of a more parsimonious model, so we decide to choice $p$ equal to three.
+### The mean space dimension
 
-### Choice of dimension of the mean space, h.
+The dimension of the mean space is guided through a principal component analysis (PCA). The `PCA.Analysis` function applies PCA to the spline coefficients of each curve in order to capture the variance in the set of variables. In `$plot`, it is stored the bar plot of the percentage of variability in each component, see Fig. \ref{fig:pca}. 
 
- The *PCA.Analysis* function applies the Principal Component Analysis (PCA) to the spline coefficients of each curve in order to capture the variance in the set of variables. This function returns the bar plot and a vector describing the percentage of data variability associated with each component.
+```{r, fig.height = 5, fig.width = 6, fig.align = "center", fig.cap="Bar plot of the variability explained by each component of the model. \\label{fig:pca}"}
 
-```{r, fig.height = 5, fig.width = 6, fig.align = "center"}
-### Calculation of h
-pca <- PCA.Analysis(data = CONNECTORList,
+# Calculation of h
+pca <- PCA.Analysis(data = trCONNECTORList,
                     p = p)
-
 pca$plot
 
-# h is 
-h=1
+# set h
+h <- 1
+
 ```
 
-The plot shows the percentage of variability of our PDX data, so the number of components that we considered was equal to `r h` in order to cover `r sum(pca$perc[1:h])`\% of the variability. 
- 
+In this example we set $h$ equal to `r h` in order to cover up to `r round(sum(pca$perc[1:h]),0)`\% of the total variability. 
 
-### Choice of the number of clusters, G.
-```{r, fig.height = 5, fig.width = 5, fig.align = "center"}
-### Stability Analysis
-Stability.clustering <-StabilityAnalysis(data = CONNECTORList,
-                                         G = 2:6, 
+### The number of clusters
+
+Setting properly the number of clusters to fit is a well known problem in cluster analysis. `connector` provides two different plots to guide the user. 
+
+In [qui rif al nostro paper] we introduced two measures of proximity, the *total tightness* $T$ and the *functional Davied-Bouldin index* fDB. Both measures rely on on the family of semi-metrics between curves defined as
+\begin{equation}\label{eq:qsemimetrics}
+	D_q(f,g) = \sqrt{ \int \left| f^{(q)}(s)-g^{(q)}(s) \right|^2 ds }, \qquad d=0,1,2,
+\end{equation} 
+where $f$ and $g$ are two curves and $f^{(q)}$ and $g^{(q)}$ are their $q$th derivatives. 
+
+The *total tightness* $T$ is the dispersion measure defined as
+\begin{equation}\label{eq:totalT}
+	 T = \sum_{k=1}^G \sum_{i=1}^n D_0(\hat{g}_i, \bar{g}^k),
+\end{equation}
+where $\hat{g}_i$ is the estimated $i$--th curve given in eq. \eqref{eq:gsplinepred} and $\bar{g}^k$ is the center of $k$--th cluster given in eq. \eqref{eq:splinemeancurve}. As the number of clusters increases, the total tightness decreases to zero, the value which is attained when the number of fitted clusters equals the number of sampled curves. In this limiting case, any $k$th cluster mean curve coincides with an estimated curve and $D_0(\hat{g}_i, \bar{g}^k) = 0$ for any $i$ and $k$. A proper number of clusters can be inferred as large enough to let the total tightness drop down to relatively little values but as the smallest over which the total tightness does not decrease substantially. Hence, we look for the location of an ``elbow" in the plot of the total tightness against the number of clusters. 
+
+
+In [qui rif al nostro paper] we defined a second index, which is a cluster separation measure, and we called it *functional* DB (fDB). It is defined as follows
+\begin{equation}\label{eq:fDB}
+	\mbox{fDB}_q = \frac{1}{G} \sum_{k=1}^G \max_{h \neq k} \left\{  \frac{S_h + S_k}{M_{hk}}  \right\},
+\end{equation} 
+where, for each cluster $k$ and $h$ 
+\begin{equation*}
+	S_k = \sqrt{\frac{1}{G_k} \sum_{i=1}^{G_k} D_q^2(\hat{g}_i, \bar{g}^k)} \qquad \mbox{and} \qquad  M_{hk} =  D_q(\bar{g}^h, \bar{g}^k),
+\end{equation*}
+with $G_k$ the number of curves in the $k$th cluster. The significance of eq. \eqref{eq:fDB} can be understood as the average of the blend measures of each cluster from its most overlapping cluster. The ``best" choice of clusters, then, will be that which minimizes this average blend. 
+
+To effectively take advantage of those two measures, `connector` supplies the function `StabilityAnalysis` which repeats the clustering procedure a number of times equal to the parameter `runs` and for each of the number of clusters given in the parameter `G`. The output of the function is a list of 3, and by means of the function `BoxPlot.Extrapolation` the two plots represented in Figure \ref{fig:TandfDB} can be extracted and plotted.
+
+
+```{r,message=FALSE, eval=FALSE}
+
+Stability.clustering <-StabilityAnalysis(data = trCONNECTORList,
+                                         G = 2:5, 
                                          h = h,
                                          p = p,
                                          runs = 100)
 
-# Showing the Stability.clustering structure
+```
+
+```{r,message=FALSE,echo=F}
+if(!file.exists("stability.RData"))
+{
+  Stability.clustering <-StabilityAnalysis(data = trCONNECTORList,
+                                         G = 2:5, 
+                                         h = h,
+                                         p = p,
+                                         runs = 100)
+  
+  save(Stability.clustering, file = "stability.RData")
+}else{
+  load("stability.RData")
+}
+
+```
+
+```{r}
+# the output structure
 str(Stability.clustering, max.level = 1, vec.len=1)
+
 ```
 
 
-```{r, fig.height = 7, fig.width = 16, fig.align = "center"}
-### Using the Box Plots you can understand the optimal number of cluster, G.
+```{r, fig.height = 7, fig.width = 16, fig.align = "center",fig.cap="\\label{fig:TandfDB} Box Plots of the {\\it total tightness} $T$ calculated on each run and for different number of clusters $G$ (left panel).  Box Plots of the {\\it functional DB index} fDB calculated on each run and for different number of clusters $G$ (right panel)."}
+
 BoxPlot.Extrapolation(stability.list = Stability.clustering,
                       h = h)
-# Both G = 4 or 5 are characterized by a low fDB index and
-# a small variation in the Elbow plot
+G <- 5
+
 ```
 
-```{r, fig.height =4, fig.width = 6, fig.align = "center",fig.cap=c("\\label{fig:ConsMatg4} Consensus Matrix for G = 4. ","\\label{fig:ConsMatg5} Consensus Matrix for G = 5. ")}
-# Looking at the Consensus Matrix is possible to understand how much the clustering
-# obtained is steable.
-ConsMatrix.Extrapolation(stability.list = Stability.clustering,
-                         h = h,
-                         G = 4)
+The left panel shows that $G=4$ and $G=5$ may be good choices for the parameter. The fDB indexes Box Plots plotted in the right panel lead the choice to $G=4$, a number of clusters that explicitly minimizes the fDB index. Hence, for the illustrated example, we are choosing $G=5$.
+
+The variability of the two measures among runs, exhibited in Figure \ref{fig:TandfDB}, is related to the random initialization of the k-means algorithm to get initial cluster memberships from points. The stability of the clustering procedure can be visualized through the consensus matrix extrapolated by the function `ConsMatrix.Extrapolation`, as shown in Figure \ref{fig:ConsMatg4}
+
+```{r, fig.height =4, fig.width = 6, fig.align = "center",fig.cap="\\label{fig:ConsMatg4} Consensus Matrix for G = 4. "}
 
 ConsMatrix.Extrapolation(stability.list = Stability.clustering,
                          h = h,
-                         G = 5)
-
-# G is
-G =4
+                         G = G)
 ```
+
+Once the free parameters are all set, the function `MostProbableClustering.Extrapolation` can be used to fix the most probable clustering with given dimension of the spline basis $p$, dimension of the mean space $h$ and number of clusters $G$ and save the result in a dedicated object.
 
 ```{r, fig.height = 6, fig.width = 6, fig.align = "center", out.width= '90%'}
-# Fixed the h and G values, here we are able to extrapolate the most probable clustering.
+
 CONNECTORList.FCM.opt<-MostProbableClustering.Extrapolation(
                                                   stability.list = Stability.clustering,
                                                   h = h,
                                                   G = G )
 ```
 
-## Clustering visualization
+## Results Visualization and Inspection
 
-When the user has identified the (sub)optimal values $optp$, $opth$ and $optG$ for the parameters $p$, $h$ and $G$, it is possible to visualize the plot reporting the mean curves for each cluster and the original growth curves separated according to the obtained clusters.
+`connector` provides the function `ClusterWithMeanCurve` which plots the sampled curves grouped by cluster membership, together with the mean curve for each cluster, see Figure \ref{fig:clusters}. The function prints as well the values for $S_h$, $M_{hk}$ and fDB given in equation \eqref{eq:fDB}.
 
-```{r, fig.height = 10, fig.width = 15, fig.align = "center"}
+```{r, fig.height = 10, fig.width = 15, fig.align = "center", fig.cap="\\label{fig:clusters} Sampled curves grouped by cluster membership."}
+
 FCMplots<- ClusterWithMeanCurve(clusterdata = CONNECTORList.FCM.opt,
-                                data = CONNECTORList,
+                                data = trCONNECTORList,
                                 feature = "Progeny",
                                 labels = c("Time","Volume"),
                                 title = paste("FCM model h=",h))
+
 ```
 
-In our case of study, the $optG $ and $opth$ are equal to four and one, respectively. Figure ... reports the four cluster mean, while the Figure ... reports the PDX growth curves separated in the four clusters. \\
-To help the user to understand the goodness of the clustering obtained, using *DiscriminantPlot* is possible to identify with a simple visualization which cluster each sample belongs, for more details @James. Specifically, two versions of the same discriminant linear plot are generated showing in a $h-$dimensional space the cluster membership of each curve. In the first case the symbols identifying the elements of different clusters are colored depending on the cluster membership (Figure \ref{fig:DiscrPlotCL}), and in the second plot the symbols are colored depending the selected feature  (Figure \ref{fig:DiscrPlotF}).
+A detailed visualization of the clusterization of the sample curves can be obtained by means of the `DiscriminantPlot` function. In [@james2003clustering], the authors describe how to obtain low-dimensional plots of curve datasets, enabling a visual assessment of clustering. They propose to project the curves into the lower dimensional space of the mean space, so that they can be plotted as points (with coordinates the functional linear discriminant components), making it much easier to detect the presence of clusters. Moreover, in case $h=1$ and hence one single functional linear discriminant component is calculated, they suggest to plot it versus the standard deviation to indicate the level of accuracy with which it has been observed. In the case study here described, we get the plots in Figure \ref{fig:DiscrPlotCL} which is coloured by cluster membership and in Figure \ref{fig:DiscrPlotF} which is coloured by the user selected feature called `"Progeny"`.
 
-In our experiment, since `r paste("h =",h)`, an one dimensional discriminant linear plot is generated, where the dotted vertical lines represent the cluster centers. Thus, what we expect is no presence of significant and elements in the same cluster near to the vertical line representing the corresponding cluster center, as in Figure \ref{fig:DiscrPlotCL}.
 
-```{r, fig.height = 4, fig.width = 6, fig.align = "center",fig.cap=c("\\label{fig:DiscrPlotCL} Discrimination Linear plots colored depending on the cluster membersheep.", "\\label{fig:DiscrPlotF} Discrimination Linear plots colored depending on the feature.") }
-### Disriminant Plot (goodness of the cluster) 
+```{r, fig.height = 4, fig.width = 6, fig.align = "center",fig.cap=c("\\label{fig:DiscrPlotCL} Curves projected onto the 1-dimensional mean space: the functional linear discriminant $\\alpha_1$ versus the standard deviation. Symbols are coloured by cluster membership.", "\\label{fig:DiscrPlotF} Curves projected onto the 1-dimensional mean space: the functional linear discriminant $\\alpha_1$ versus the standard deviation. Symbols are coloured by progeny.") }
+
 DiscrPlt<-DiscriminantPlot(clusterdata = CONNECTORList.FCM.opt,
-                           data = CONNECTORList,
+                           data = trCONNECTORList,
                            h = h,
                            feature = "Progeny")
 
@@ -285,23 +352,68 @@ DiscrPlt$ColCluster
 DiscrPlt$ColFeature
 ```
 
-In the end, to inspect the composition of the clusters obtained, the function *CountingSamples* reports the number and the name of samples in each cluster according to the feature selected by the user.
+In the end, to inspect the composition of the clusters, the function `CountingSamples` reports the number and the name of samples in each cluster according to the feature selected by the user.
 
-```{r, fig.height = 6, fig.width = 6, fig.align = "center"}
-### Counting samples distribution into the clusters
+```{r, fig.height = 4, fig.width = 6, fig.align = "center"}
+
 NumberSamples<-CountingSamples(clusterdata = CONNECTORList.FCM.opt,
-                               data = CONNECTORList,
+                               data = trCONNECTORList,
                                feature = "Progeny")
 
-# Showing the NumberSamples structure
 str(NumberSamples, max.level = 2)
+
 ```
 
-## Advanced analysis
+# Advanced Topics
 
-```{r, fig.height = 6, fig.width = 6, fig.align = "center"}
-### Plotting discriminant functions
+In [@james2003clustering] the authors suggest to consider all the information about the traits that distinguish one cluster from another. In particular, they calculate the optimal weights to apply to each dimension for determining cluster membership. It turns out that when $h=1$ such weights are a vector and can be plotted as in Figure \ref{fig:discrimination}. 
+
+```{r, fig.height = 4, fig.width = 6, fig.align = "center", fig.cap="\\label{fig:discrimination} Discriminant curve."}
+
 MaxDiscrPlots<-MaximumDiscriminationFunction(clusterdata = CONNECTORList.FCM.opt)
 
 MaxDiscrPlots
+
 ```
+Large absolute values correspond to large weights and hence large discrimination between clusters. Roughly speaking Figure \ref{fig:discrimination} tells us that earlier measurements are important in determining cluster assignment as well as latter ones.
+
+
+# Details on the functional clustering model 
+
+The curves, $g_i(t)$ for each $i$th selected individual, are supposed to be observed with measurement errors and only at few discrete time points. Hence the vector $\mathbf{Y}_i$ of observed values at times $t_{i_1}, \dots , t_{i_{n_i}}$ is given as
+\begin{equation*}
+	\mathbf{Y}_i = \mathbf{g}_i + \boldsymbol{\varepsilon}_i,
+\end{equation*}
+where $\mathbf{g}_i$  and $\boldsymbol{\varepsilon}_i$ are the vectors of true values and measurement errors at time grid, respectively. As there are only finite number of observations, individual curves are modeled using basis functions, in particular cubic splines. Let
+\begin{equation}\label{eq:gspline}
+	g_i(t) = \mathbf{s}(t)^T  \boldsymbol{\eta}_i,
+\end{equation}
+where $\mathbf{s}(t)$ is a $p-$dimensional spline basis vector and $\boldsymbol{\eta}_i$ is a vector of spline coefficients. The $\boldsymbol{\eta}_i$'s are treated with a random-effects model rather than considering them as parameters and fitting a separate spline curve for each individual. Cluster means are furthermore rewritten as
+\begin{equation*}
+	\boldsymbol{\mu}_{k} = \boldsymbol{\lambda}_0 + \Lambda \boldsymbol{\alpha}_k,
+\end{equation*}
+where $\boldsymbol{\lambda}_0$ and $\boldsymbol{\alpha}_k$ are $p-$ and $h-$ dimensional vectors, $\Lambda$ is a $(p,h)$ matrix and $h \leq \min(p,G-1)$, where $G$ denote the true number of clusters. This parametrization allows a lower-dimensional representation of the curves with means in a restricted subspace (for $h < G-1$).
+
+With this formulation, the functional clustering model can be written as
+\begin{eqnarray}
+	\mathbf{Y}_i =S_i  \cdot ( \boldsymbol{\lambda}_0 + \Lambda \boldsymbol{\alpha}_{\mathbf{z}_i} +  \boldsymbol{\gamma}_i) +  \boldsymbol{\varepsilon}_i, \quad i=1, \dots, n,\nonumber\\
+	\boldsymbol{\varepsilon}_i \sim  \mathcal{N} (\mathbf{0},R), \quad  \boldsymbol{\gamma}_i \sim   \mathcal{N} (\mathbf{0},\Gamma), \qquad \qquad
+\end{eqnarray}
+where $S_i = (\mathbf{s}(t_{i_1}),\dots,\mathbf{s}(t_{i_{n_i}}))^T$ is the spline basis matrix for the $i-$th curve. 
+
+The model is fitted following [@james2003clustering] and all the estimated parameters and the predicted cluster membership are returned. Notice that the $k$th cluster mean curve can be retrieved as
+\begin{equation}\label{eq:splinemeancurve}
+	\bar{g}^k(t) = \mathbf{s}(t)^T ( \hat{\boldsymbol{\lambda}}_0 + \hat{\Lambda} \hat{ \boldsymbol{\alpha}}_k).
+\end{equation}
+Moreover, the functional clustering procedure can accurately predict unobserved portions of the curves $g_i(t)$ by means of the natural estimate
+\begin{equation}\label{eq:gsplinepred}
+	\hat{g}_i(t) =  \mathbf{s}(t)^T  \hat{\boldsymbol{\eta}}_i,
+\end{equation}
+where $\hat{\boldsymbol{\eta}}_i$ is a prediction for $\boldsymbol{\eta}_i$ which is proven to be optimally computed as $\mathbb{E}( \boldsymbol{\eta}_i \;|\; \mathbf{Y}_i)$ and explicitly given in [@james2003clustering], eq. (17). 
+
+# References
+
+---
+nocite: |
+  @ClassicalModels
+...
