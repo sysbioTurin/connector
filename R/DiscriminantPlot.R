@@ -36,7 +36,7 @@ DiscriminantPlot<-function(clusterdata,h,data,feature,save=FALSE,path=NULL)
   Feature <- data$LabCurv[paste(feature)]
   
   col<- as.character(unlist(unique(Feature)) )
-  col1<- data$ColFeature
+  colFetaure <- rainbow(dim(unique(data$Lab[feature]))[1])
   
   symbols<-clusterdata$FCM$cluster$cluster.names
   
@@ -61,7 +61,7 @@ DiscriminantPlot<-function(clusterdata,h,data,feature,save=FALSE,path=NULL)
       geom_vline(xintercept = projectedclustcenters)+
       xlab("Alpha")+ylab('Standard Deviation')+
       labs(title="Discriminant plot")+
-      scale_colour_manual(values = col1,limits=col,breaks=col,name=feature )+
+      scale_colour_manual(values = colFetaure,limits=col,breaks=col,name=feature )+
       scale_shape_manual("Cluster",values=cl.names) +
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
   }
@@ -85,7 +85,7 @@ DiscriminantPlot<-function(clusterdata,h,data,feature,save=FALSE,path=NULL)
       geom_text(data = DataFrameCluster,aes(x=projectedclustcenters1,y=projectedclustcenters2,label=Center),size=5,show.legend = F)+
       xlab("Alpha 1")+ylab('Alpha 2')+
       labs(title="Discriminant plot")+
-      scale_colour_manual(values = col1,limits=col,breaks=col,name=feature )+
+      scale_colour_manual(values = colFetaure,limits=col,breaks=col,name=feature )+
       scale_shape_manual("Cluster",values=cl.names,labels=paste(names(cl.names),", c.",symbols,sep=""),breaks=names(cl.names)) +
       theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
   }

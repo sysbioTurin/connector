@@ -51,154 +51,141 @@
 #' @export
 ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c("","") ,save=FALSE,path=NULL )
 {
-axis.x<-labels[1]
-axis.y<-labels[2]
+  axis.x<-labels[1]
+  axis.y<-labels[2]
 
-clusterdata.info<-clusterdata$Cl.Info
-clusterdata<-clusterdata$FCM
+  clusterdata.info<-clusterdata$Cl.Info
+  clusterdata<-clusterdata$FCM
 
-    if(!is.null(clusterdata$fit))
-    {
-      G<-length(clusterdata$prediction$meancurves[1,])
+  if(!is.null(clusterdata$fit))
+  {
+    G<-length(clusterdata$prediction$meancurves[1,])
       
-      clusterdata$cluster$cluster.member -> classes
-      clusterdata$prediction$meancurves -> meancurves
-      clusterdata$fit$grid -> grid
-      symbols<-clusterdata$cluster$cluster.names
+    clusterdata$cluster$cluster.member -> classes
+    clusterdata$prediction$meancurves -> meancurves
+    clusterdata$fit$grid -> grid
+    symbols<-clusterdata$cluster$cluster.names
+    
+  }else{
+    warning("An object returned by Cluster_choice is required.",immediate. = TRUE)
+  }
+
+  classificate <- rep(classes,data$LenCurv)
+  curves <- data.frame(Times=data$Dataset$Time,Vol=data$Dataset$Vol,ID=data$Dataset$ID,Cluster=classificate, Info=rep(t(data$LabCurv[feature]),data$LenCurv))
+  # cut the meancurves at the growth curves' maximum time
+    
+  meancurves_truncated<-c()
+  time3<-c()
+  cluster<-c()
+    
+  for(clust in 1:G)
+  {
+    time2<-sort(unique(curves[curves$Cluster==clust,]$Times))
+    m<-meancurves[,clust][grid%in%time2]
+    time3<-c(time3,grid[grid%in%time2])
+    meancurves_truncated<-c(meancurves_truncated,m)
+    cluster<-c(cluster,rep(symbols[clust],length(grid[grid%in%time2])))
+  }
+  cl.names<-clusterdata$cluster$cluster.names
+  
+  plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
+    
+  PlotMeanCurve<-ggplot()+
+    geom_line(data=plot_data, aes(x=time,y=means,group=clusters,linetype= as.factor(clusters)),size=1 )+  
+    scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols), name="Cluster") +
+    labs(title=title, x=axis.x, y=axis.y, linetype="Cluster")+
+    theme(plot.title = element_text(hjust = 0.5), axis.line = element_line(colour = "black"), panel.background = element_blank())
+
+    col<- as.character(unique(curves$Info))
+    colFetaure <- rainbow(dim(unique(data$Lab[feature]))[1])
+    
+    plots<-list()
+    plots_spline<-list()
+    ymax<-max(plot_data$means,curves$Vol)
+    xmax<-max(grid)
+    ymin<-min(plot_data$means,curves$Vol)
+    xmin<-min(grid)
+    
+    esse<-clusterdata.info$Coefficents$esse
+    essed1<-clusterdata.info$Deriv.Coefficents$esse
+    essed2<-clusterdata.info$Deriv2.Coefficents$esse
+    fDB<-clusterdata.info$Coefficents$fDB.index
+    fDB1<-clusterdata.info$Deriv.Coefficents$fDB.index
+    fDB2<-clusterdata.info$Deriv2.Coefficents$fDB.index
+    errei<-clusterdata.info$Coefficents$errei
+    erreid1<-clusterdata.info$Deriv.Coefficents$errei
+    erreid2<-clusterdata.info$Deriv2.Coefficents$errei
+    
+    emme<-clusterdata.info$Coefficents$emme
+    row.names(emme)=paste("Cluster",row.names(emme))
+    colnames(emme)=paste("Cluster",colnames(emme))
       
-    }else{
-      warning("An object returned by Cluster_choice is required.",immediate. = TRUE)
-}
+    ##### Build the S data frame  
+    S.indexes<-data.frame(S=esse,S_1=essed1,S_2=essed2)
+    row.names(S.indexes)=paste("Cluster",row.names(S.indexes))
+    cat("\n######## S indexes ############\n")
+    print(kable(S.indexes))
+    cat("\n##############################################################\n")
     
+    ##### Build the M data frame
+    cat("############################################################## \n
+        ######## M indexes ############\n")
+    print(kable(emme))
+    cat("\n##############################################################")
     
+    ##### Build the R data frame  
+    R.indexes<-data.frame(R=errei,R_1=erreid1,R_2=erreid2)
+    row.names(R.indexes)=paste("Cluster",row.names(R.indexes))
+    cat("\n######## R indexes ############\n")
+    print(kable(R.indexes))
+    cat("\n##############################################################")
     
-
-    classificate <- rep(classes,data$LenCurv)
+    ##### Build the fDB data frame 
+    fDB.indexes<-data.frame(fDB=fDB,fDB_1=fDB1,fDB_2=fDB2)
+    cat("\n######## fDB indexes ############\n")
+    print(kable(fDB.indexes))
+    cat("\n##############################################################")
+    ###########################
     
-    curves <- data.frame(Times=data$Dataset$Time,Vol=data$Dataset$Vol,ID=data$Dataset$ID,Cluster=classificate, Info=rep(t(data$LabCurv[feature]),data$LenCurv))
-    
-
-    
-    # cut the meancurves at the growth curves' maximum time
-    
-    meancurves_truncated<-c()
-    time3<-c()
-    cluster<-c()
-    
-    for(clust in 1:G)
+    for(i in 1:G)
     {
-      time2<-sort(unique(curves[curves$Cluster==clust,]$Times))
-      m<-meancurves[,clust][grid%in%time2]
-      time3<-c(time3,grid[grid%in%time2])
-      meancurves_truncated<-c(meancurves_truncated,m)
-      cluster<-c(cluster,rep(symbols[clust],length(grid[grid%in%time2])))
+      order(symbols)[i]->index.symb # sorting from the lower to the higher mean curve w.r.t. the zero axis
+      
+      plots[[paste(symbols[index.symb],"Cluster")]]<- ggplot()+
+        geom_line(data=plot_data[plot_data$clusters==symbols[index.symb],], aes(x=time,y=means,linetype= as.factor(clusters)),size = 1.2 )+
+        scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
+        labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
+        geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
+        scale_colour_manual(values = colFetaure,limits=col,breaks=col,name=feature)+
+        theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(ymin,ymax)+xlim(xmin,xmax)
     }
-    cl.names<-clusterdata$cluster$cluster.names
-    
-
-    plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
-    
-    PlotMeanCurve<-ggplot()+
-      geom_line(data=plot_data, aes(x=time,y=means,group=clusters,linetype= as.factor(clusters)),size=1 )+  
-      scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
-      labs(title=title, x=axis.x, y = axis.y,linetype="Cluster")+
-      theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())
-
-    
-      col<- as.character(unique(curves$Info))
-      col1<- data$ColFeature
-      plots<-list()
-      plots_spline<-list()
-      ymax<-max(plot_data$means,curves$Vol)
-      xmax<-max(grid)
-      ymin<-min(plot_data$means,curves$Vol)
-      xmin<-min(grid)
       
-      esse<-clusterdata.info$Coefficents$esse
-      essed1<-clusterdata.info$Deriv.Coefficents$esse
-      essed2<-clusterdata.info$Deriv2.Coefficents$esse
-      fDB<-clusterdata.info$Coefficents$fDB.index
-      fDB1<-clusterdata.info$Deriv.Coefficents$fDB.index
-      fDB2<-clusterdata.info$Deriv2.Coefficents$fDB.index
-      errei<-clusterdata.info$Coefficents$errei
-      erreid1<-clusterdata.info$Deriv.Coefficents$errei
-      erreid2<-clusterdata.info$Deriv2.Coefficents$errei
-      
-      emme<-clusterdata.info$Coefficents$emme
-      row.names(emme)=paste("Cluster",row.names(emme))
-      colnames(emme)=paste("Cluster",colnames(emme))
-      
-      
-      ##### Build the S data frame  
-      S.indexes<-data.frame(S=esse,S_1=essed1,S_2=essed2)
-      row.names(S.indexes)=paste("Cluster",row.names(S.indexes))
-      cat("\n######## S indexes ############\n")
-      print(kable(S.indexes))
-      cat("\n##############################################################\n")
-      
-      ##### Build the M data frame
-      cat("############################################################## \n
-          ######## M indexes ############\n")
-      print(kable(emme))
-      cat("\n##############################################################")
-      
-      ##### Build the R data frame  
-      R.indexes<-data.frame(R=errei,R_1=erreid1,R_2=erreid2)
-      row.names(R.indexes)=paste("Cluster",row.names(R.indexes))
-      cat("\n######## R indexes ############\n")
-      print(kable(R.indexes))
-      cat("\n##############################################################")
-      
-      ##### Build the fDB data frame 
-      fDB.indexes<-data.frame(fDB=fDB,fDB_1=fDB1,fDB_2=fDB2)
-      cat("\n######## fDB indexes ############\n")
-      print(kable(fDB.indexes))
-      cat("\n##############################################################")
-      ###########################
-      
-      
-      for(i in 1:G)
-      {
-        order(symbols)[i]->index.symb # sorting from the lower to the higher mean curve w.r.t. the zero axis
-        
-        plots[[paste(symbols[index.symb],"Cluster")]]<- ggplot()+
-          geom_line(data=plot_data[plot_data$clusters==symbols[index.symb],], aes(x=time,y=means,linetype= as.factor(clusters)),size = 1.2 )+
-          scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
-          labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
-          geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
-          scale_colour_manual(values = col1,limits=col,breaks=col,name=feature)+
-          theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(ymin,ymax)+xlim(xmin,xmax)
-
-      }
-      
-      ### grouping all the plot per cluster and print it
-       allCl.plot<-plot_grid(plotlist = plots) 
+  ### grouping all the plot per cluster and print it
+  allCl.plot<-plot_grid(plotlist = plots) 
+  h <- length(clusterdata$fit$parameters$Lambda[1,])
+  p <- length(clusterdata$fit$parameters$Lambda[,1])
+     
+  plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Other parameters: p = ", p, ", h = ", h, ", G = ", G  ,sep = ""))  )
+     
+  print(plots[["ALL"]])
        
-       h <- length(clusterdata$fit$parameters$Lambda[1,])
-       p <- length(clusterdata$fit$parameters$Lambda[,1])
+  ### 
+     
+  if(save)
+  {
+   if(is.null(path)) path <- getwd()
        
-       plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Other parameters: p = ", p, ", h = ", h, ", G = ", G  ,sep = ""))  )
+   for(i in 1:G)
+  {
+  #### Save the clusters and mean curves as pdf
+    ggsave(filename = paste(symbols[i],"Cluster.pdf",sep=""),plot=plots[[paste(symbols[i],"Cluster")]],width=29, height = 20, units = "cm",scale = 1,path = path)
+  }
+  ggsave(filename = "ALLCluster.pdf",plot=plots$ALL,width=29, height = 20, units = "cm",scale = 1,path = path)
+  ggsave(filename = "MeanCurve.pdf",plot=PlotMeanCurve,width=29, height = 20, units = "cm",scale = 1,path = path)
        
-       print(plots[["ALL"]])
-       
-       ### 
-       
-       if(save)
-       {
-         if(is.null(path)) path <- getwd()
-         
-         for(i in 1:G)
-         {
-           #### Save the clusters and mean curves as pdf
-           
-           ggsave(filename = paste(symbols[i],"Cluster.pdf",sep=""),plot=plots[[paste(symbols[i],"Cluster")]],width=29, height = 20, units = "cm",scale = 1,path = path)
-         }
-           ggsave(filename = "ALLCluster.pdf",plot=plots$ALL,width=29, height = 20, units = "cm",scale = 1,path = path)
-           ggsave(filename = "MeanCurve.pdf",plot=PlotMeanCurve,width=29, height = 20, units = "cm",scale = 1,path = path)
-           
-           #### Save the fDB indexes as pdf
-           # Transform tables into grobs
-           tt3 <- ttheme_default(
+  #### Save the fDB indexes as pdf
+  # Transform tables into grobs
+  tt3 <- ttheme_default(
              rowhead=list(fg_params=list(fontface="bold"))
            )
            
