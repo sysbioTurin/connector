@@ -74,7 +74,7 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
     ##### Calculation of the tightness and DB (0,1,2) indexes
     l.tight<-lapply(1:runs,function(x) ALL.runs[[x]]$Tight.indexes[,hind])
     l.fDB<-lapply(1:runs,function(x) ALL.runs[[x]]$fDB.indexes[,hind])
-    l.fDB1<-lapply(1:runs,function(x) ALL.runs[[x]]$fDB2deriv.indexes[,hind])
+    l.fDB1<-lapply(1:runs,function(x) ALL.runs[[x]]$fDB1deriv.indexes[,hind])
     l.fDB2<-lapply(1:runs,function(x) ALL.runs[[x]]$fDB2deriv.indexes[,hind])
     #####
     
