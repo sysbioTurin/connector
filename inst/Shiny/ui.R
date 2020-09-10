@@ -82,8 +82,8 @@ ui <- dashboardPage(
       tabItem(tabName = "home",
               h2("Connector "),
               h1(""),
-              p("Presented by: Quantitative Biology (q-Bio) group of the University of Turin",
-                tags$a(href= "onclick =window.open('http://beta.di.unito.it/index.php/english/research/groups/computational-and-mathematical-methodologies-modelling-multi-omics-systems/about')", "website")
+              p("Presented by: ",strong("Quantitative Biology")," group of the University of Turin, ",
+                tags$a(href= "onclick =window.open('http://beta.di.unito.it/index.php/english/research/groups/computational-and-mathematical-methodologies-modelling-multi-omics-systems/about')", "(q-Bio Turin)")
               ),
               p("Authors: S. Pernice, R. Sirovich, M. Beccuti and F. Cordero",
                 style = "font-family: 'times'; font-si16pt"),
@@ -96,15 +96,19 @@ ui <- dashboardPage(
                 # The id lets us use input$tabset1 on the server to find the current tab
                 id = "tabBoxLoading",width = 12 ,
                 tabPanel("From files:", "",
-                         fluidRow(       
+                         fluidRow(
+                           p("Two files are requested to run the data analysis exploiting the CONNECTOR package:"),
+                           p("  - the excel file, namely ", strong("GrowDataFile", style = "font: bold"),", reporting the growth evolution data, "),
+                           p("  - the csv file, namely", strong("AnnotationFile", style = "font: bold"),", containing the annotation information associated with the samples. "),
+                           p("Hence, the growth data associated with an experiment must be stored into GrowDataFile as a table with two columns for each sample. The first column, labeled  Time, contains the time points of a sample. The second column, labeled by the sample name, contains  the data volume over the time. Instead, the second file (i.e. AnnotationFile)  stores  the annotated information associated with the samples as a table in csv format so that  number of rows is equals to the total number of samples."),
                            column(width=6,
-                                  fileInput("fileGrowth", "Growth Data:", placeholder = "Choose a xlsx file",
+                                  fileInput("fileGrowth", "GrowDataFile:", placeholder = "Choose a xlsx file",
                                             accept = c(
                                               "application/vnd.ms-excel",
                                               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") )
                                   ),
                            column(width=6,
-                                  fileInput("fileFeat", "Features Data",  placeholder = "Choose a csv file",
+                                  fileInput("fileFeat", "AnnotationFile",  placeholder = "Choose a csv file",
                                             accept = c(".csv") )
                                   ),
                            fluidRow(column(width = 10,offset = 1,verbatimTextOutput("LoadingError1"))),
@@ -141,10 +145,12 @@ ui <- dashboardPage(
                 tabPanel("From RData:", "",
                          fluidRow(
                            column(width=12,
+                                  p("Select an RDs storing the data.frame with three columns: ID for the identification number of each curve, V for the values and Time for the respective time points"),
                                   fileInput("RDataImportGrowthData", "Growth curves data:",
                                             placeholder = "Select an RDs storing the data.frame for the growth data",
                                             width = "100%"
                                             ),
+                                  p("Select an RDs storing the data.frame where the first column must be named ID and it stores the identification numbers contained in the GrowDataFrame. Then it is possible to add a column per feature to consider and to associate to the respective sample (depending on the identification number in the first column. If NULL, then in the ConnectorList only the feature ID will be reported. " ),
                                   fileInput("RDataImportFeatureData", "Feature data:",
                                             placeholder = "Select an RDs storing the data.frame for the feature data",
                                             width = "100%"
