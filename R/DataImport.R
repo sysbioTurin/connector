@@ -34,7 +34,11 @@
 DataImport <- function(GrowDataFile,AnnotationFile) {
  ###Read Data File
   dataset <- read_excel(GrowDataFile,col_names=T)
-  if( all(dataset[1,]==rep(0,length(dataset[1,]))) ) warning("The first line of the GrowthDataFile is zero.",immediate. = T)
+  if( all(dataset[1,]==rep(0,length(dataset[1,]))) )
+    {
+      warning("The first line of the GrowthDataFile is zero.",immediate. = T)
+      return()
+    }
   
  ### Read Target File
   labcurv  <- read.csv(file=AnnotationFile,header=TRUE)
@@ -45,12 +49,13 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   if(length(c_names)!=(length(labcurv$ID)))
   {
     warning("Number of columns in the excel file is different from the number of samples stored in the target file.")
-
+    return()
   }else{
 
     if(all(c_names==labcurv$SampleName)==FALSE)
     {
       warning("SampleNames in the target file do not correspond to the names in the excel file.")
+      return()
     }
   }
 

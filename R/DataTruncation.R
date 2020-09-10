@@ -6,7 +6,7 @@
 #'
 #' @param data CONNECTORList. (see \code{\link{DataImport}})
 #' @param feature The column name reported in the AnnotationFile containing the feature  to be investigated.
-#' @param truncTime  An integer number corresponding to the time where  the curves will be truncated.
+#' @param truncTime  A two dimension vector of integers corresponding to the time points where the curves will be truncated. If an integer number is passed, than it will be considered as the upper time point by default.
 #' @param labels  Vector containing the text for the title of axis names and plot title.
 #' @param save If TRUE then the growth curves plot truncated at the "TruncTime" is saved into a pdf file.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
@@ -24,6 +24,7 @@
 #'CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 #'
 #'CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("time","volume","Tumor Growth"))
+#'CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=c(20,50),labels = c("time","volume","Tumor Growth"))
 #'
 #' @import ggplot2
 #' @export
@@ -36,7 +37,8 @@ DataTruncation <- function(data,feature,truncTime=NULL,labels=NULL,save=FALSE,pa
   ### Plot growth curves with truncation time
   growth.curve.tr <- growth.curve.ls$GrowthCurve_plot
   
-  if(! is.null(truncTime)) growth.curve.tr <- growth.curve.tr + geom_vline(xintercept=truncTime, color="black", size=1)
+  if(! is.null(truncTime))
+    growth.curve.tr <- growth.curve.tr +geom_vline(xintercept=truncTime, color="black", size=1)
   
   if(save==TRUE)
   {
@@ -88,10 +90,23 @@ DataTrunc <- function(data,truncTime=NULL)
   if(!is.null(truncTime))
   {
     max.time<-max(dataset[,3])
-    if(max.time<truncTime)  warning("Truncation time greater than maximum time in the dataset.")
-    dataset.tr <- dataset[dataset[,3]<=truncTime,]
+    min.time<-min(dataset[,3])
+    
+    if(length(truncTime)>1) 
+    {
+      max.truncTime <- max(truncTime)
+      min.truncTime <- min(truncTime)
+    }else{
+      min.truncTime<- min.time
+      max.truncTime <- truncTime
+    }
+    
+    if(max.time<max.truncTime)  warning("Max truncation time greater than maximum time in the dataset.")
+    if(min.time>min.truncTime)  warning("Min truncation time smaller than minimum time in the dataset.")
+    
+    dataset.tr <- dataset[dataset[,3]<=max.truncTime & dataset[,3]>=min.truncTime ,]
     for (i in 1:sample.size)  lencurv.tr[i]<-length(dataset.tr[,1][dataset.tr[,1]==i])
-    timegrid.tr <- data$TimeGrid[data$TimeGrid<=truncTime]
+    timegrid.tr <- data$TimeGrid[data$TimeGrid<=max.truncTime & data$TimeGrid>=min.truncTime ]
     data.tr=list(Dataset=dataset.tr,LenCurv=lencurv.tr,LabCurv=data$LabCurv,TimeGrid=timegrid.tr)
   }
   else data.tr <- data

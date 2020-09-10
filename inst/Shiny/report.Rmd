@@ -1,0 +1,91 @@
+---
+title: "Report"
+data: Sys.Date()
+output: 
+ html_document:
+    toc: true
+    toc_depth: 3
+params:
+ infoReport: 1
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "##",
+  results = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  highlight = TRUE,
+  background = 'grey',
+  fig.cap = TRUE
+)
+```
+
+# Recap
+The following parameters value has been selected:
+
+ 1. the number of basis spline,
+ `r if(!is.null(params$infoReport$p)){paste("p = ",params$infoReport$p) }else{ paste("p was not selected ")} ` ;
+ 2. the dimension of the mean space, 
+ `r if(!is.null(params$infoReport$h)){paste("h = ",params$infoReport$h) }else{ paste("h was not selected ")} ` ;
+ 3. the number of clusters, 
+ `r if(!is.null(params$infoReport$G)){paste("G = ",params$infoReport$G) }else{ paste("G was not selected ")} ` .
+ 
+# Data import and preprocessing
+
+```{r , fig.height = 3, fig.width = 7, fig.align = "center", fig.cap="Sampled curves coloured by  feature selected."}
+
+params$infoReport$GrowPlot
+
+```
+
+```{r , fig.height = 3, fig.width = 7, fig.align = "center", fig.cap="Time grid."}
+
+params$infoReport$TimeGrid
+
+```
+
+# Paramenter selection
+
+```{r , fig.height = 3, fig.width = 7, fig.align = "center"}
+
+if(!is.null(params$infoReport$CrossLL)) params$infoReport$CrossLL
+if(!is.null(params$infoReport$PCAplot)) params$infoReport$PCAplot
+if(!is.null(params$infoReport$IndexBoxPlot)) params$infoReport$IndexBoxPlot
+
+```
+
+# Cluster plots
+
+```{r , fig.height = 3, fig.width = 7, fig.align = "center"}
+
+if(!is.null(params$infoReport$ConsMatrix)) params$infoReport$ConsMatrix
+if(!is.null(params$infoReport$FCMplots)){
+  params$infoReport$FCMplots$plotMeanCurve
+  params$infoReport$FCMplots$plotsCluster
+} 
+                           
+```
+
+
+
+```{r , fig.height = 3, fig.width = 7, fig.align = "center"}
+
+if(!is.null(params$infoReport$DiscriminantPlot)) params$infoReport$DiscriminantPlot
+if(!is.null(params$infoReport$DiscriminantPlotF)) params$infoReport$DiscriminantPlotF
+
+```
+
+# Spline fitting
+
+```{r , fig.height = 3, fig.width = 7, fig.align = "center"}
+
+if(!is.null(params$infoReport$FCMplots)){
+  
+for(i in lengeth(params$infoReport$FCMplots$spline.plots)) params$infoReport$FCMplots$spline.plots[[i]]
+  
+  }
+  
+```
+

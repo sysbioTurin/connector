@@ -12,7 +12,7 @@ DataTruncation(data, feature, truncTime = NULL, labels = NULL,
 
 \item{feature}{The column name reported in the AnnotationFile containing the feature  to be investigated.}
 
-\item{truncTime}{An integer number corresponding to the time where  the curves will be truncated.}
+\item{truncTime}{A two dimension vector of integers corresponding to the time points where the curves will be truncated. If an integer number is passed, than it will be considered as the upper time point by default.}
 
 \item{labels}{Vector containing the text for the title of axis names and plot title.}
 
@@ -35,6 +35,7 @@ AnnotationFile <-"data/475info.txt"
 CONNECTORList <- DataImport(GrowDataFile,AnnotationFile)
 
 CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=50,labels = c("time","volume","Tumor Growth"))
+CONNECTORList<- DataTruncation(CONNECTORList,"Progeny",truncTime=c(20,50),labels = c("time","volume","Tumor Growth"))
 
 }
 \author{
