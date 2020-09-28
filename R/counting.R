@@ -25,24 +25,10 @@
 #'
 #'CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",60,labels = c("time","volume","Tumor Growth"))
 #'
-#' ############################## FCM ##############################
-#'
 #' CONNECTORList.FCM <- ClusterChoice(CONNECTORList,k=c(2:6),h=2)
 #' CONNECTORList.FCM.k4.h2<- CONNECTORList.FCM$FCM_all$`k= 4`$`h= 2`
 #'
 #' NumberSamples<-CountingSamples(clusterdata=CONNECTORList.FCM.k4.h2,CONNECTORList,feature = "Progeny")
-#'
-#' ############################## MALTHUS ##############################
-#' lower<-c(10^(-5),0)
-#' upper<-c(10^2,10^3)
-#' init<- list(V0=max(0.1,min(CONNECTORList$Dataset$Vol)),a=1)
-#' 
-#' 
-#' Malthus1<- FittingAndClustering(data = CONNECTORList, k = 4, model="Malthus",feature="Progeny",fitting.method="optimr",lower=lower,upper=upper,init=init)
-#'
-#'
-#' NumberSamples<-CountingSamples(clusterdata=Malthus1,CONNECTORList,feature = "Progeny")
-#'
 #' @import plyr
 #' @export
 #' 
