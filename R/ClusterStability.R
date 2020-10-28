@@ -12,6 +12,7 @@
 #' @param seed Seed for the kmeans function.
 #' @param save If TRUE then the growth curves plot truncated at the "TruncTime" is saved into a pdf file.
 #' @param path The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.
+#' @param Cores Number of cores to parallelize computations.
 #' 
 #' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
 #'  

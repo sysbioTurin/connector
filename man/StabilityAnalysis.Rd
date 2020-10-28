@@ -5,7 +5,7 @@
 \title{Cluster Stability}
 \usage{
 StabilityAnalysis(data, G, h, p, runs = 50, seed = 2404,
-  save = FALSE, path = NULL)
+  save = FALSE, path = NULL, Cores = 1)
 }
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}} or \code{\link{DataTruncation}})}
@@ -23,6 +23,8 @@ StabilityAnalysis(data, G, h, p, runs = 50, seed = 2404,
 \item{save}{If TRUE then the growth curves plot truncated at the "TruncTime" is saved into a pdf file.}
 
 \item{path}{The folder path where the plot(s) will be saved. If it is missing, the plot is saved in the current working  directory.}
+
+\item{Cores}{Number of cores to parallelize computations.}
 }
 \value{
 StabilityAnalysis returns a list of (i) lists, called ConsensusInfo, reporting for each G and h: the Consensus Matrix, either as a NxN matrix, where N is the number of samples, or plot, and the most probable clustering obtained from running several times the method; (ii) the box plots showing both the Elbow plot considering the total tightness and the box plots of the fDB indexes for each G; and finally, (iii) the seed. See \code{\link{BoxPlot.Extrapolation}} and \code{\link{MostProbableClustering.Extrapolation}}.

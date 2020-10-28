@@ -8,6 +8,7 @@
 #' @param p The vector of the dimension of the natural cubic spline basis.
 #' @param save If TRUE then the plot is saved into a pdf file.
 #' @param path The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.
+#' @param Cores Number of cores to parallelize computations.
 #' 
 #' @return
 #' DimensionBasis.Choice returns line plot of the cross-validated loglikelihood for each value of p, in grey the result of all ten repetitions of the likelihood calculation and in black the mean of them.
@@ -31,7 +32,7 @@
 #' 
 #' @author Cordero Francesca, Pernice Simone, Sirovich Roberta
 #'
-#' @import ggplot2 fda plyr
+#' @import ggplot2 fda plyr parallel
 #' @importFrom MASS ginv
 #' @export
 #' 

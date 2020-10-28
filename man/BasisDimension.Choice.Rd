@@ -4,7 +4,7 @@
 \alias{BasisDimension.Choice}
 \title{Choice of the B-spline dimension}
 \usage{
-BasisDimension.Choice(data, p, save = FALSE, path = NULL)
+BasisDimension.Choice(data, p, save = FALSE, path = NULL, Cores = 1)
 }
 \arguments{
 \item{data}{CONNECTORList. (see \code{\link{DataImport}})}
@@ -14,6 +14,8 @@ BasisDimension.Choice(data, p, save = FALSE, path = NULL)
 \item{save}{If TRUE then the plot is saved into a pdf file.}
 
 \item{path}{The folder path  where the plot will be saved. If it is missing, the plot is saved in the current working  directory.}
+
+\item{Cores}{Number of cores to parallelize computations.}
 }
 \value{
 DimensionBasis.Choice returns line plot of the cross-validated loglikelihood for each value of p, in grey the result of all ten repetitions of the likelihood calculation and in black the mean of them.
