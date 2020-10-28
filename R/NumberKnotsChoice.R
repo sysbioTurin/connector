@@ -35,8 +35,9 @@
 #' @importFrom MASS ginv
 #' @export
 #' 
-BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
+BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL,Cores = 1)
 {
+  samples <- unique(data$Dataset$ID)
   p.values<-p
   crossvalid<-list()
   n_sample<-length(data$LenCurv)
@@ -59,26 +60,30 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL)
     warning(paste("The maximum value of p should not be larger than the length of the grid. Thus the range of p is fixed from",min(p),"to",Lgrid,".\n") )
   }
   
-  for(step in 1:10)
-  {
+  cl <- makeCluster(Cores)
   
-  SampleTestSet<-sample(1:n_sample,perc)
-  SampleTestSet<-SampleTestSet[order(SampleTestSet)]
+  crossvalid<-parLapply(cl,1:10, function(step){
+    SampleTestSet<-sample(samples,perc)
+    SampleTestSet<-SampleTestSet[order(SampleTestSet)]
+    
+    TestSet<-data$Dataset[data$Dataset$ID%in%SampleTestSet,]
+    TestSet <-data.frame(ID=rep(1:(length(SampleTestSet)),data$LenCurv[which(samples %in% SampleTestSet)]),
+                         Vol=TestSet$Vol[],
+                         Time=TestSet$Time)
+    
+    TrainingSet<-data$Dataset[-which(data$Dataset$ID%in%SampleTestSet),]
+    
+    #### Let define the FCM input matrix of ID sample, Points and time indexes per sample into the grid.
+    
+    data.funcit <-matrix(c(rep(1:(n_sample-length(SampleTestSet)),data$LenCurv[-which(samples %in% SampleTestSet)]),TrainingSet$Vol,match(TrainingSet$Time,grid)),
+                         ncol=3,byrow=F)
+    
+    CrossLikelihood<-sapply(p.values, CalcLikelihood, data.funcit,TestSet,grid)
+    
+    return(data.frame(p=p.values,CrossLikelihood=CrossLikelihood,sim=step))
+  })
   
-  TestSet<-data$Dataset[data$Dataset$ID%in%SampleTestSet,]
-  TestSet <-data.frame(ID=rep(1:(length(SampleTestSet)),data$LenCurv[SampleTestSet]),Vol=TestSet$Vol[],Time=TestSet$Time)
-  
-  TrainingSet<-data$Dataset[-which(data$Dataset$ID%in%SampleTestSet),]
-
-  #### Let define the FCM input matrix of ID sample, Points and time indexes per sample into the grid.
-  
-  data.funcit <-matrix(c(rep(1:(n_sample-length(SampleTestSet)),data$LenCurv[-SampleTestSet]),TrainingSet$Vol,match(TrainingSet$Time,grid)),ncol=3,byrow=F)
- 
-  CrossLikelihood<-sapply(p.values, CalcLikelihood, data.funcit,TestSet,grid)
-  
-  crossvalid[[step]]<-data.frame(p=p.values,CrossLikelihood=CrossLikelihood,sim=step)
-  
-  }
+  stopCluster(cl)
   
   ALLcrossvalid<-ldply(crossvalid, rbind)
   mean<-sapply(p.values, function(x){ mean(ALLcrossvalid$CrossLikelihood[ALLcrossvalid$p==x]) } )

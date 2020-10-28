@@ -136,9 +136,9 @@ withConsoleRedirect <- function(expr) {
   return("")
 }
 
-Visual_1Step <- function(CONNECTORList,input, output, session,rResult,Flags)
+Visual_1Step <- function(CONNECTORList,input, output, session,rResult,Flags,From=NULL)
 {
-  GrowPlot<-GrowthCurve(CONNECTORList, feature = "ID")
+  GrowPlot<- GrowthCurve(CONNECTORList, feature = "ID")
   TimeGrid <- TimeGridDensity(CONNECTORList)
   OutGrowPlot <- GrowPlot$GrowthCurve_plot
   
@@ -205,8 +205,15 @@ Visual_1Step <- function(CONNECTORList,input, output, session,rResult,Flags)
   })
   
   ## Now it is possible to save something:
-  Flags$save1 = 0
-  Flags$GoS1toS2 = 0
+  if(is.null(From))
+  {
+    Flags$save1 = 0
+    Flags$GoS1toS2 = 0
+  }else{
+    Flags$save1 = 0
+    Flags$GoS1toS2_RDS = 0
+  }
+  
 }
 
 server <- function(input, output, session) {
@@ -232,13 +239,14 @@ server <- function(input, output, session) {
                             ConsMatrix = NULL
                             )
   
-  Flags  <- reactiveValues(save1 = 1, GoS1toS2 = 1, GoS3toS4 = 1, GoS4toS5 = 1)
+  Flags  <- reactiveValues(save1 = 1, GoS1toS2 = 1,GoS1toS2_RDS=1, GoS3toS4 = 1, GoS4toS5 = 1)
 ## Data import:
 
   Flags$ContinueLoadingData <- FALSE
   Flags$ContinueEstimP<- FALSE
   Flags$ContinueEstimH<- FALSE
   Flags$ContinueEstimG<- FALSE
+  Flags$ContinueUploadingRDS <- FALSE
   
   observeEvent(input$LoadingData, {
       output$LoadingError1 <- renderText({
@@ -371,7 +379,7 @@ server <- function(input, output, session) {
   }) 
   observeEvent(input$RunForG, {
     output$FCMallError <- renderText({
-      validate(need(!(is.null(rResult$CONNECTORList_trunc) & is.null(rResult$CONNECTORList_trunc)) ,
+      validate(need(!(is.null(rResult$CONNECTORList_trunc) & is.null(rResult$CONNECTORList)) ,
                     "Please upload the RData with a ConnectorList object or run the preprocessing step!") )
       Flags$ContinueEstimG <- T
       ""
@@ -409,7 +417,7 @@ server <- function(input, output, session) {
     }
           output$IndexesClusterErrorCLplot <- renderText({
             validate(need(!is.null(rResult$CONNECTORList.FCM) ,
-                          if((is.null(rResult$CONNECTORList_trunc) & is.null(rResult$CONNECTORList_trunc)) ){
+                          if((is.null(rResult$CONNECTORList_trunc) & is.null(rResult$CONNECTORList)) ){
                             "Please upload the RData with a ConnectorList object or run the preprocessing step!"
                       }else{
                         "Please run the FCM and select a number of clusters!!!"
@@ -619,6 +627,13 @@ server <- function(input, output, session) {
     }
   })
   observe({
+    if(Flags$GoS1toS2_RDS == 0){
+      shinyjs::enable("FromS1toS2_RDs")
+    }else{
+      shinyjs::disable("FromS1toS2_RDs")
+    }
+  })
+  observe({
     if(Flags$GoS3toS4 == 0){
       shinyjs::enable("FromS3toS4")
     }else{
@@ -634,6 +649,11 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$FromS1toS2, {
+    updateTabsetPanel(session, "tabs",
+                      selected = "PreProc"
+    )
+  })
+  observeEvent(input$FromS1toS2_RDs, {
     updateTabsetPanel(session, "tabs",
                       selected = "PreProc"
     )
@@ -760,7 +780,7 @@ server <- function(input, output, session) {
     
     output$LoadingError3 <- renderText({
       validate(
-        need(!is.null(input$RDataImportGrowthData$datapath), "Please select a Connector.RData!!!")
+        need(!is.null(input$RDataImportGrowthData$datapath), "Please select an RDS file!!!")
       )
       Flags$ContinueUploading = TRUE
       ""
@@ -772,7 +792,7 @@ server <- function(input, output, session) {
       {
         if(is.null(rResult$CONNECTORList_trunc) & is.null(rResult$CONNECTORList) )
         {
-          load  = TRUE
+          Flags$ContinueUploadingRDS = TRUE
         }else{ ### alert!!! if it is aleready present! 
           showModal(modalDialog(
             title = "Important message",
@@ -781,14 +801,18 @@ server <- function(input, output, session) {
             footer= tagList(actionButton("confirmUpload2", "Update"),
                             modalButton("Cancel")
             )
-          )) 
+          ))
+          
         }
         
-        GrowthData <- readRDS(input$RDataImportGrowthData$datapath)
-        
         observeEvent(input$confirmUpload2, {
-          removeModal()
-          if(!is.null(input$RDataImportFeatureData$datapath)){
+          Flags$ContinueUploadingRDS = TRUE
+        })
+        
+        GrowthData <- readRDS(input$RDataImportGrowthData$datapath)
+        cat(input$RDataImportGrowthData$datapath)
+        if(Flags$ContinueUploadingRDS ){
+    if(!is.null(input$RDataImportFeatureData$datapath)){
             FeatureData <- readRDS(input$RDataImportFeatureData$datapath)
             txt <- withConsoleRedirect(
               CONNECTORList <- DataFrameImport(GrowthData,FeatureData)
@@ -800,9 +824,8 @@ server <- function(input, output, session) {
           }
           rResult$CONNECTORList <- CONNECTORList
           output$SummaryLoading <- renderUI({HTML(paste(txt[-1], collapse = "<br/>"))} ) 
-          Visual_1Step(CONNECTORList,input, output, session,rResult,Flags)
-          
-        })
+          Visual_1Step(CONNECTORList,input, output, session,rResult,Flags,"FromRDS")
+  }
         
       }
     })

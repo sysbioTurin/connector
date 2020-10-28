@@ -161,6 +161,9 @@ ui <- dashboardPage(
                            column(width=2,
                                   actionButton( label = "Load", inputId = "LoadingConnectorList2", icon = icon("file-upload") )
                            ),
+                           column(width=1,
+                                  actionButton( label = "Next", inputId = "FromS1toS2_RDs", icon = icon("arrow-circle-right") )
+                           ),
                            add_busy_spinner(spin = "fading-circle",color = "white",height = 80,width=80)
                          )
                 )
@@ -279,9 +282,10 @@ ui <- dashboardPage(
                          column(width=2,
                                 actionButton( label = "Select",inputId = "hSelection", icon = icon("check") )
                          ),
-                         column(width=1,offset = 1,
+                         column(width=1, offset = 2,
                                 actionButton( label = "Next", inputId = "FromS4toS5", icon = icon("arrow-circle-right") )
-                         ),"",
+                         ),
+                         h3("    "),
                          box(width = 12, title = "Save the plots:",collapsible = TRUE,
                              column(width =12,
                                     textInput(inputId = "titlePCA", label = "Plot title",value = "" )

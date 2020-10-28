@@ -18,10 +18,10 @@ Datavisual
 # trunc = 50
 
 ### Truncation
-CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",50,labels = c("Time","Volume","Tumor Growth"))
+trCONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",70,labels = c("Time","Volume","Tumor Growth"))
 
 ### Calculation of p
-CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:6)
+CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:6,Cores = 2)
 
 CrossLogLike$CrossLogLikePlot
 
@@ -39,7 +39,11 @@ h<-1
 ####### Calculation of G and fitting using FCM
 
 ### Stability Analysis
-S.cl <-StabilityAnalysis(CONNECTORList, G = 2:6, h = h, p = p, runs=10)
+S.cl <-StabilityAnalysis(data = trCONNECTORList,
+                                         G = 2:5,
+                                         h = h,
+                                         p = p,
+                                         runs = 100)
 
 ### Using the Box Plots you can understand the optimal number of cluster, G.
 BoxPlot.Extrapolation(stability.list = S.cl, h = h)

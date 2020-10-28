@@ -26,12 +26,13 @@ TimeGridDensity <- function(data,save=FALSE,path=NULL)
  ### Variables initialization
  TimeMeasure <-data$Dataset[,c(1,3)]
  SampleSize <- length(unique(data$Dataset[,1]))
+ SampleID <- unique(data$Dataset[,1])
  LenCurve <- data$LenCurv
  PointsCoord<-matrix(0,nrow =LenCurve%*%LenCurve,ncol = 2)
  k<-0
 
  # Generate time grid
-  for(i in 1:SampleSize)
+  for(i in SampleID)
   {
     l<-length(TimeMeasure[TimeMeasure[,1]==i,1])
     PointsCoord[(k+1):(k+l^2),1]<-rep(TimeMeasure[TimeMeasure[,1]==i,2],l)

@@ -26,22 +26,55 @@ DataFrameImport <- function(GrowDataFrame,AnnotationFrame=NULL) {
   ###Read growth curves dataframe
   colnames(GrowDataFrame) <-c("ID","Vol","Time")
   
-  ID <- unique(GrowDataFrame$ID)
-  samplesize <- length(ID)
+  ID.sample <- unique(GrowDataFrame$ID)
+  samplesize <- length(ID.sample)
+  alldata$LenCurv <- table(GrowDataFrame$ID)
+  
+  ID <- 1: samplesize
+  if(sum(ID-ID.sample) != 0)
+  { # the id passed in input is correct, from 1 to number of samples
+    GrowDataFrame$ID <- rep(ID, alldata$LenCurv )
+    switchIndex <- 1:samplesize
+    names(switchIndex) <- ID.sample
+
+    changeAnnotation<-T
+  }else{
+    changeAnnotation<-F
+  }
   
   if(is.null(AnnotationFrame))
   {
-    annotations <- data.frame(ID = ID)
-  }else{
-    annotations <- AnnotationFrame
-    if(colnames(annotations)[1]!= "ID") 
-    {
-      warning("The first column name of the AnnotationFrame must be 'ID' \n ")
-      return()
+    if(changeAnnotation){
+      annotations <- data.frame(ID = ID,ID.sample = ID.sample)
+    }else{
+      annotations <- data.frame(ID = ID)
     }
+  }else{
+    if(colnames(AnnotationFrame)[1]!= "ID") 
+      {
+        warning("The first column name of the AnnotationFrame must be 'ID' \n ")
+        return()
+      }else{
+        if(unique(ID.sample %in% AnnotationFrame[,1]) %in% FALSE)
+          {
+            warning("The AnnotationFrame 'ID's do not correspond to the one stored in the GrowDataFrame!\n ")
+            return()
+          }
+        }
+    
+    if(changeAnnotation){
+      colnames(AnnotationFrame)[1] <- "ID.Sample"
+      annotations <- data.frame(ID = switchIndex[paste(AnnotationFrame$ID.Sample)], AnnotationFrame )
+    }else{
+      annotations <- AnnotationFrame
+    }
+ 
   }
   
-
+  if(! "SampleName" %in% colnames(annotations) )
+  {
+    annotations$SampleName <- paste("Sample", ID)
+  }
   ###Check the column names
   
   if(samplesize!=length(annotations[,1]) )
@@ -52,7 +85,6 @@ DataFrameImport <- function(GrowDataFrame,AnnotationFrame=NULL) {
   
   ### Inizialize :
   alldata$Dataset <- GrowDataFrame
-  alldata$LenCurv <- table(GrowDataFrame$ID)
   alldata$TimeGrid <- sort(unique(GrowDataFrame$Time))
   alldata$LabCurv <- annotations
     

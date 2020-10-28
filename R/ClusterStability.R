@@ -49,11 +49,11 @@
 #'
 #' @seealso MostProbableClustering.Extrapolation, BoxPlot.Extrapolation, ConsMatrix.Extrapolation.
 #' 
-#' @import ggplot2 reshape2 RColorBrewer statmod
+#' @import ggplot2 reshape2 RColorBrewer statmod parallel
 #' @importFrom cowplot plot_grid
 #' @export
 
-StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
+StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Cores=1)
 {
   ALL.runs<-list()
   ConsensusInfo<-list()
@@ -61,9 +61,12 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
   set.seed(seed)
   seed<-.Random.seed 
   assign(x = ".Random.seed", value = seed, envir = .GlobalEnv)
+  
+  cl <- makeCluster(Cores)
 
-  ALL.runs<-lapply(1:runs, function(i) ClusterChoice(data = data, G = G, h = h, p = p,seed=NULL) )
+  ALL.runs<-parLapply(cl,1:runs, function(i) ClusterChoice(data = data, G = G, h = h, p = p,seed=NULL) )
 
+  stopCluster(cl)
 ###### box plot generation #####
   Box.pl<-list()
   
@@ -134,8 +137,8 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       
       consensusM<-Reduce("+",consensus.runs)
       
-      colnames(consensusM)<- data$LabCurv$SampleName
-      row.names(consensusM)<- data$LabCurv$SampleName
+      colnames(consensusM)<- data$LabCurv$ID
+      row.names(consensusM)<- data$LabCurv$ID
       
       consensusM<-as.data.frame(consensusM)/runs
       
@@ -146,7 +149,7 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       #  mat[do.call(order, as.data.frame(mat)),]
       
       fcm<-BestClustering
-      curvename<-data$LabCurv$SampleName
+      curvename<-data$LabCurv$ID
       curve<-fcm$FCM$prediction$gpred
       rownames(curve)<-curvename
       
@@ -176,16 +179,17 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL)
       
       #2) Sorting depending on the cluster membership
       names(cl.memer)<-curvename
-      
+      cl.memer<-sort(cl.memer)
       #3) Defining a dataframe in order to sort the curves depending by the cluster and distance!
       
       namefroml2<-1:length(curvename)
       names(namefroml2)<-curvename.ordered
-      namefroml2<-namefroml2[names(cl.memer)]
+      namefroml2<-namefroml2[names(cl.memer)] # ordering the curve ordered by the L2 distance
       
       curve.name.dtfr<-data.frame(namefroml2=namefroml2,cl.mem=cl.memer,1:length(curvename.ordered))
       
-      ind<-curve.name.dtfr[order(curve.name.dtfr$namefroml2,curve.name.dtfr$cl.mem,curve.name.dtfr$namefroml2),3]
+      # ind<-curve.name.dtfr[order(curve.name.dtfr$namefroml2,curve.name.dtfr$cl.mem,curve.name.dtfr$namefroml2),3]
+      ind<-curve.name.dtfr[order(curve.name.dtfr$cl.mem,curve.name.dtfr$namefroml2),3]
       
       curvename.ordered<-names(cl.memer)[ind]
       
