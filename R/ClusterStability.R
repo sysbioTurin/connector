@@ -65,7 +65,12 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Co
   
   cl <- makeCluster(Cores)
 
-  ALL.runs<-parLapply(cl,1:runs, function(i) ClusterChoice(data = data, G = G, h = h, p = p,seed=NULL) )
+  CONNECTORList <- data
+  G = G
+  h = h
+  p = p
+  
+  ALL.runs<-parLapply(cl,1:runs, function(i) ClusterChoice(data = CONNECTORList, G = G, h = h, p = p,seed=NULL) )
 
   stopCluster(cl)
 ###### box plot generation #####

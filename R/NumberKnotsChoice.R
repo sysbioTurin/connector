@@ -61,7 +61,11 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL,Cores = 1)
     warning(paste("The maximum value of p should not be larger than the length of the grid. Thus the range of p is fixed from",min(p),"to",Lgrid,".\n") )
   }
   
+  
+  if(Cores > 10) Cores <- 10
+  
   cl <- makeCluster(Cores)
+  
   
   crossvalid<-parLapply(cl,1:10, function(step){
     SampleTestSet<-sample(samples,perc)
