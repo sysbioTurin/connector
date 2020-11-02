@@ -166,7 +166,7 @@ ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c(""
   p <- length(clusterdata$fit$parameters$Lambda[,1])
      
   plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Other parameters: p = ", p, ", h = ", h, ", G = ", G  ,sep = ""))  )
-     
+  plots[["PlotData"]]<-plot_data
   print(plots[["ALL"]])
        
   ### 

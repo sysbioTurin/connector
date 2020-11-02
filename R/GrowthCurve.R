@@ -46,16 +46,16 @@ GrowthCurve <- function(data,feature,labels=NULL,save=FALSE,path=NULL)
 
   ### Set growth curve plot with ggplot
   GrowthCurve <- ggplot(data=dataplot, aes(x=Time, y=Vol,group=ID,col=dataplot[,feature])) +
-  geom_line() +
-  geom_point() +
-  labs(title=title,x=axes.x, y = axes.y,col=feature)+
-  theme(plot.title = element_text(hjust = 0.5),title =element_text(size=10, face='bold'))
-  GrowthCurve + scale_colour_manual(values = feature.palette)
+    geom_line() +
+    geom_point() +
+    labs(title=title,x=axes.x, y = axes.y,col=feature)+
+    theme(plot.title = element_text(hjust = 0.5),title =element_text(size=10, face='bold'))+
+    scale_colour_manual(values = feature.palette)
 
   ### Enrich data with colour palette
   data$FeatureColour <- feature.palette
 
-  GrowthCurve.ls <- list(GrowthCurve_plot=GrowthCurve,data=data)
+  GrowthCurve.ls <- list(GrowthCurve_plot=GrowthCurve,data=data,PlotData = dataplot)
   
   if(save==TRUE)
   {
