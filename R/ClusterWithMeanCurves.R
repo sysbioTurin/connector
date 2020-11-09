@@ -156,8 +156,9 @@ ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c(""
         scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
         labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
         geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
-        scale_colour_manual(values = colFetaure,limits=col,breaks=col,name=feature)+
-        theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+ ylim(ymin,ymax)+xlim(xmin,xmax)
+        scale_colour_manual(values = colFetaure,limits=col,breaks=sort(col),name=feature)+
+        theme(plot.title = element_text(hjust = 0.5),axis.line = element_line(colour = "black"),panel.background = element_blank())+
+        ylim(ymin,ymax)+xlim(xmin,xmax)
     }
       
   ### grouping all the plot per cluster and print it

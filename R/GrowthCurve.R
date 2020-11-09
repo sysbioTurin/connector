@@ -42,15 +42,17 @@ GrowthCurve <- function(data,feature,labels=NULL,save=FALSE,path=NULL)
   dataplot <- data$Dataset
   dataplot <- data.frame(merge(data$Dataset,data$LabCurv[,c("ID",feature)],by="ID"))
   dataplot[,feature]<-factor(as.matrix(dataplot[feature]))
-  feature.palette <- rainbow(dim(unique(dataplot[feature]))[1])
-
+  
+  col <- as.character(unique(curves$Info))
+  colFetaure <- rainbow(dim(unique(data$Lab[feature]))[1])
+  
   ### Set growth curve plot with ggplot
   GrowthCurve <- ggplot(data=dataplot, aes(x=Time, y=Vol,group=ID,col=dataplot[,feature])) +
     geom_line() +
     geom_point() +
     labs(title=title,x=axes.x, y = axes.y,col=feature)+
     theme(plot.title = element_text(hjust = 0.5),title =element_text(size=10, face='bold'))+
-    scale_colour_manual(values = feature.palette)
+    scale_colour_manual(values = colFetaure,limits = col, breaks = sort(col), name = feature)
 
   ### Enrich data with colour palette
   data$FeatureColour <- feature.palette
