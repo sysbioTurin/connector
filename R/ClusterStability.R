@@ -115,7 +115,7 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Co
     
     boxplots<-plot_grid(plotlist=pl)
     
-    Box.pl[[paste("h=",h[hind])]]$Plot<-boxplots
+    Box.pl[[paste("h=",h[hind])]]$Plot<-list(Both=boxplots,fDBindex = pl[["fDBindex"]], Elbow= pl[["Tight"]])
     Box.pl[[paste("h=",h[hind])]]$Data<-list(Tight=Tight,fDB=fDB,fDB.1=fDB.der1,fDB.2=fDB.der2)
     
     ######### Cluster Membership #########
