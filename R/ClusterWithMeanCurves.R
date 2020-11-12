@@ -88,13 +88,22 @@ ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c(""
   }
   cl.names<-clusterdata$cluster$cluster.names
   
-  plot_data<-data.frame(time=time3,means=meancurves_truncated,clusters=cluster)
+  plot_data<-data.frame(Times=time3,means=meancurves_truncated,Cluster=cluster)
     
   PlotMeanCurve<-ggplot()+
-    geom_line(data=plot_data, aes(x=time,y=means,group=clusters,linetype= as.factor(clusters)),size=1 )+  
-    scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols), name="Cluster") +
-    labs(title=title, x=axis.x, y=axis.y, linetype="Cluster")+
-    theme(plot.title = element_text(hjust = 0.5), axis.line = element_line(colour = "black"), panel.background = element_blank())
+    geom_line(data=plot_data,
+              aes(x=Times,y=means,group=Cluster,linetype= as.factor(Cluster)),size=1 )+  
+    scale_linetype_manual(values =1:G ,
+                          limits=sort(symbols),
+                          breaks=sort(symbols),
+                          name="Cluster") +
+    labs(title=title,
+         x=axis.x,
+         y=axis.y,
+         linetype="Cluster")+
+    theme(plot.title = element_text(hjust = 0.5),
+          axis.line = element_line(colour = "black"),
+          panel.background = element_blank())
 
     col<- as.character(unique(curves$Info))
     colFetaure <- rainbow(dim(unique(data$Lab[feature]))[1])
@@ -152,7 +161,7 @@ ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c(""
       order(symbols)[i]->index.symb # sorting from the lower to the higher mean curve w.r.t. the zero axis
       
       plots[[paste(symbols[index.symb],"Cluster")]]<- ggplot()+
-        geom_line(data=plot_data[plot_data$clusters==symbols[index.symb],], aes(x=time,y=means,linetype= as.factor(clusters)),size = 1.2 )+
+        geom_line(data=plot_data[plot_data$Cluster==symbols[index.symb],], aes(x=Times,y=means,linetype= as.factor(Cluster)),size = 1.2 )+
         scale_linetype_manual(values =1:G ,limits=sort(symbols),breaks=sort(symbols),name="Cluster") +
         labs(title=paste("Cluster",symbols[index.symb]), x=axis.x, y = axis.y)+
         geom_line(data = curves[curves$Cluster==index.symb,],aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
@@ -162,11 +171,33 @@ ClusterWithMeanCurve<-function(clusterdata, data, feature ,title="", labels=c(""
     }
       
   ### grouping all the plot per cluster and print it
-  allCl.plot<-plot_grid(plotlist = plots) 
+  #allCl.plot<-plot_grid(plotlist = plots) 
   h <- length(clusterdata$fit$parameters$Lambda[1,])
   p <- length(clusterdata$fit$parameters$Lambda[,1])
      
-  plots[["ALL"]]<-ggdraw(add_sub(allCl.plot, paste("Other parameters: p = ", p, ", h = ", h, ", G = ", G  ,sep = ""))  )
+  curves.tmp<-curves
+  curves.tmp$Cluster <- symbols[curves.tmp$Cluster]
+  
+  plots[["ALL"]]<- ggplot()+
+    geom_line(data=plot_data,
+              aes(x=Times,y=means,linetype= as.factor(Cluster)),size = 1.2 )+
+    scale_linetype_manual(values =1:G ,limits=sort(symbols),
+                          breaks=sort(symbols),name="Cluster") +
+    facet_wrap(~Cluster)+
+    geom_line(data = curves.tmp,
+              aes(x=Times,y=Vol,group=ID,color=factor(Info)))+
+    scale_colour_manual(values = colFetaure,
+                        limits=col,
+                        breaks=sort(col),
+                        name=feature)+
+    theme(plot.title = element_text(hjust = 0.5),
+          axis.line = element_line(colour = "black"),
+          panel.background = element_blank())+
+    ylim(ymin,ymax)+xlim(xmin,xmax)+
+   labs(title=paste("Other parameters: p = ", p, ", h = ", h, ", G = ", G  ,sep = ""),
+        x = axis.x,
+        y = axis.y)
+
   plots[["PlotData"]]<-plot_data
   print(plots[["ALL"]])
        

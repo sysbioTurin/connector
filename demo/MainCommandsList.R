@@ -18,7 +18,7 @@ Datavisual
 # trunc = 50
 
 ### Truncation
-trCONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",70,labels = c("Time","Volume","Tumor Growth"))
+CONNECTORList<- DataTruncation(CONNECTORList,feature="Progeny",70,labels = c("Time","Volume","Tumor Growth"))
 
 ### Calculation of p
 CrossLogLike<-BasisDimension.Choice(CONNECTORList,2:6,Cores = 2)
@@ -39,7 +39,7 @@ h<-1
 ####### Calculation of G and fitting using FCM
 
 ### Stability Analysis
-S.cl <-StabilityAnalysis(data = trCONNECTORList,
+S.cl <-StabilityAnalysis(data = CONNECTORList,
                                          G = 2:5,
                                          h = h,
                                          p = p,
