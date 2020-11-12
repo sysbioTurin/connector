@@ -332,7 +332,7 @@
       # Calculate covariance for each alpha hat.
       InvCalpha <- t(par$Lambda) %*% t(Sij) %*% solve(Sigma) %*% Sij %*%
         par$Lambda
-      Calpha[i,  ,  ] <- solve(InvCalpha)
+      Calpha[i,  ,  ] <- solve(InvCalpha,tol = 1e-30)
       # Calculate each alpha hat.
       alpha.hat[i,  ] <- Calpha[i,  ,  ] %*% t(par$Lambda) %*% t(
         Sij) %*% solve(Sigma) %*% (xij - Sij %*% par$lambda.zero)
