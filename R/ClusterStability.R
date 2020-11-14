@@ -220,8 +220,8 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Co
       
       x.text<-(cluster.lines$xend-cluster.lines$x)/2 + cluster.lines$x
       y.text<-(cluster.lines$yend-cluster.lines$y)/2 + cluster.lines$y
-      x.text<-x.text[1:G]
-      y.text<-y.text[-(1:G)]
+      x.text<-x.text[1:Gind]
+      y.text<-y.text[-(1:Gind)]
       
       ConsensusPlot<- ggplot() + 
         geom_tile(data=m,aes(x = Var1, y = Var2,fill=value))+
