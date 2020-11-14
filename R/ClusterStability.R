@@ -213,16 +213,26 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Co
       coor<-c(0,cumsum(length.cl))
       coor.2<-sum(length.cl)-coor
       
-      cluster.lines<-data.frame(x=c(coor[-length(coor)],coor[-length(coor)]), y=c(coor.2[-1],coor.2[-length(coor.2)]), xend=c(coor[-1],coor[-length(coor)]), yend=c(coor.2[-1],coor.2[-1] ) ) +.5
+      cluster.lines<-data.frame(x=c(coor[-length(coor)],coor[-length(coor)]),
+                                y=c(coor.2[-1],coor.2[-length(coor.2)]),
+                                xend=c(coor[-1],coor[-length(coor)]),
+                                yend=c(coor.2[-1],coor.2[-1] ) ) +.5
       
-      ConsensusPlot<- ggplot(m,aes(x = Var1, y = Var2,fill=value)) + 
-        geom_tile()+labs(x="", y="",fill="Same cluster \ncounting") +
+      x.text<-(cluster.lines$xend-cluster.lines$x)/2 + cluster.lines$x
+      y.text<-(cluster.lines$yend-cluster.lines$y)/2 + cluster.lines$y
+      x.text<-x.text[1:G]
+      y.text<-y.text[-(1:G)]
+      
+      ConsensusPlot<- ggplot() + 
+        geom_tile(data=m,aes(x = Var1, y = Var2,fill=value))+
+        labs(x="", y="",fill="Same cluster \ncounting") +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank(), axis.line = element_line(colour = "black"),axis.text.x = element_text(angle = 45, hjust = 1))+
         scale_fill_gradient2(midpoint=0.5, low="blue", mid="yellow",
                               high="red")+
         geom_segment(data=cluster.lines, aes(x,y,xend=xend, yend=yend), size=1.5, inherit.aes=F)+
-        labs(title="Consensus Matrix",subtitle = "Black line for the most probable clustering" )  
+        labs(title="Consensus Matrix",subtitle = "Black line for the most probable clustering" )+
+        annotate(geom="text",x=x.text, y=y.text, label= rev(BestClustering$FCM$cluster$cluster.names),size=6)
       
       return(list(ConsensusMatrix=consensusM,ConsensusPlot=ConsensusPlot,MostProbableClustering=BestClustering) )
     } 
