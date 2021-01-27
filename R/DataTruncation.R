@@ -82,7 +82,7 @@ DataTrunc <- function(data,truncTime=NULL)
 #### Truncates the growth data at a specific time point chosen by the user.
   # Variables inizialization
   dataset <- data$Dataset
-  sample.size <- max(unique(dataset[,1]))
+  sample.size <- length(unique(dataset[,1]))
   lencurv.tr <- numeric(sample.size)
   
   # Data truncation
@@ -105,6 +105,7 @@ DataTrunc <- function(data,truncTime=NULL)
     if(min.time>min.truncTime)  warning("Min truncation time smaller than minimum time in the dataset.")
     
     dataset.tr <- dataset[dataset[,3]<=max.truncTime & dataset[,3]>=min.truncTime ,]
+    
     for (i in 1:sample.size)  lencurv.tr[i]<-length(dataset.tr[,1][dataset.tr[,1]==i])
     timegrid.tr <- data$TimeGrid[data$TimeGrid<=max.truncTime & data$TimeGrid>=min.truncTime ]
     data.tr=list(Dataset=dataset.tr,LenCurv=lencurv.tr,LabCurv=data$LabCurv,TimeGrid=timegrid.tr)
@@ -113,7 +114,7 @@ DataTrunc <- function(data,truncTime=NULL)
   
   if( length(which(data.tr$LenCurv < 2))!=0 ) 
   {
-    return(0)
+    warning("Curves with less than 2 points are now present!!!")
   }
 
   return(data.tr)
