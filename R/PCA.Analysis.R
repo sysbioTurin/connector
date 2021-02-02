@@ -47,14 +47,17 @@ PCA.Analysis <- function(data,p=5,save=FALSE,path=NULL)
 
     curveIndx <- data[,1]
     timeIndx <- match(data[,3],TimeGrid)
-    n <- max(curveIndx)
+    n <- unique(curveIndx)
     fullBase <- base[timeIndx,  ]
-    coeffs <- matrix(0,nrow=n,ncol=sum(p))
-    for (i in 1:n){
+    coeffs <- matrix(0,nrow=length(n),ncol=sum(p))
+    
+    for ( i in 1:length(n) ){
+      ni<-n[i]
+      cat("i=",i,"\n")
       if(is.null(dim(base)[1]))
         base <- t(t(base))
-      basei <- fullBase[curveIndx==i,]
-      yi <- data[curveIndx==i,2] 
+      basei <- fullBase[curveIndx==ni,]
+      yi <- data[curveIndx==ni,2] 
       
       if(length(yi)>1){
         coeffs[i,] <- solve(t(basei) %*% basei + pert * diag(p)) %*% t(basei) %*%yi
