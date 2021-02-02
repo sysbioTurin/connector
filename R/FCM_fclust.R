@@ -68,9 +68,11 @@
     N <- length(table(data$curve))
     # Compute initial estimate of basis coefficients.
     points <- matrix(0,N,sum(q))
+    indexesCurve <- unique(data$curve)
     for (i in 1:N){
-      Si <- S[data$curve==i,]
-      xi <- data$x[data$curve==i]
+      Ni<- indexesCurve[i]
+      Si <- S[data$curve==Ni,]
+      xi <- data$x[data$curve==Ni]
       points[i,] <- solve(t(Si) %*% Si + pert * diag(q)) %*% t(Si) %*%xi}
     # Use k-means to get initial cluster memberships from points.
     if(K > 1)

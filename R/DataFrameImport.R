@@ -31,7 +31,7 @@ DataFrameImport <- function(GrowDataFrame,AnnotationFrame=NULL) {
   alldata$LenCurv <- table(GrowDataFrame$ID)
   
   ID <- 1: samplesize
-  if(all(ID==ID.sample) != 0)
+  if(!all(ID==ID.sample))
   { # the id passed in input is correct, from 1 to number of samples
     GrowDataFrame$ID <- rep(ID, alldata$LenCurv )
     switchIndex <- 1:samplesize
