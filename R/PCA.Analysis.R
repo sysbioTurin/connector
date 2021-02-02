@@ -53,7 +53,6 @@ PCA.Analysis <- function(data,p=5,save=FALSE,path=NULL)
     
     for ( i in 1:length(n) ){
       ni<-n[i]
-      cat("i=",i,"\n")
       if(is.null(dim(base)[1]))
         base <- t(t(base))
       basei <- fullBase[curveIndx==ni,]
