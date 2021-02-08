@@ -86,7 +86,7 @@ DataFrameImport <- function(GrowDataFrame,AnnotationFrame=NULL) {
   ### Inizialize :
   alldata$Dataset <- GrowDataFrame
   alldata$TimeGrid <- sort(unique(GrowDataFrame$Time))
-  alldata$LabCurv <- annotations[order(annotation$ID),]
+  alldata$LabCurv <- annotations[order(annotations$ID),]
     
   cat("############################### \n######## Summary ##############\n")
   cat("\n Number of curves:",samplesize,";\n Min curve length: ",min(alldata$LenCurv),"; Max curve length: ",max(alldata$LenCurv),".\n")
