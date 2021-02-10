@@ -63,6 +63,9 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Co
   seed<-.Random.seed 
   assign(x = ".Random.seed", value = seed, envir = .GlobalEnv)
   
+  nworkers <- detectCores()
+  if(nworkers<Cores) Cores <- nworkers
+  
   cl <- makeCluster(Cores)
 
   CONNECTORList <- data

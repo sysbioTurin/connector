@@ -61,7 +61,8 @@ BasisDimension.Choice<-function(data,p,save=FALSE,path=NULL,Cores = 1)
     warning(paste("The maximum value of p should not be larger than the length of the grid. Thus the range of p is fixed from",min(p),"to",Lgrid,".\n") )
   }
   
-  
+  nworkers <- detectCores()
+  if(nworkers<Cores) Cores <- nworkers
   if(Cores > 10) Cores <- 10
   
   cl <- makeCluster(Cores)
