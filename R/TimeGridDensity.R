@@ -45,17 +45,33 @@ TimeGridDensity <- function(data,save=FALSE,path=NULL)
   Time2 <- PointsCoord[,2]
   
   df <- data.frame(Time1=Time1,Time2=Time2)
-  #df<-ddply(df,.(Time1,Time2),nrow)
+  df1<-ddply(df,.(Time1,Time2),nrow)
   
 
   ### Plot density grid
-  TimeGrid_plot <- ggplot(df,aes(Time1, Time2)) +
-                    stat_density_2d( aes(fill=stat(nlevel)), geom = "polygon" )+
-                    scale_fill_gradientn(colours = c("#baffc9","#FF0000"),name="Freq. of \nobservations")+
-                  theme_bw() +
-	                labs(title="Time grid",x="Time", y = "Time")+
-                  theme(plot.title = element_text(hjust = 0.5),title =element_text(size=12, face='bold'))
+#   TimeGrid_plot <- ggplot(df,aes(Time1, Time2)) +
+#                     stat_density_2d( aes(fill=stat(nlevel)), geom = "polygon" )+
+#                     scale_fill_gradientn(colours = c("#baffc9","#FF0000"),
+#                                          name="Freq. of \nobservations")+
+#                   theme_bw() +
+# 	                labs(title="Time grid",x="Time", y = "Time")+
+#                   theme(plot.title = element_text(hjust = 0.5),
+#                         title =element_text(size=12, face='bold'))
 
+  
+  TimeGrid_plot <-  ggplot() + 
+    geom_point(data=df1,aes(Time1, Time2,col=V1/max(V1)))+
+    stat_density_2d(data=df,aes(Time1, Time2,fill=stat(nlevel)), geom = "polygon" )+
+    scale_fill_gradientn(colours = c("#baffc9","#FF0000"),
+                         name="Freq. of \nobservations")+
+    scale_color_gradientn(colours = c("#baffc9","#FF0000"),
+                         name="Freq. of \nobservations")+
+    theme_bw() +
+    labs(title="Time grid",x="Time", y = "Time")+
+    theme(plot.title = element_text(hjust = 0.5),
+          title =element_text(size=12, face='bold'))+
+    guides(color = FALSE)
+  
   if(save==TRUE)
   {
     if(is.null(path))
