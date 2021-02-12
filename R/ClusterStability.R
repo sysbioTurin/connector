@@ -223,19 +223,28 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Co
       
       x.text<-(cluster.lines$xend-cluster.lines$x)/2 + cluster.lines$x
       y.text<-(cluster.lines$yend-cluster.lines$y)/2 + cluster.lines$y
-      x.text<-x.text[1:Gind]
-      y.text<-y.text[-(1:Gind)]
+      x.text <- x.text[1:length(length.cl)]
+      y.text <- y.text[-(1:length(length.cl) )]
       
-      ConsensusPlot<- ggplot() + 
-        geom_tile(data=m,aes(x = Var1, y = Var2,fill=value))+
-        labs(x="", y="",fill="Same cluster \ncounting") +
-        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              panel.background = element_blank(), axis.line = element_line(colour = "black"),axis.text.x = element_text(angle = 45, hjust = 1))+
-        scale_fill_gradient2(midpoint=0.5, low="blue", mid="yellow",
-                              high="red")+
-        geom_segment(data=cluster.lines, aes(x,y,xend=xend, yend=yend), size=1.5, inherit.aes=F)+
-        labs(title="Consensus Matrix",subtitle = "Black line for the most probable clustering" )+
-        annotate(geom="text",x=x.text, y=y.text, label= rev(BestClustering$FCM$cluster$cluster.names),size=6)
+      lab = rev(BestClustering$FCM$cluster$cluster.names)[rev(BestClustering$FCM$cluster$cluster.names) %in% unique(names(BestClustering$FCM$cluster$cluster.member)) ]
+      
+      ConsensusPlot <- ggplot() +
+        geom_tile(data = m, 
+                  aes(x = Var1, y = Var2, fill = value)) +
+        labs(x = "",y = "", fill = "Same cluster \ncounting") + 
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+              panel.background = element_blank(), axis.line = element_line(colour = "black"), 
+              axis.text.x = element_text(angle = 45, hjust = 1)) + 
+        scale_fill_gradient2(midpoint = 0.5, low = "blue", 
+                             mid = "yellow", high = "red") +
+        geom_segment(data = cluster.lines, 
+                     aes(x, y, xend = xend, yend = yend), size = 1.5, 
+                     inherit.aes = F) +
+        labs(title = "Consensus Matrix",
+             subtitle = "Black line for the most probable clustering") + 
+        annotate(geom = "text", x = x.text, y = y.text, 
+                 label = lab , 
+                 size = 6)
       
       return(list(ConsensusMatrix=consensusM,ConsensusPlot=ConsensusPlot,MostProbableClustering=BestClustering) )
     } 
