@@ -29,7 +29,7 @@ DataFrameImport <- function(GrowDataFrame,AnnotationFrame=NULL) {
   ID.sample <- unique(GrowDataFrame$ID)
   samplesize <- length(ID.sample)
   alldata$LenCurv <- table(GrowDataFrame$ID)
-  
+  alldata$LenCurv <- alldata$LenCurv[unique(GrowDataFrame$ID)]
   ID <- 1: samplesize
   if(!all(ID==ID.sample))
   { # the id passed in input is correct, from 1 to number of samples
