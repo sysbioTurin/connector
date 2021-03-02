@@ -112,6 +112,17 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
   ### ID, volume and time data frame
 
   dataset <- data.frame(ID=ID,Vol=VolValue,Time=TimeValue)
+  
+  check.times<-aggregate(dataset$Time, by = list(dataset$ID),function(x){
+    table(x)->number.times
+    if(length(unique(number.times))>1) return("Multiple Times")
+    else return("Perfect")
+  })
+  if(length(unique(check.times))>1){
+    warning("Samples with multiple observations at the same time point are present. One observation per time point is required")
+    return()
+  }
+  
   alldata <- list(Dataset=dataset,LenCurv=lencurv,LabCurv=labcurv,TimeGrid=timegrid)
   
   cat("############################### \n######## Summary ##############\n")

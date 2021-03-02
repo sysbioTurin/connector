@@ -85,6 +85,17 @@ DataFrameImport <- function(GrowDataFrame,AnnotationFrame=NULL) {
   
   ### Inizialize :
   alldata$Dataset <- GrowDataFrame
+  
+  check.times<-aggregate(GrowDataFrame$Time, by = list(GrowDataFrame$ID),function(x){
+    table(x)->number.times
+    if(length(unique(number.times))>1) return("Multiple Times")
+    else return("Perfect")
+  })
+  if(length(unique(check.times))>1){
+    warning("Samples with multiple observations at the same time point are present. One observation per time point is required")
+    return()
+  }
+  
   alldata$TimeGrid <- sort(unique(GrowDataFrame$Time))
   alldata$LabCurv <- annotations[order(annotations$ID),]
     
