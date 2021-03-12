@@ -54,7 +54,7 @@
 #' @importFrom cowplot plot_grid
 #' @export
 
-StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Cores=1)
+StabilityAnalysis<-function(data,G,h,p,runs=50,seed=123,save=FALSE,path=NULL,Cores=1)
 {
   ALL.runs<-list()
   ConsensusInfo<-list()
@@ -67,7 +67,8 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=2404,save=FALSE,path=NULL,Co
   if(nworkers<Cores) Cores <- nworkers
   
   cl <- makeCluster(Cores)
-
+  clusterSetRNGStream(cl, seed)
+  
   CONNECTORList <- data
   G = G
   h = h

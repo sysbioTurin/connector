@@ -118,7 +118,8 @@ DataImport <- function(GrowDataFile,AnnotationFile) {
     if(length(unique(number.times))>1) return("Multiple Times")
     else return("Perfect")
   })
-  if(length(unique(check.times))>1){
+  
+  if(length(unique(check.times$x))>1){
     warning("Samples with multiple observations at the same time point are present. One observation per time point is required")
     return()
   }
