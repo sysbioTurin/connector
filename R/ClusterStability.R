@@ -59,9 +59,9 @@ StabilityAnalysis<-function(data,G,h,p,runs=50,seed=123,save=FALSE,path=NULL,Cor
   ALL.runs<-list()
   ConsensusInfo<-list()
   
-  set.seed(seed)
-  seed<-.Random.seed 
-  assign(x = ".Random.seed", value = seed, envir = .GlobalEnv)
+  # set.seed(seed)
+  # seed<-.Random.seed 
+  # assign(x = ".Random.seed", value = seed, envir = .GlobalEnv)
   
   nworkers <- detectCores()
   if(nworkers<Cores) Cores <- nworkers
